@@ -1,0 +1,10 @@
+INSERT INTO books(author,title,size) VALUES('Dostoevsky','Idiot',350);
+INSERT INTO books(author,title,size) VALUES('Tven','Trip',456);
+INSERT INTO books(author,title,size) VALUES('Tolkien','LOTR',4350);
+INSERT INTO books(author,title,size) VALUES('Gorky','Na dne',487);
+INSERT INTO books(author,title,size) VALUES('Pushkin','Lukomorie',254);
+INSERT INTO books(author,title,size) VALUES('Tolkien','Silmalirion',1500);
+INSERT INTO books(author,title,size) VALUES('Tven','Trip',350);
+INSERT INTO books(author,title,size) VALUES('Dostoevsky','Idiot',234);
+INSERT INTO books(author,title,size) VALUES('Puskin','Lukomorie',254);
+INSERT INTO books(author,title,size) VALUES('Dostoevsky','Idiot',350);
