@@ -3,10 +3,13 @@ package com.example.MyBookShopApp.data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.expression.Lists;
 
 import java.sql.ResultSet;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -32,35 +35,14 @@ public class BookService {
     }
 
     public List<AuthorsByLetter> getAuthorsData() {
-        List<AuthorsByLetter> authorsByLetters = new ArrayList<>();
         List<String> authors = jdbcTemplate.query("SELECT author FROM books",
                 (ResultSet rs, int rowNum) -> rs.getString("author"));
-        Collections.sort(authors);
-        authors.forEach(a -> {
-            String letter = a.substring(0, 1);
-            if (authorsByLetters == null) {
-                addAuthor(authorsByLetters, a, letter);
-            }
-            boolean isLetterFind = false;
-            for (AuthorsByLetter l : authorsByLetters) {
-                if (l.getLetter().equals(letter)) {
-                    l.getAuthors().add(a);
-                    isLetterFind = true;
-                    break;
-                }
-            }
-            if (isLetterFind == false) {
-                addAuthor(authorsByLetters, a, letter);
-            }
-        });
-        return authorsByLetters;
-    }
-
-    private void addAuthor(List<AuthorsByLetter> authorsByLetters, String a, String letter) {
-        AuthorsByLetter newAuthors = new AuthorsByLetter();
-        newAuthors.setAuthors(new ArrayList<>());
-        newAuthors.getAuthors().add(a);
-        newAuthors.setLetter(letter);
-        authorsByLetters.add(newAuthors);
+        return authors
+                .stream()
+                .collect(Collectors.groupingBy(a -> a.charAt(0)))
+                .entrySet()
+                .stream()
+                .map(entry -> new AuthorsByLetter(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 }

@@ -3,14 +3,14 @@ package com.example.MyBookShopApp.data;
 import java.util.List;
 
 public class AuthorsByLetter {
-    private String letter;
+    private Character letter;
     private List<String> authors;
 
-    public String getLetter() {
+    public Character getLetter() {
         return letter;
     }
 
-    public void setLetter(String letter) {
+    public void setLetter(Character letter) {
         this.letter = letter;
     }
 
@@ -28,5 +28,10 @@ public class AuthorsByLetter {
                 "letter='" + letter + '\'' +
                 ", authors=" + authors +
                 '}';
+    }
+
+    public AuthorsByLetter(Character letter, List<String> authors) {
+        this.letter = letter;
+        this.authors = authors;
     }
 }
