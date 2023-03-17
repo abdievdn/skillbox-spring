@@ -1,10 +1,9 @@
 package com.example.MyBookShopApp.data.struct.book;
 
-import com.example.MyBookShopApp.data.struct.author.AuthorEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2GenreEntity;
+import com.example.MyBookShopApp.data.struct.book.links.Book2TagEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2UserEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,7 +12,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ApiModel(description = "entity represents a book")
 @Data
@@ -59,4 +57,7 @@ public class BookEntity {
 
     @OneToMany(mappedBy = "book")
     private List<Book2UserEntity> book2users = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    private List<Book2TagEntity> book2tags = new ArrayList<>();
 }

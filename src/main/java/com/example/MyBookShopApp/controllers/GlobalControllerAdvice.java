@@ -4,21 +4,25 @@ import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.SearchWordDto;
 import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.data.struct.book.genre.GenreEntity;
+import com.example.MyBookShopApp.data.struct.tag.TagEntity;
 import com.example.MyBookShopApp.services.BookService;
 import com.example.MyBookShopApp.services.GenreService;
-import lombok.AllArgsConstructor;
+import com.example.MyBookShopApp.services.TagService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @ControllerAdvice
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GlobalControllerAdvice {
 
     private final BookService bookService;
     private final GenreService genreService;
+    private final TagService tagService;
 
     @ModelAttribute("searchWordDto")
     public SearchWordDto searchWordModel() {
@@ -68,5 +72,15 @@ public class GlobalControllerAdvice {
     @ModelAttribute("genreSlug")
     public String genreSlugModel() {
         return "";
+    }
+
+    @ModelAttribute("tagsList")
+    public List<TagEntity> tagsListModel() {
+        return tagService.getAllTags();
+    }
+
+    @ModelAttribute("tagsMap")
+    public Map<TagEntity, Integer> tagsMapModel() {
+        return tagService.getTagsWithValues();
     }
 }

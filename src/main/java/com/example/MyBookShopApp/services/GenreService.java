@@ -7,7 +7,7 @@ import com.example.MyBookShopApp.data.struct.book.genre.GenreEntity;
 import com.example.MyBookShopApp.repositories.Book2GenreRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import com.example.MyBookShopApp.repositories.GenreRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GenreService {
 
     private final GenreRepository genreRepository;
@@ -30,8 +30,7 @@ public class GenreService {
     }
 
     private GenreEntity getGenreEntity(String slug) {
-        GenreEntity genre = genreRepository.findBySlug(slug).orElseGet(GenreEntity::new);
-        return genre;
+        return genreRepository.findBySlug(slug).orElseGet(GenreEntity::new);
     }
 
     private List<BookEntity> getBooksByGenre(GenreEntity genre) {
@@ -67,7 +66,7 @@ public class GenreService {
     }
 
     private void setBooksCountToGenre(List<GenreEntity> genres) {
-        Integer count = 0;
+        Integer count;
         for (GenreEntity g : genres) {
             count = book2GenreRepository.countAllByGenreId(g.getId());
             g.setBooksCount(count);

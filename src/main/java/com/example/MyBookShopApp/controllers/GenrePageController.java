@@ -3,7 +3,7 @@ package com.example.MyBookShopApp.controllers;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.struct.book.genre.GenreEntity;
 import com.example.MyBookShopApp.services.GenreService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GenrePageController {
 
     private final GenreService genreService;
