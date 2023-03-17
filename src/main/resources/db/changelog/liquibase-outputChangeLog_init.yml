@@ -1,0 +1,590 @@
+databaseChangeLog:
+- changeSet:
+    id: 1677156568465-1
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: author_pkey
+            name: id
+            type: INTEGER
+        - column:
+            name: description
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: photo
+            type: VARCHAR(255)
+        - column:
+            name: slug
+            type: VARCHAR(255)
+        tableName: author
+- changeSet:
+    id: 1677156568465-2
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: balance_transaction_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: description
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: time
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: value
+            type: INTEGER
+        tableName: balance_transaction
+- changeSet:
+    id: 1677156568465-3
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book_pkey
+            name: id
+            type: INTEGER
+        - column:
+            name: description
+            type: TEXT
+        - column:
+            name: discount
+            type: SMALLINT
+        - column:
+            name: image
+            type: VARCHAR(255)
+        - column:
+            name: is_bestseller
+            type: SMALLINT
+        - column:
+            name: price
+            type: INTEGER
+        - column:
+            name: pub_date
+            type: date
+        - column:
+            name: slug
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: title
+            type: VARCHAR(255)
+        tableName: book
+- changeSet:
+    id: 1677156568465-4
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book2author_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: author_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: sort_index
+            type: INTEGER
+        tableName: book2author
+- changeSet:
+    id: 1677156568465-5
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book2genre_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: genre_id
+            type: INTEGER
+        tableName: book2genre
+- changeSet:
+    id: 1677156568465-6
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book2user_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: time
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: type_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        tableName: book2user
+- changeSet:
+    id: 1677156568465-7
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book2user_type_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: code
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        tableName: book2user_type
+- changeSet:
+    id: 1677156568465-8
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book_file_pkey
+            name: id
+            type: INTEGER
+        - column:
+            name: hash
+            type: VARCHAR(255)
+        - column:
+            name: path
+            type: VARCHAR(255)
+        - column:
+            name: type_id
+            type: INTEGER
+        tableName: book_file
+- changeSet:
+    id: 1677156568465-9
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book_file_type_pkey
+            name: id
+            type: INTEGER
+        - column:
+            name: description
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        tableName: book_file_type
+- changeSet:
+    id: 1677156568465-10
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book_review_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: text
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: time
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        tableName: book_review
+- changeSet:
+    id: 1677156568465-11
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book_review_like_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: review_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: time
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: value
+            type: SMALLINT
+        tableName: book_review_like
+- changeSet:
+    id: 1677156568465-12
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: document_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: slug
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: sort_index
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: text
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: title
+            type: VARCHAR(255)
+        tableName: document
+- changeSet:
+    id: 1677156568465-13
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: faq_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: answer
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: question
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: sort_index
+            type: INTEGER
+        tableName: faq
+- changeSet:
+    id: 1677156568465-14
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: file_download_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 1
+            name: count
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        tableName: file_download
+- changeSet:
+    id: 1677156568465-15
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: genre_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: parent_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: slug
+            type: VARCHAR(255)
+        tableName: genre
+- changeSet:
+    id: 1677156568465-16
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: message_pkey
+            name: id
+            type: INTEGER
+        - column:
+            name: email
+            type: VARCHAR(255)
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: subject
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: text
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            name: time
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: user_id
+            type: INTEGER
+        tableName: message
+- changeSet:
+    id: 1677156568465-17
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: user_contact_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: approved
+            type: SMALLINT
+        - column:
+            constraints:
+              nullable: false
+            name: code
+            type: VARCHAR(255)
+        - column:
+            name: code_time
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: code_trails
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: contact
+            type: VARCHAR(255)
+        - column:
+            name: type
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        tableName: user_contact
+- changeSet:
+    id: 1677156568465-18
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: users_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: balance
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: hash
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: reg_time
+            type: TIMESTAMP WITHOUT TIME ZONE
+        tableName: users
+

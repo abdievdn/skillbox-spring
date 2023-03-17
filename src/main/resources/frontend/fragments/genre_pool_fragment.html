@@ -1,0 +1,13 @@
+<th:block th:fragment="genreFragment(genres)" th:each="genre : ${genres}">
+    <div th:class="${!genre.genres.isEmpty} ? 'Tags' : 'Tag'">
+        <div th:class="${!genre.genres.isEmpty} ? 'Tags-title' : ''">
+            <div class="Tag">
+                <a href="#" th:href="@{'/genres/' + ${genre.slug}}" th:text="${genre.name} + ' (' + ${genre.booksCount} + ')'">
+                </a>
+            </div>
+        </div>
+        <th:block th:if="!${genre.genres.isEmpty}">
+            <th:block th:replace="~{this :: genreFragment(${genre.genres})}"></th:block>
+        </th:block>
+    </div>
+</th:block>

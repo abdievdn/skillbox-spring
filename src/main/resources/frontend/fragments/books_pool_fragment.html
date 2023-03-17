@@ -1,0 +1,66 @@
+<div class="Cards Cards_refresh" th:fragment="cards(books)">
+    <div class="Card" th:each="book : ${books}">
+        <div th:replace="~{this :: card}"></div>
+    </div>
+</div>
+
+<div class="Slider Slider_carousel" th:fragment="cardsSlider(books, data)">
+    <div class="Slider-box Cards"
+         data-load="" th:data-load="${data}"
+         data-loadoffset="0"
+         data-loadlimit="20">
+        <div class="Slider-item" th:each="book : ${books}">
+            <div class="Slider-content Cards_refresh">
+                <div class="Card">
+                    <div  th:replace="~{this :: card}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="Slider-navigateWrap">
+        <div class="Slider-navigate">
+        </div>
+    </div>
+    <div class="Slider-load">
+        <div class="Slider-load-text">Идет загрузка данных
+        </div>
+    </div>
+</div>
+
+<div th:fragment="card">
+    <div class="Card-picture">
+        <a href="#" th:href="${book.id}">
+            <img th:src="${book.image}" src="" alt="card.jpg"/>
+        </a>
+        <div th:if="${book.discount} > 0">
+            <div th:replace="~{this :: cardSale}"></div>
+        </div>
+        <div th:if="${book.isBestseller}">
+            <div th:replace="~{this :: cardBestseller}"></div>
+        </div>
+    </div>
+    <div class="Card-content">
+        <strong class="Card-title">
+            <a href="#" th:text="${book.title}"></a>
+        </strong>
+        <div class="Card-description" th:each="author : ${book.authors}">
+            <span th:text="${author}"></span>
+        </div>
+        <div class="Card-cost">
+            <span class="Card-priceOld" th:text="${book.price}"></span>
+            <span class="Card-price" th:text="${book.price} - (${book.price} * (${book.discount} / 100))"></span>
+        </div>
+    </div>
+</div>
+
+<div class="Card-sale" th:fragment="cardSale" th:text="${book.discount} + '% скидка'">
+</div>
+
+<div class="Card-ribbon" th:fragment="cardBestseller"><span class="Card-ribbonText">Бестселлер</span>
+</div>
+
+<a class="Card-status" title="Отложена"><img src="/assets/img/icons/heart.svg" alt="heart.svg"/></a>
+
+<a class="Card-status" title="Куплена"><img src="/assets/img/icons/check.svg" alt="check.svg"/></a>
+
+<a class="Card-status" title="В корзине"><img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/></a>
