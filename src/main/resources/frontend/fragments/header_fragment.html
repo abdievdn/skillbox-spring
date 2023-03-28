@@ -31,13 +31,15 @@
                     </div>
                     <div class="Header-search">
                         <div class="search">
-                            <form class="form form_search" action="#" method="post" data-searchlimit="20" th:object="${searchWordDto}">
+                            <form class="form form_search" action="#" method="post" data-searchlimit="20">
                                 <label for="query"></label>
-                                <input class="search-input" id="query" name="query" type="text"
-                                                                  placeholder="Search over 30 million book titles" th:field="*{example}" value=""/>
+                                <input class="search-input" id="query" name="query" type="text" placeholder="Search over 30 million book titles"
+                                       th:value="${searchWord}"/>
                                 <button class="search-button" type="submit" name="search" id="search">Поиск</button>
                             </form>
                         </div>
+                        <span th:if="${searchError}" th:text="${searchError.getLocalizedMessage()}"
+                              style="color: red; padding-top: 4px; padding-left: 8px"></span>
                     </div>
                 </div>
                 <div class="row-block Header-cart">
@@ -51,7 +53,7 @@
                                 </g>
                             </g>
                         </svg>
-                        <span class="CartBlock-amount">0</span></a><a class="CartBlock-block" href="cart.html" th:href="@{/cart}">
+                        <span class="CartBlock-amount">0</span></a><a class="CartBlock-block" th:href="@{/books/cart}">
                         <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="30" height="23"
                              viewBox="0 0 30 23">
                             <g>

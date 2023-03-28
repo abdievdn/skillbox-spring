@@ -26,12 +26,12 @@ public class AuthorService {
         return authors.stream().collect(Collectors.groupingBy(a -> a.getLastName().substring(0, 1)));
     }
 
-    public AuthorEntity getAuthorData(String slug) {
-        return authorRepository.findBySlug(slug).orElseGet(AuthorEntity::new);
+    public AuthorEntity getAuthorData(Integer id) {
+        return authorRepository.findById(id).orElseGet(AuthorEntity::new);
     }
 
-    public List<BookDto> getBooksByAuthor(String slug, Integer offset, Integer size) {
-        AuthorEntity author = getAuthorData(slug);
+    public List<BookDto> getBooksByAuthor(Integer id, Integer offset, Integer size) {
+        AuthorEntity author = getAuthorData(id);
         List<BookEntity> authorBooks = new ArrayList<>();
         for (Book2AuthorEntity a : author.getAuthor2books()) {
             authorBooks.add(a.getBook());
@@ -39,16 +39,4 @@ public class AuthorService {
         AuthorService.booksCount = authorBooks.size();
         return bookService.getBooksPage(offset, size, authorBooks);
     }
-
-//    public List<String> getAuthorNamesByBook(BookEntity book) {
-//        List<String> authors = new ArrayList<>();
-//        for (Book2AuthorEntity a : book2AuthorRepository.findAllByBookId(book.getId())) {
-//            Optional<AuthorEntity> author = authorRepository.findById(a.getAuthorId());
-//            if (author.isPresent()) {
-//                String authorName = author.get().getFirstName() + " " + author.get().getLastName();
-//                authors.add(authorName);
-//            }
-//        }
-//        return authors;
-//    }
 }

@@ -1,32 +1,49 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
+import com.example.MyBookShopApp.errors.CommonErrorException;
+import com.example.MyBookShopApp.services.ResourceStorage;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
+import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.services.BookService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+@Slf4j
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/books")
 public class BookPageController {
 
     private final BookService bookService;
+    private final ResourceStorage storage;
 
-    @GetMapping({"/books/recommended/page", "/books/recommended/slider"})
+    @GetMapping({"/recommended/page", "/books/recommended/slider"})
     @ResponseBody
     public BooksPageDto recommendedBooks(@RequestParam("offset") Integer offset,
-                                               @RequestParam("limit") Integer size) {
+                                         @RequestParam("limit") Integer size) {
         return new BooksPageDto(bookService.getPageOfRecommendedBooks(offset, size));
     }
 
-    @GetMapping("/books/recent/slider")
+    @GetMapping("/recent/slider")
     @ResponseBody
     public BooksPageDto recentBooks(@RequestParam("offset") Integer offset,
                                     @RequestParam("limit") Integer size) {
         return new BooksPageDto(bookService.getPageOfRecentBooks(offset, size));
     }
 
-    @GetMapping("/books/recent/page")
+    @GetMapping("/recent/page")
     @ResponseBody
     public BooksPageDto recentBooks(@RequestParam("from") String from,
                                     @RequestParam("to") String to,
@@ -35,19 +52,20 @@ public class BookPageController {
         return new BooksPageDto(bookService.getPageOfRecentBooks(from, to, offset, size));
     }
 
-    @GetMapping("/books/recent")
+    @GetMapping("/recent")
     public String recentBooks() {
         return "/books/recent";
     }
 
-    @GetMapping({"/books/popular/page", "/books/popular/slider"})
+    @GetMapping({"/popular/page", "/books/popular/slider"})
     @ResponseBody
     public BooksPageDto popularBooks(@RequestParam("offset") Integer offset,
-                                           @RequestParam("limit") Integer size) {
+                                     @RequestParam("limit") Integer size) {
         return new BooksPageDto(bookService.getPageOfPopularBooks(offset, size));
     }
 
-    @GetMapping("/books/popular")
+
+    @GetMapping("/popular")
     public String popularBooks() {
         return "/books/popular";
     }
@@ -55,5 +73,33 @@ public class BookPageController {
     @GetMapping("/postponed")
     public String postponedBooks() {
         return "postponed";
+    }
+
+    @GetMapping("/{slug}")
+    public String bookPage(@PathVariable("slug") String slug, Model model) {
+        BookEntity book = bookService.getBookBySlug(slug);
+        GenreEntity genre = book.getGenre().getGenre();
+        model.addAttribute("bookSlug", book);
+        model.addAttribute("bookGenreId", genre.getId());
+        return "/books/slug";
+    }
+
+    @PostMapping("/{slug}/img/save")
+    public String saveNewBookImage(@RequestParam("file") MultipartFile file,
+                                   @PathVariable("slug") String slug) throws IOException {
+        storage.saveNewBookImage(file, slug);
+        return "redirect:/books/" + slug;
+    }
+
+    @GetMapping("/download/{hash}")
+    public ResponseEntity<ByteArrayResource> bookFile(@PathVariable("hash") String hash) throws IOException {
+        Path path = storage.getBookFilePath(hash);
+        MediaType mediaType = storage.getBookFileMime(hash);
+        byte[] data = storage.getBookFileByteArray(hash);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + path.getFileName().toString())
+                .contentType(mediaType)
+                .contentLength(data.length)
+                .body(new ByteArrayResource(data));
     }
 }

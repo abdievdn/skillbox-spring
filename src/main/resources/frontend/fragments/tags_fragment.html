@@ -3,6 +3,6 @@
        th:classappend="${tag.value} < 2 ? 'Tag_xs' :
                      (${tag.value} < 4 ? 'Tag_sm' :
                      (${tag.value} < 8 ? 'Tag_md' : 'Tag_lg'))">
-    <a th:href="@{'/tags/slug/' + ${tag.key.slug}}" th:text="${tag.key.name}"></a>
+    <a th:href="@{'/tags/slug/' + ${tag.key.id}}" th:text="${tag.key.name}"></a>
   </div>
 </div>

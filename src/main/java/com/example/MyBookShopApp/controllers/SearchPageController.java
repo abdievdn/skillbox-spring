@@ -2,10 +2,9 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
-import com.example.MyBookShopApp.data.dto.SearchWordDto;
+import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.services.BookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +21,9 @@ public class SearchPageController {
     private final BookService bookService;
 
     @GetMapping(value = {"/search", "/search/{searchWord}"})
-    public String getSearchResults(@PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto, Model model) {
-        List<BookDto> searchResultBooks = bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), 0, 20);
-        model.addAttribute("searchWordDto", searchWordDto);
+    public String getSearchResults(@PathVariable(value = "searchWord", required = false) String searchWord, Model model) throws CommonErrorException {
+        List<BookDto> searchResultBooks = bookService.getPageOfSearchResultBooks(searchWord, 0, 20);
+        model.addAttribute("searchWord", searchWord);
         model.addAttribute("searchResults", searchResultBooks);
         model.addAttribute("booksCount", BookService.booksSearchCount);
         return "/search/index";
@@ -34,7 +33,7 @@ public class SearchPageController {
     @ResponseBody
     public BooksPageDto getSearchPage(@RequestParam("offset") Integer offset,
                                       @RequestParam("limit") Integer size,
-                                      @PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto) {
-        return new BooksPageDto(bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), offset, size), BookService.booksSearchCount);
+                                      @PathVariable(value = "searchWord", required = false) String searchWord) throws CommonErrorException {
+        return new BooksPageDto(bookService.getPageOfSearchResultBooks(searchWord, offset, size), BookService.booksSearchCount);
     }
 }

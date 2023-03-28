@@ -1,16 +1,18 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
-import com.example.MyBookShopApp.data.dto.SearchWordDto;
 import com.example.MyBookShopApp.data.struct.book.BookEntity;
-import com.example.MyBookShopApp.data.struct.book.genre.GenreEntity;
+import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
 import com.example.MyBookShopApp.data.struct.tag.TagEntity;
+import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.services.BookService;
 import com.example.MyBookShopApp.services.GenreService;
 import com.example.MyBookShopApp.services.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +25,6 @@ public class GlobalControllerAdvice {
     private final BookService bookService;
     private final GenreService genreService;
     private final TagService tagService;
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordModel() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("searchResults")
-    public List<BookEntity> searchResultsModel() {
-        return new ArrayList<>();
-    }
 
     @ModelAttribute("booksList")
     public List<BookEntity> booksListModel() {
@@ -69,11 +61,6 @@ public class GlobalControllerAdvice {
         return new ArrayList<>();
     }
 
-    @ModelAttribute("genreSlug")
-    public String genreSlugModel() {
-        return "";
-    }
-
     @ModelAttribute("tagsList")
     public List<TagEntity> tagsListModel() {
         return tagService.getAllTags();
@@ -83,4 +70,15 @@ public class GlobalControllerAdvice {
     public Map<TagEntity, Integer> tagsMapModel() {
         return tagService.getTagsWithValues();
     }
+
+    @ExceptionHandler(CommonErrorException.class)
+    public String handleCommonErrorException(Exception exception, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("searchError", exception);
+        return "redirect:/";
+    }
+
+//    @ExceptionHandler(NullPointerException.class)
+//    public String handleNullPointerException(Exception ex) {
+//        return "redirect:/";
+//    }
 }

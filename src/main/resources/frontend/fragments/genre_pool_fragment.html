@@ -2,7 +2,7 @@
     <div th:class="${!genre.genres.isEmpty} ? 'Tags' : 'Tag'">
         <div th:class="${!genre.genres.isEmpty} ? 'Tags-title' : ''">
             <div class="Tag">
-                <a href="#" th:href="@{'/genres/' + ${genre.slug}}" th:text="${genre.name} + ' (' + ${genre.booksCount} + ')'">
+                <a href="#" th:href="@{'/genres/' + ${genre.id}}" th:text="${genre.name} + ' (' + ${genre.booksCount} + ')'">
                 </a>
             </div>
         </div>

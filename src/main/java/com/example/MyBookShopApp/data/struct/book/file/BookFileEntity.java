@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.data.struct.book.file;
 
+import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,10 +14,20 @@ public class BookFileEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "type_id")
-    private Integer typeId;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id", referencedColumnName = "id", columnDefinition = "INT NOT NULL")
+    private BookFileTypeEntity type;
 
     private String path;
 
     private String hash;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    private BookEntity book;
+
+    @Override
+    public String toString() {
+        return type.getName();
+    }
 }

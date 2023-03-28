@@ -85,7 +85,7 @@ p.error-browser
                 </header>
                 <div th:replace="~{fragments/books_pool_fragment :: cardsSlider(${authorBooks}, 'author')}"></div>
                 <footer class="Section-footer">
-                    <a class="Author-books" th:href="@{'/books/author/' + ${authorSlug}}">Все книги автора
+                    <a class="Author-books" th:href="@{'/books/author/' + ${authorId}}">Все книги автора
                         <span class="Author-amount" th:text="${booksCount}"></span>
                     </a>
                 </footer>

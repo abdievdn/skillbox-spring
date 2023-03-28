@@ -30,3 +30,7 @@ spring:
       matching-strategy: ant_path_matcher
   messages:
     basename: lang.messages
+
+path:
+  upload: d:/files/book-covers
+  download: d:/files/book-files

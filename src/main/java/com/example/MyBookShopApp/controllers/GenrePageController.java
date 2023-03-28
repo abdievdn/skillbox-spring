@@ -1,7 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
-import com.example.MyBookShopApp.data.struct.book.genre.GenreEntity;
+import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
 import com.example.MyBookShopApp.services.GenreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,19 +27,19 @@ public class GenrePageController {
         return "/genres/index";
     }
 
-    @GetMapping("/genres/{slug}")
-    public String genresSlugPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
-        model.addAttribute("booksByGenreList", genreService.getBooksByGenreAndSubGenres(slug, 0, 20));
-        model.addAttribute("genreSlug", slug);
-        model.addAttribute("genreBreadcrumbs", genreService.getGenreBreadcrumbs(slug));
+    @GetMapping("/genres/{id}")
+    public String genresidPage(@PathVariable(value = "id", required = false) Integer id, Model model) {
+        model.addAttribute("booksByGenreList", genreService.getBooksByGenreAndSubGenres(id, 0, 20));
+        model.addAttribute("genreId", id);
+        model.addAttribute("genreBreadcrumbs", genreService.getGenreBreadcrumbs(id));
         return "/genres/slug";
     }
 
-    @GetMapping("/genres/page/{slug}")
+    @GetMapping("/genres/page/{id}")
     @ResponseBody
-    public BooksPageDto genresSlugPage(@PathVariable(value = "slug", required = false) String slug,
+    public BooksPageDto genresidPage(@PathVariable(value = "id", required = false) Integer id,
                                        @RequestParam("offset") Integer offset,
                                        @RequestParam("limit") Integer size) {
-        return new BooksPageDto(genreService.getBooksByGenreAndSubGenres(slug, offset, size));
+        return new BooksPageDto(genreService.getBooksByGenreAndSubGenres(id, offset, size));
     }
 }

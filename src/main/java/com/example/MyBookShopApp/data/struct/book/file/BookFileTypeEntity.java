@@ -18,4 +18,7 @@ public class BookFileTypeEntity {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @OneToOne(mappedBy = "type")
+    private BookFileEntity bookFile;
 }

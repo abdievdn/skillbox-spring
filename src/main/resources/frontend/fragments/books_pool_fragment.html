@@ -12,7 +12,7 @@
         <div class="Slider-item" th:each="book : ${books}">
             <div class="Slider-content Cards_refresh">
                 <div class="Card">
-                    <div  th:replace="~{this :: card}"></div>
+                    <div th:replace="~{this :: card}"></div>
                 </div>
             </div>
         </div>
@@ -27,9 +27,9 @@
     </div>
 </div>
 
-<div th:fragment="card">
+<th:block th:fragment="card">
     <div class="Card-picture">
-        <a href="#" th:href="${book.id}">
+        <a th:href="@{'/books/' + ${book.slug}}">
             <img th:src="${book.image}" src="" alt="card.jpg"/>
         </a>
         <div th:if="${book.discount} > 0">
@@ -41,17 +41,17 @@
     </div>
     <div class="Card-content">
         <strong class="Card-title">
-            <a href="#" th:text="${book.title}"></a>
+            <a th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}"></a>
         </strong>
         <div class="Card-description" th:each="author : ${book.authors}">
             <span th:text="${author}"></span>
         </div>
         <div class="Card-cost">
-            <span class="Card-priceOld" th:text="${book.price}"></span>
-            <span class="Card-price" th:text="${book.price} - (${book.price} * (${book.discount} / 100))"></span>
+            <span class="Card-priceOld" th:if="${book.discount != 0}" th:text="${'₽' + book.price}"></span>
+            <span class="Card-price" th:text="${'₽' + book.discountPrice}"></span>
         </div>
     </div>
-</div>
+</th:block>
 
 <div class="Card-sale" th:fragment="cardSale" th:text="${book.discount} + '% скидка'">
 </div>
@@ -63,4 +63,5 @@
 
 <a class="Card-status" title="Куплена"><img src="/assets/img/icons/check.svg" alt="check.svg"/></a>
 
-<a class="Card-status" title="В корзине"><img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/></a>
+<a class="Card-status" title="В корзине"><img src="/assets/img/icons/shopping-basket.svg"
+                                              alt="shopping-basket.svg"/></a>

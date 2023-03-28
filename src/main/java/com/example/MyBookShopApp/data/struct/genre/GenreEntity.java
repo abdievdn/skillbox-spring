@@ -1,13 +1,17 @@
-package com.example.MyBookShopApp.data.struct.book.genre;
+package com.example.MyBookShopApp.data.struct.genre;
 
 import com.example.MyBookShopApp.data.struct.book.links.Book2GenreEntity;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "genre")
 public class GenreEntity {
@@ -33,5 +37,5 @@ public class GenreEntity {
     private List<GenreEntity> genres = new ArrayList<>();
 
     @OneToMany(mappedBy = "genre")
-    private List<Book2GenreEntity> genre2books = new ArrayList<>();
+    private List<Book2GenreEntity> books = new ArrayList<>();
 }

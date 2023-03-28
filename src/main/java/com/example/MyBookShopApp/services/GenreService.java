@@ -3,7 +3,8 @@ package com.example.MyBookShopApp.services;
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2GenreEntity;
-import com.example.MyBookShopApp.data.struct.book.genre.GenreEntity;
+import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
+import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.repositories.Book2GenreRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import com.example.MyBookShopApp.repositories.GenreRepository;
@@ -24,18 +25,24 @@ public class GenreService {
     private final Book2GenreRepository book2GenreRepository;
     private final BookService bookService;
 
-    public List<BookDto> getBooksByGenreAndSubGenres(String slug, Integer offset, Integer size) {
-        List<BookEntity> booksByGenre = getBooksByGenre(getGenreEntity(slug));
+    public GenreEntity getGenreByBookSlug(String slug) {
+        BookEntity book = bookService.getBookBySlug(slug);
+        Book2GenreEntity book2GenreEntity = book.getGenre();
+        return book2GenreEntity.getGenre();
+    }
+
+    public List<BookDto> getBooksByGenreAndSubGenres(Integer id, Integer offset, Integer size) {
+        List<BookEntity> booksByGenre = getBooksByGenre(getGenreEntity(id));
         return bookService.getBooksPage(offset, size, booksByGenre);
     }
 
-    private GenreEntity getGenreEntity(String slug) {
-        return genreRepository.findBySlug(slug).orElseGet(GenreEntity::new);
+    private GenreEntity getGenreEntity(Integer id) {
+        return genreRepository.findById(id).orElseGet(GenreEntity::new);
     }
 
     private List<BookEntity> getBooksByGenre(GenreEntity genre) {
         List<BookEntity> books = new ArrayList<>();
-        for (Book2GenreEntity b : genre.getGenre2books()) {
+        for (Book2GenreEntity b : genre.getBooks()) {
             books.add(bookRepository.findById(b.getBook().getId()).orElseThrow());
         }
         if (!genre.getGenres().isEmpty()) {
@@ -46,8 +53,8 @@ public class GenreService {
         return books;
     }
 
-    public List<GenreEntity> getGenreBreadcrumbs(String slug) {
-        GenreEntity genre = getGenreEntity(slug);
+    public List<GenreEntity> getGenreBreadcrumbs(Integer id) {
+        GenreEntity genre = getGenreEntity(id);
         List<GenreEntity> breadcrumbs = new ArrayList<>();
         while (true) {
             breadcrumbs.add(0, genre);

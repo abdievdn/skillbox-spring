@@ -51,7 +51,7 @@ p.error-browser
                     <form class="form form_search" action="#" method="post" data-searchlimit="20">
                         <input class="search-input" id="querypage" name="querypage" type="text"
                                placeholder="Search over 30 million book titles"
-                               th:value="${searchWordDto.example}"/>
+                               th:value="${searchWord}"/>
                         <button class="search-button" type="submit" name="searchpage" id="searchpage">Поиск
                         </button>
                     </form>
@@ -69,7 +69,7 @@ p.error-browser
                        data-refreshshow="search"
                        data-refreshoffset="1"
                        data-refreshlimit="20"
-                       th:attr="data-refreshquery=${searchWordDto.example}"
+                       th:attr="data-refreshquery=${searchWord}"
                        data-refreshquery="Техника">Показать еще</a>
                 </div>
             </div>

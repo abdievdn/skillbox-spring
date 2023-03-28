@@ -3,6 +3,7 @@ package com.example.MyBookShopApp.services;
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2UserEntity;
+import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,14 @@ public class BookService {
     private final Book2UserRepository book2UserRepository;
     public static Long booksSearchCount;
 
+    public BookEntity getBookBySlug(String slug) {
+            return bookRepository.findBySlug(slug).orElse(null);
+    }
+
+    public BookDto getBookDtoBySlug(String slug) {
+        return getBookDto(getBookBySlug(slug));
+    }
+
     public List<BookEntity> getBooksData() {
         return bookRepository.findAll();
     }
@@ -34,31 +43,15 @@ public class BookService {
         return bookRepository.findAll(page);
     }
 
-    public List<BookEntity> getBooksByTitle(String bookTitle) {
-        return bookRepository.findAllByTitleContainingIgnoreCase(bookTitle);
-    }
-
-    public List<BookEntity> getBooksWithPriceBetween(Integer min, Integer max) {
-        return bookRepository.findAllByPriceBetween(min, max);
-    }
-
-    public List<BookEntity> getBooksWithPrice(Integer price) {
-        return bookRepository.findAllByPriceIs(price);
-    }
-
-    public List<BookEntity> getBooksWithMaxDiscount() {
-        return bookRepository.findAllWithMaxDiscount();
-    }
-
-    public List<BookEntity> getBestsellers() {
-        return bookRepository.findBestsellers();
-    }
-
-    public List<BookDto> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer size) {
-        Pageable page = PageRequest.of(offset, size);
-        Page<BookEntity> books = bookRepository.findAllByTitleContainingIgnoreCase(searchWord, page);
-        BookService.booksSearchCount = books.getTotalElements();
-        return bookEntityListToBookDtoList(books.getContent());
+    public List<BookDto> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer size) throws CommonErrorException {
+        if (searchWord == null || searchWord.length() < 1) {
+            throw new CommonErrorException("Не введено значение поиска!");
+        } else {
+            Pageable page = PageRequest.of(offset, size);
+            Page<BookEntity> books = bookRepository.findAllByTitleContainingIgnoreCase(searchWord, page);
+            BookService.booksSearchCount = books.getTotalElements();
+            return bookEntityListToBookDtoList(books.getContent());
+        }
     }
 
     public List<BookDto> getPageOfRecommendedBooks(Integer offset, Integer size) {
@@ -155,5 +148,19 @@ public class BookService {
         List<BookDto> booksDto = new ArrayList<>();
         books.forEach(b -> booksDto.add(getBookDto(b)));
         return booksDto;
+    }
+
+    public void saveBookImage(String slug, String savePath) {
+        BookEntity book = getBookBySlug(slug);
+        book.setImage(savePath);
+        bookRepository.save(book);
+    }
+
+    public List<BookDto> getBooksCart(String cartContents) {
+        cartContents = cartContents.startsWith("/") ? cartContents.substring(1) : cartContents;
+        cartContents = cartContents.endsWith("/") ? cartContents.substring(0, cartContents.length() - 1) : cartContents;
+        String[] cookieSlugs = cartContents.split("/");
+        List<BookEntity> booksFromCookie = bookRepository.findAllBySlugIn(cookieSlugs);
+        return bookEntityListToBookDtoList(booksFromCookie);
     }
 }

@@ -1,12 +1,13 @@
 package com.example.MyBookShopApp.data.struct.book;
 
+import com.example.MyBookShopApp.data.struct.book.file.BookFileEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2GenreEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2TagEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2UserEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -14,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ApiModel(description = "entity represents a book")
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "book")
 public class BookEntity {
@@ -23,7 +25,6 @@ public class BookEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
 
     @Column(columnDefinition = "SMALLINT")
     private Short discount;
@@ -47,17 +48,26 @@ public class BookEntity {
     private String image;
 
     @ApiModelProperty("mnemonic identity - the sequence of characters")
+    @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String slug;
 
     @OneToMany(mappedBy = "book")
     private List<Book2AuthorEntity> book2authors = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
-    private List<Book2GenreEntity> book2genres = new ArrayList<>();
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(referencedColumnName = "book_id")
+    private Book2GenreEntity genre;
 
     @OneToMany(mappedBy = "book")
     private List<Book2UserEntity> book2users = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
     private List<Book2TagEntity> book2tags = new ArrayList<>();
+
+    public Integer discountPrice() {
+        return price - (price * discount / 100);
+    }
+
+    @OneToMany(mappedBy = "book")
+    private List<BookFileEntity> bookFileList = new ArrayList<>();
 }

@@ -51,7 +51,7 @@ p.error-browser
                 <li class="breadcrumbs-item"><a th:href="@{'/genres/'}" href="/genres/">Жанры</a>
                 </li>
                 <th:block th:each="genre : ${genreBreadcrumbs}">
-                    <li class="breadcrumbs-item"><a th:href="@{'/genres/' + ${genre.slug}}" href="#" th:text="${genre.name}"></a>
+                    <li class="breadcrumbs-item"><a th:href="@{'/genres/' + ${genre.id}}" href="#" th:text="${genre.name}"></a>
                     </li>
                 </th:block>
             </ul>
@@ -65,7 +65,7 @@ p.error-browser
                        data-refreshshow="genre"
                        data-refreshoffset="1"
                        data-refreshlimit="20"
-                       th:attr="data-refreshid=${genreSlug}">Показать еще</a>
+                       th:attr="data-refreshid=${genreId}">Показать еще</a>
                 </div>
             </div>
         </main>

@@ -13,20 +13,20 @@ public class TagPageController {
 
     private final TagService tagService;
 
-    @GetMapping("/tags/slug/{slug}")
-    public String booksByTag(@PathVariable("slug") String slug, Model model) {
-        model.addAttribute("booksByTagList", tagService.getBooksByTag(slug, 0, 20));
-        model.addAttribute("tagSlug", slug);
+    @GetMapping("/tags/slug/{id}")
+    public String booksByTag(@PathVariable("id") Integer id, Model model) {
+        model.addAttribute("booksByTagList", tagService.getBooksByTag(id, 0, 20));
+        model.addAttribute("tagId", id);
         model.addAttribute("tagName", TagService.tagName);
         return "/tags/slug";
     }
 
-    @GetMapping("/tags/page/{slug}")
+    @GetMapping("/tags/page/{id}")
     @ResponseBody
-    public BooksPageDto tagsSlugPage(@PathVariable(value = "slug", required = false) String slug,
+    public BooksPageDto tagsSlugPage(@PathVariable(value = "id", required = false) Integer id,
                                      @RequestParam("offset") Integer offset,
                                      @RequestParam("limit") Integer size) {
-        return new BooksPageDto(tagService.getBooksByTag(slug, offset, size));
+        return new BooksPageDto(tagService.getBooksByTag(id, offset, size));
     }
 
     @GetMapping("tags/index")
