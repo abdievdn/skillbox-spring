@@ -22,7 +22,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
 
     Page<BookEntity> findAllByOrderByPubDateDesc(Pageable page);
 
-    Optional<BookEntity> findBySlug(String slug);
-
     List<BookEntity> findAllBySlugIn(String[] slugs);
+
+    Optional<BookEntity> findBySlug(String slug);
 }

@@ -27,7 +27,7 @@ public class AuthorService {
     }
 
     public AuthorEntity getAuthorData(Integer id) {
-        return authorRepository.findById(id).orElseGet(AuthorEntity::new);
+        return authorRepository.findById(id).orElseThrow();
     }
 
     public List<BookDto> getBooksByAuthor(Integer id, Integer offset, Integer size) {

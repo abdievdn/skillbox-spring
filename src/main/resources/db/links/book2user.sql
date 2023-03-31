@@ -1,4 +1,4 @@
-insert into book2user (id, time, type_id, book_id, user_id) values (1, '2022/05/26', 2, 718, 75);
+insert into book2user (id, time, type_id, book_id, user_id) values (1, '2022/05/26', 2, 605, 1);
 insert into book2user (id, time, type_id, book_id, user_id) values (2, '2023/02/24', 2, 128, 92);
 insert into book2user (id, time, type_id, book_id, user_id) values (3, '2022/04/14', 3, 739, 99);
 insert into book2user (id, time, type_id, book_id, user_id) values (4, '2023/01/04', 1, 223, 91);

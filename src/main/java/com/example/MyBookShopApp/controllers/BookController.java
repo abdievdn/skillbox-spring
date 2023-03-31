@@ -1,10 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
-import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.services.ResourceStorage;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
-import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.services.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +21,7 @@ import java.nio.file.Path;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/books")
-public class BookPageController {
+public class BookController {
 
     private final BookService bookService;
     private final ResourceStorage storage;
@@ -64,23 +61,14 @@ public class BookPageController {
         return new BooksPageDto(bookService.getPageOfPopularBooks(offset, size));
     }
 
-
     @GetMapping("/popular")
     public String popularBooks() {
         return "/books/popular";
     }
 
-    @GetMapping("/postponed")
-    public String postponedBooks() {
-        return "postponed";
-    }
-
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
-        BookEntity book = bookService.getBookBySlug(slug);
-        GenreEntity genre = book.getGenre().getGenre();
-        model.addAttribute("bookSlug", book);
-        model.addAttribute("bookGenreId", genre.getId());
+        model.addAttribute("bookSlug", bookService.getBookDtoBySlug(slug));
         return "/books/slug";
     }
 

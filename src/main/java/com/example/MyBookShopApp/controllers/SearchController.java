@@ -16,7 +16,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class SearchPageController {
+public class SearchController {
 
     private final BookService bookService;
 

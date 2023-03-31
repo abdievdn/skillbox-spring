@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-public class TagPageController {
+public class TagController {
 
     private final TagService tagService;
 

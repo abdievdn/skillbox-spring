@@ -51,12 +51,14 @@ public class BookEntity {
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String slug;
 
+    private Short rating;
+
     @OneToMany(mappedBy = "book")
     private List<Book2AuthorEntity> book2authors = new ArrayList<>();
 
     @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(referencedColumnName = "book_id")
-    private Book2GenreEntity genre;
+    private Book2GenreEntity genre2book;
 
     @OneToMany(mappedBy = "book")
     private List<Book2UserEntity> book2users = new ArrayList<>();

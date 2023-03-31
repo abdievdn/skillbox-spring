@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-public class MainPageController {
+public class DefaultController {
 
     @GetMapping("/")
     public String mainPage() {

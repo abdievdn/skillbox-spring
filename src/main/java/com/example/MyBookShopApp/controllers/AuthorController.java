@@ -17,7 +17,7 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 @Api(tags = SpringfoxConfig.AUTHOR_TAG)
-public class AuthorPageController {
+public class AuthorController {
 
     private final AuthorService authorService;
     private String id;

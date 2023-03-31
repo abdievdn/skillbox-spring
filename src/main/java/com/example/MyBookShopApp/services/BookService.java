@@ -2,16 +2,24 @@ package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.struct.book.BookEntity;
+import com.example.MyBookShopApp.data.struct.book.links.Book2AuthorEntity;
+import com.example.MyBookShopApp.data.struct.book.links.Book2TagEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2UserEntity;
+import com.example.MyBookShopApp.data.struct.user.UserEntity;
 import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
+import com.example.MyBookShopApp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -24,10 +32,12 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final Book2UserRepository book2UserRepository;
+
+    private final UserRepository userRepository;
     public static Long booksSearchCount;
 
     public BookEntity getBookBySlug(String slug) {
-            return bookRepository.findBySlug(slug).orElse(null);
+        return bookRepository.findBySlug(slug).orElseThrow();
     }
 
     public BookDto getBookDtoBySlug(String slug) {
@@ -82,7 +92,7 @@ public class BookService {
         List<Book2UserEntity> allBooks2User = book2UserRepository.findAll();
         Map<Integer, Double> popularBooksMap = new TreeMap<>();
         for (Book2UserEntity b : allBooks2User) {
-            double popIndex = 0;
+            double popIndex;
             switch (b.getType().getId()) {
                 case 1:
                     popIndex = 0.4;
@@ -125,22 +135,33 @@ public class BookService {
     }
 
     private BookDto getBookDto(BookEntity bookEntity) {
+        UserEntity user = userRepository.findById(1).orElseThrow();
         return BookDto.builder()
                 .id(bookEntity.getId())
                 .slug(bookEntity.getSlug())
                 .image(bookEntity.getImage())
                 .authors(bookEntity.getBook2authors()
                         .stream()
-                        .map(b2a -> b2a.getAuthor().toString())
+                        .map(Book2AuthorEntity::getAuthor)
+                        .collect(Collectors.toList()))
+                .tags(bookEntity.getBook2tags()
+                        .stream()
+                        .map(Book2TagEntity::getTag)
                         .collect(Collectors.toList()))
                 .title(bookEntity.getTitle())
+                .description(bookEntity.getDescription())
+                .genre(bookEntity.getGenre2book().getGenre())
                 .discount(bookEntity.getDiscount())
                 .isBestseller(bookEntity.getIsBestseller() == 1)
-                .rating(5)
-                .status("")
+                .rating(bookEntity.getRating())
+                .status(bookEntity.getBook2users()
+                        .stream()
+                        .filter(u -> u.getUser().equals(user))
+                        .map(Book2UserEntity::getType)
+                        .toString())
                 .price(bookEntity.getPrice())
-                .discountPrice(bookEntity.getPrice() -
-                        (bookEntity.getPrice() * bookEntity.getDiscount() / 100))
+                .discountPrice(bookEntity.discountPrice())
+                .files(bookEntity.getBookFileList())
                 .build();
     }
 
@@ -156,11 +177,62 @@ public class BookService {
         bookRepository.save(book);
     }
 
-    public List<BookDto> getBooksCart(String cartContents) {
-        cartContents = cartContents.startsWith("/") ? cartContents.substring(1) : cartContents;
-        cartContents = cartContents.endsWith("/") ? cartContents.substring(0, cartContents.length() - 1) : cartContents;
-        String[] cookieSlugs = cartContents.split("/");
+    public List<BookDto> getBooksStatusList(String contents) {
+        String[] cookieSlugs = contents.split("/");
         List<BookEntity> booksFromCookie = bookRepository.findAllBySlugIn(cookieSlugs);
         return bookEntityListToBookDtoList(booksFromCookie);
+    }
+
+    public void addBookToCookie(String status, String slug,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
+        String cookieName = "";
+        if (status.equals("CART")) {
+            cookieName = "cart";
+            Cookie cookie = getCookie(request, "postponed");
+            if (cookie != null) {
+                removeBookFromCookie(slug, cookie.getValue(), response, "postponed");
+            }
+        }
+        if (status.equals("KEPT")) {
+            cookieName = "postponed";
+            Cookie cookie = getCookie(request, "cart");
+            if (cookie != null) {
+                removeBookFromCookie(slug, cookie.getValue(), response, "cart");
+            }
+        }
+        if (!cookieName.equals("")) {
+            Cookie getCookie = getCookie(request, cookieName);
+            if (getCookie == null) {
+                Cookie cookie = new Cookie(cookieName, slug);
+                cookie.setPath("/books");
+                response.addCookie(cookie);
+            } else {
+                String contents = getCookie.getValue();
+                if (!contents.contains(slug)) {
+                    StringJoiner stringJoiner = new StringJoiner("/");
+                    stringJoiner.add(contents).add(slug);
+                    Cookie cookie = new Cookie(cookieName, stringJoiner.toString());
+                    cookie.setPath("/books");
+                    response.addCookie(cookie);
+                }
+            }
+        }
+    }
+
+    private Cookie getCookie(HttpServletRequest request, String cookieName) {
+        return WebUtils.getCookie(request, cookieName);
+    }
+
+    public void removeBookFromCookie(String slug, String contents, HttpServletResponse response, String status) {
+        if (contents != null && !contents.equals("")) {
+            if (contents.contains(slug)) {
+                ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(contents.split("/")));
+                cookieBooks.remove(slug);
+                Cookie cookie = new Cookie(status, String.join("/", cookieBooks));
+                cookie.setPath("/books");
+                response.addCookie(cookie);
+            }
+        }
     }
 }

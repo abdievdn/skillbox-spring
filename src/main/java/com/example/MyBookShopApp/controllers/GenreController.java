@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class GenrePageController {
+public class GenreController {
 
     private final GenreService genreService;
     @ModelAttribute("genresList")
