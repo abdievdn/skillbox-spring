@@ -37,7 +37,7 @@ public class TagService {
     public List<BookDto> getBooksByTag(Integer id, Integer offset, Integer size) {
         List<BookEntity> books = new ArrayList<>();
         TagEntity tag = tagRepository.findById(id).orElseGet(TagEntity::new);
-        tag.getTag2books().forEach(b -> books.add(b.getBook()));
+        tag.getTag2books().forEach(b -> books.add(b.getBook2Tag()));
         TagService.tagName = tag.getName();
         return bookService.getBooksPage(offset, size, books);
     }

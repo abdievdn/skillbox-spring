@@ -25,7 +25,7 @@ public class Book2UserEntity {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", columnDefinition = "INT NOT NULL")
-    private BookEntity book;
+    private BookEntity book2User;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", columnDefinition = "INT NOT NULL")

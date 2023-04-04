@@ -2,7 +2,6 @@ package com.example.MyBookShopApp.data.struct.book.links;
 
 import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,9 +17,9 @@ public class Book2GenreEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
-    @JoinColumn(name = "book_id", referencedColumnName = "id", columnDefinition = "INT NOT NULL")
-    private BookEntity book;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", columnDefinition = "INT NOT NULL")
+    private BookEntity book2Genre;
 
     @ManyToOne
     @JoinColumn(name = "genre_id", columnDefinition = "INT NOT NULL")

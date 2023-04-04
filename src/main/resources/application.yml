@@ -16,7 +16,7 @@ spring:
   sql:
     init:
       mode: always
-      data-locations: classpath*:/db/*.sql, classpath*:/db/links/*.sql
+      data-locations: classpath*:/db/*.sql, classpath*:/db/book_review/*.sql, classpath*:/db/links/*.sql
   web:
     resources:
       static-locations: classpath:/frontend/
@@ -26,7 +26,7 @@ spring:
     enabled: false
     change-log: classpath:/db/changelog/changelog-master.yml
   mvc:
-    pathmatch:
+    path-match:
       matching-strategy: ant_path_matcher
   messages:
     basename: lang.messages

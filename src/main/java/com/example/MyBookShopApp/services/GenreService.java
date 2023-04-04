@@ -26,7 +26,7 @@ public class GenreService {
 
     public GenreEntity getGenreByBookSlug(String slug) {
         BookEntity book = bookService.getBookBySlug(slug);
-        Book2GenreEntity book2GenreEntity = book.getGenre2book();
+        Book2GenreEntity book2GenreEntity = book.getGenre2Book();
         return book2GenreEntity.getGenre();
     }
 
@@ -42,7 +42,7 @@ public class GenreService {
     private List<BookEntity> getBooksByGenre(GenreEntity genre) {
         List<BookEntity> books = new ArrayList<>();
         for (Book2GenreEntity b : genre.getBooks()) {
-            books.add(bookRepository.findById(b.getBook().getId()).orElseThrow());
+            books.add(bookRepository.findById(b.getBook2Genre().getId()).orElseThrow());
         }
         if (!genre.getGenres().isEmpty()) {
             for (GenreEntity g : genre.getGenres()) {

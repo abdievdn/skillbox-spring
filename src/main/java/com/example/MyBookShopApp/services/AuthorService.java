@@ -34,7 +34,7 @@ public class AuthorService {
         AuthorEntity author = getAuthorData(id);
         List<BookEntity> authorBooks = new ArrayList<>();
         for (Book2AuthorEntity a : author.getAuthor2books()) {
-            authorBooks.add(a.getBook());
+            authorBooks.add(a.getBook2Author());
         }
         AuthorService.booksCount = authorBooks.size();
         return bookService.getBooksPage(offset, size, authorBooks);

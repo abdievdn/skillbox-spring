@@ -1,10 +1,12 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
+import com.example.MyBookShopApp.data.dto.RatingDto;
 import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2TagEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2UserEntity;
+import com.example.MyBookShopApp.data.struct.book.rating.BookRatingEntity;
 import com.example.MyBookShopApp.data.struct.user.UserEntity;
 import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
@@ -24,6 +26,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.counting;
 
 @Slf4j
 @Service
@@ -107,10 +112,10 @@ public class BookService {
                     popIndex = 0;
                     break;
             }
-            if (popularBooksMap.containsKey(b.getBook().getId())) {
-                popIndex = popIndex + popularBooksMap.get(b.getBook().getId());
+            if (popularBooksMap.containsKey(b.getBook2User().getId())) {
+                popIndex = popIndex + popularBooksMap.get(b.getBook2User().getId());
             }
-            popularBooksMap.put(b.getBook().getId(), popIndex);
+            popularBooksMap.put(b.getBook2User().getId(), popIndex);
         }
         List<BookEntity> popularBooks = popularBooksMap
                 .entrySet()
@@ -140,21 +145,21 @@ public class BookService {
                 .id(bookEntity.getId())
                 .slug(bookEntity.getSlug())
                 .image(bookEntity.getImage())
-                .authors(bookEntity.getBook2authors()
+                .authors(bookEntity.getBook2Authors()
                         .stream()
                         .map(Book2AuthorEntity::getAuthor)
                         .collect(Collectors.toList()))
-                .tags(bookEntity.getBook2tags()
+                .tags(bookEntity.getBook2Tags()
                         .stream()
                         .map(Book2TagEntity::getTag)
                         .collect(Collectors.toList()))
                 .title(bookEntity.getTitle())
                 .description(bookEntity.getDescription())
-                .genre(bookEntity.getGenre2book().getGenre())
+                .genre(bookEntity.getGenre2Book().getGenre())
                 .discount(bookEntity.getDiscount())
                 .isBestseller(bookEntity.getIsBestseller() == 1)
-                .rating(bookEntity.getRating())
-                .status(bookEntity.getBook2users()
+                .rating(getBookRatingBySlug(bookEntity))
+                .status(bookEntity.getBook2Users()
                         .stream()
                         .filter(u -> u.getUser().equals(user))
                         .map(Book2UserEntity::getType)
@@ -235,4 +240,30 @@ public class BookService {
             }
         }
     }
+
+    private RatingDto getBookRatingBySlug(BookEntity book) {
+        List<BookRatingEntity> bookRatings = book.getBook2Ratings();
+        return RatingDto.builder()
+                .value((short) Math.round(bookRatings
+                        .stream()
+                        .mapToInt(BookRatingEntity::getValue)
+                        .average()
+                        .orElse(0)))
+                .count(bookRatings.size())
+                .values2Count(bookRatings
+                        .stream()
+                        .collect(Collectors.groupingBy(
+                                BookRatingEntity::getValue,
+                                collectingAndThen(counting(), Long::intValue)))
+                        .entrySet()
+                        .stream()
+                        .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue,
+                                (k, v) -> v,
+                                LinkedHashMap::new)))
+                .build();
+    }
+
 }

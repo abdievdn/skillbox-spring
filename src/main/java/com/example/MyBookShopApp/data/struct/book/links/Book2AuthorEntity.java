@@ -5,8 +5,6 @@ import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Entity
@@ -19,7 +17,7 @@ public class Book2AuthorEntity {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", columnDefinition = "INT NOT NULL")
-    private BookEntity book;
+    private BookEntity book2Author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", columnDefinition = "INT NOT NULL")

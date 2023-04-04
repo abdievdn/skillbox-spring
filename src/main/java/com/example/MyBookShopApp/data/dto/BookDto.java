@@ -27,7 +27,7 @@ public class BookDto {
     private GenreEntity genre;
     private Short discount;
     private Boolean isBestseller;
-    private Short rating;
+    private RatingDto rating;
     private String status;
     private Integer price;
     private Integer discountPrice;

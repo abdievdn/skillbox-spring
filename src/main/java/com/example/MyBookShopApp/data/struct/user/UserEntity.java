@@ -1,7 +1,10 @@
 package com.example.MyBookShopApp.data.struct.user;
 
-import com.example.MyBookShopApp.data.struct.book.links.Book2GenreEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2UserEntity;
+import com.example.MyBookShopApp.data.struct.book.rating.BookRatingEntity;
+import com.example.MyBookShopApp.data.struct.book.rating.BookReviewRatingEntity;
+import com.example.MyBookShopApp.data.struct.book.review.BookReviewEntity;
+import com.example.MyBookShopApp.data.struct.book.review.BookReviewLikeEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -32,4 +35,16 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user")
     private List<Book2UserEntity> user2books = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<BookRatingEntity> valuesForBooks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userRating")
+    private List<BookReviewRatingEntity> userRatingValues = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userLike")
+    private List<BookReviewLikeEntity> userLikeValues = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userReview")
+    private List<BookReviewEntity> reviews = new ArrayList<>();
 }

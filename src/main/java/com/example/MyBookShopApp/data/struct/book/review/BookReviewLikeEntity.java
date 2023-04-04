@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.data.struct.book.review;
 
+import com.example.MyBookShopApp.data.struct.user.UserEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,11 +15,13 @@ public class BookReviewLikeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(columnDefinition = "INT NOT NULL")
-    private int reviewId;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_id", columnDefinition = "INT NOT NULL")
+    private BookReviewEntity reviewLike;
 
-    @Column(columnDefinition = "INT NOT NULL")
-    private int userId;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", columnDefinition = "INT NOT NULL")
+    private UserEntity userLike;
 
     @Column(columnDefinition = "TIMESTAMP NOT NULL")
     private LocalDateTime time;

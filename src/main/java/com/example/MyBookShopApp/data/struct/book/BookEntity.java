@@ -5,6 +5,8 @@ import com.example.MyBookShopApp.data.struct.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2GenreEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2TagEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2UserEntity;
+import com.example.MyBookShopApp.data.struct.book.rating.BookRatingEntity;
+import com.example.MyBookShopApp.data.struct.book.review.BookReviewEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -51,25 +53,36 @@ public class BookEntity {
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String slug;
 
-    private Short rating;
+    @OneToMany(mappedBy = "book2Author")
+    private List<Book2AuthorEntity> book2Authors = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
-    private List<Book2AuthorEntity> book2authors = new ArrayList<>();
+    @OneToOne(mappedBy = "book2Genre")
+    private Book2GenreEntity genre2Book;
 
-    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(referencedColumnName = "book_id")
-    private Book2GenreEntity genre2book;
+    @OneToMany(mappedBy = "book2User")
+    private List<Book2UserEntity> book2Users = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
-    private List<Book2UserEntity> book2users = new ArrayList<>();
-
-    @OneToMany(mappedBy = "book")
-    private List<Book2TagEntity> book2tags = new ArrayList<>();
+    @OneToMany(mappedBy = "book2Tag")
+    private List<Book2TagEntity> book2Tags = new ArrayList<>();
 
     public Integer discountPrice() {
         return price - (price * discount / 100);
     }
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book2File")
     private List<BookFileEntity> bookFileList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book2Rating")
+    private List<BookRatingEntity> book2Ratings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book2Review")
+    private List<BookReviewEntity> book2Reviews = new ArrayList<>();
+
+    public Short getCommonRatingValue() {
+        return (short) Math.round(book2Ratings
+                .stream()
+                .mapToInt(BookRatingEntity::getValue)
+                .average()
+                .orElse(0));
+    }
 }
