@@ -20,7 +20,6 @@ import java.util.Map;
 public class AuthorController {
 
     private final AuthorService authorService;
-    private String id;
 
     @ModelAttribute("authorsMap")
     public Map<String, List<AuthorEntity>> authorsMap() {
@@ -33,38 +32,38 @@ public class AuthorController {
         return "/authors/index";
     }
 
-    @GetMapping("/authors/{id}")
-    public String authorsidPage(@PathVariable(value = "id", required = false) Integer id, Model model) {
-        setModelAttributes(model, id, 10);
+    @GetMapping("/authors/{slug}")
+    public String authorsidPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
+        setModelAttributes(model, slug, 10);
         model.addAttribute("booksCount", AuthorService.booksCount);
         return "/authors/slug";
     }
 
-    private void setModelAttributes(Model model, Integer id, int size) {
-        model.addAttribute("authorData", authorService.getAuthorData(id));
-        model.addAttribute("authorBooks", authorService.getBooksByAuthor(id, 0, size));
-        model.addAttribute("authorId", id);
+    private void setModelAttributes(Model model, String slug, int size) {
+        model.addAttribute("authorData", authorService.getAuthorData(slug));
+        model.addAttribute("authorBooks", authorService.getBooksByAuthor(slug, 0, size));
+        model.addAttribute("authorId", slug);
     }
 
-    @GetMapping("/authors/page/{id}")
+    @GetMapping("/authors/page/{slug}")
     @ResponseBody
-    public BooksPageDto recentBooks(@PathVariable(value = "id", required = false) Integer id,
+    public BooksPageDto recentBooks(@PathVariable(value = "slug", required = false) String slug,
                                     @RequestParam("offset") Integer offset,
                                     @RequestParam("limit") Integer size) {
-        return new BooksPageDto(authorService.getBooksByAuthor(id, offset, size));
+        return new BooksPageDto(authorService.getBooksByAuthor(slug, offset, size));
     }
 
-    @GetMapping("/books/author/{id}")
-    public String booksByAuthor(@PathVariable(value = "id", required = false) Integer id, Model model) {
-        setModelAttributes(model, id, 20);
+    @GetMapping("/books/author/{slug}")
+    public String booksByAuthor(@PathVariable(value = "slug", required = false) String slug, Model model) {
+        setModelAttributes(model, slug, 20);
         return "/books/author";
     }
 
-    @GetMapping("/books/author/page/{id}")
+    @GetMapping("/books/author/page/{slug}")
     @ResponseBody
-    public BooksPageDto bookByAuthorPage(@PathVariable(value = "id", required = false) Integer id,
+    public BooksPageDto bookByAuthorPage(@PathVariable(value = "slug", required = false) String slug,
                                          @RequestParam("offset") Integer offset,
                                          @RequestParam("limit") Integer size) {
-        return new BooksPageDto(authorService.getBooksByAuthor(id, offset, size));
+        return new BooksPageDto(authorService.getBooksByAuthor(slug, offset, size));
     }
 }

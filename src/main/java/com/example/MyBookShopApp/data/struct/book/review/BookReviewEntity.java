@@ -21,11 +21,11 @@ public class BookReviewEntity {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", columnDefinition = "INT NOT NULL")
-    private BookEntity book2Review;
+    private BookEntity book;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", columnDefinition = "INT NOT NULL")
-    private UserEntity userReview;
+    private UserEntity user;
 
     @Column(columnDefinition = "TIMESTAMP NOT NULL")
     private LocalDateTime time;
@@ -36,7 +36,7 @@ public class BookReviewEntity {
     @OneToMany(mappedBy = "reviewRating")
     private List<BookReviewRatingEntity> ratings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "reviewLike")
+    @OneToMany(mappedBy = "review")
     private List<BookReviewLikeEntity> likes = new ArrayList<>();
 
     public Integer getCommonRatingValue() {
@@ -45,5 +45,12 @@ public class BookReviewEntity {
                 .mapToInt(BookReviewRatingEntity::getValue)
                 .average()
                 .orElse(0));
+    }
+
+    public Integer getLikesCountByValue(Short value) {
+        return  (int) likes
+                .stream()
+                .filter(l -> l.getValue() == value)
+                .count();
     }
 }

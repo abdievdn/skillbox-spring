@@ -26,12 +26,12 @@ public class AuthorService {
         return authors.stream().collect(Collectors.groupingBy(a -> a.getLastName().substring(0, 1)));
     }
 
-    public AuthorEntity getAuthorData(Integer id) {
-        return authorRepository.findById(id).orElseThrow();
+    public AuthorEntity getAuthorData(String slug) {
+        return authorRepository.findBySlug(slug).orElseThrow();
     }
 
-    public List<BookDto> getBooksByAuthor(Integer id, Integer offset, Integer size) {
-        AuthorEntity author = getAuthorData(id);
+    public List<BookDto> getBooksByAuthor(String slug, Integer offset, Integer size) {
+        AuthorEntity author = getAuthorData(slug);
         List<BookEntity> authorBooks = new ArrayList<>();
         for (Book2AuthorEntity a : author.getAuthor2books()) {
             authorBooks.add(a.getBook2Author());

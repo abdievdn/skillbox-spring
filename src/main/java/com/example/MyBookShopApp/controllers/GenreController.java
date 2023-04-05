@@ -27,19 +27,19 @@ public class GenreController {
         return "/genres/index";
     }
 
-    @GetMapping("/genres/{id}")
-    public String genresidPage(@PathVariable(value = "id", required = false) Integer id, Model model) {
-        model.addAttribute("booksByGenreList", genreService.getBooksByGenreAndSubGenres(id, 0, 20));
-        model.addAttribute("genreId", id);
-        model.addAttribute("genreBreadcrumbs", genreService.getGenreBreadcrumbs(id));
+    @GetMapping("/genres/{slug}")
+    public String genresidPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
+        model.addAttribute("booksByGenreList", genreService.getBooksByGenreAndSubGenres(slug, 0, 20));
+        model.addAttribute("genreId", slug);
+        model.addAttribute("genreBreadcrumbs", genreService.getGenreBreadcrumbs(slug));
         return "/genres/slug";
     }
 
-    @GetMapping("/genres/page/{id}")
+    @GetMapping("/genres/page/{slug}")
     @ResponseBody
-    public BooksPageDto genresidPage(@PathVariable(value = "id", required = false) Integer id,
+    public BooksPageDto genresidPage(@PathVariable(value = "slug", required = false) String slug,
                                        @RequestParam("offset") Integer offset,
                                        @RequestParam("limit") Integer size) {
-        return new BooksPageDto(genreService.getBooksByGenreAndSubGenres(id, offset, size));
+        return new BooksPageDto(genreService.getBooksByGenreAndSubGenres(slug, offset, size));
     }
 }

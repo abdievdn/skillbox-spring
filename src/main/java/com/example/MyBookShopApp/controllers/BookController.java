@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.services.ResourceStorage;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.services.BookService;
@@ -69,6 +70,7 @@ public class BookController {
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         model.addAttribute("bookSlug", bookService.getBookDtoBySlug(slug));
+        model.addAttribute("bookReviewList", bookService.getBookReviewList(slug));
         return "/books/slug";
     }
 
@@ -89,5 +91,13 @@ public class BookController {
                 .contentType(mediaType)
                 .contentLength(data.length)
                 .body(new ByteArrayResource(data));
+    }
+
+
+    @PostMapping("/rateBook")
+    public ResultDto rateBook(@RequestParam("bookId") String slug,
+                              @RequestParam("value") Short value) {
+
+        return new ResultDto(true);
     }
 }

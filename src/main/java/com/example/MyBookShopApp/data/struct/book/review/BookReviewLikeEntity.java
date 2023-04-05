@@ -17,11 +17,11 @@ public class BookReviewLikeEntity {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id", columnDefinition = "INT NOT NULL")
-    private BookReviewEntity reviewLike;
+    private BookReviewEntity review;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", columnDefinition = "INT NOT NULL")
-    private UserEntity userLike;
+    private UserEntity user;
 
     @Column(columnDefinition = "TIMESTAMP NOT NULL")
     private LocalDateTime time;

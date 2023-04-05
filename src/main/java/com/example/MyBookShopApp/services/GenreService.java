@@ -24,19 +24,13 @@ public class GenreService {
     private final Book2GenreRepository book2GenreRepository;
     private final BookService bookService;
 
-    public GenreEntity getGenreByBookSlug(String slug) {
-        BookEntity book = bookService.getBookBySlug(slug);
-        Book2GenreEntity book2GenreEntity = book.getGenre2Book();
-        return book2GenreEntity.getGenre();
-    }
-
-    public List<BookDto> getBooksByGenreAndSubGenres(Integer id, Integer offset, Integer size) {
-        List<BookEntity> booksByGenre = getBooksByGenre(getGenreEntity(id));
+    public List<BookDto> getBooksByGenreAndSubGenres(String slug, Integer offset, Integer size) {
+        List<BookEntity> booksByGenre = getBooksByGenre(getGenreEntity(slug));
         return bookService.getBooksPage(offset, size, booksByGenre);
     }
 
-    private GenreEntity getGenreEntity(Integer id) {
-        return genreRepository.findById(id).orElseGet(GenreEntity::new);
+    private GenreEntity getGenreEntity(String slug) {
+        return genreRepository.findBySlug(slug).orElseGet(GenreEntity::new);
     }
 
     private List<BookEntity> getBooksByGenre(GenreEntity genre) {
@@ -52,8 +46,8 @@ public class GenreService {
         return books;
     }
 
-    public List<GenreEntity> getGenreBreadcrumbs(Integer id) {
-        GenreEntity genre = getGenreEntity(id);
+    public List<GenreEntity> getGenreBreadcrumbs(String slug) {
+        GenreEntity genre = getGenreEntity(slug);
         List<GenreEntity> breadcrumbs = new ArrayList<>();
         while (true) {
             breadcrumbs.add(0, genre);

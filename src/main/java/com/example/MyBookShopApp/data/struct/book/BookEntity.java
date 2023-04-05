@@ -75,14 +75,6 @@ public class BookEntity {
     @OneToMany(mappedBy = "book2Rating")
     private List<BookRatingEntity> book2Ratings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book2Review")
+    @OneToMany(mappedBy = "book")
     private List<BookReviewEntity> book2Reviews = new ArrayList<>();
-
-    public Short getCommonRatingValue() {
-        return (short) Math.round(book2Ratings
-                .stream()
-                .mapToInt(BookRatingEntity::getValue)
-                .average()
-                .orElse(0));
-    }
 }

@@ -7,6 +7,7 @@ import com.example.MyBookShopApp.data.struct.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2TagEntity;
 import com.example.MyBookShopApp.data.struct.book.links.Book2UserEntity;
 import com.example.MyBookShopApp.data.struct.book.rating.BookRatingEntity;
+import com.example.MyBookShopApp.data.struct.book.review.BookReviewEntity;
 import com.example.MyBookShopApp.data.struct.user.UserEntity;
 import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
@@ -53,11 +54,6 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Page<BookEntity> getPageOfBooks(Integer offset, Integer size) {
-        Pageable page = PageRequest.of(offset, size);
-        return bookRepository.findAll(page);
-    }
-
     public List<BookDto> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer size) throws CommonErrorException {
         if (searchWord == null || searchWord.length() < 1) {
             throw new CommonErrorException("Не введено значение поиска!");
@@ -70,8 +66,11 @@ public class BookService {
     }
 
     public List<BookDto> getPageOfRecommendedBooks(Integer offset, Integer size) {
-        Pageable page = PageRequest.of(offset, size);
-        return bookEntityListToBookDtoList(bookRepository.findAllByIsBestsellerOrderByPriceAsc((short) 1, page).getContent());
+        return bookEntityListToBookDtoList(
+                bookRepository.findAllByIsBestsellerOrderByPriceAsc(
+                                (short) 1,
+                                PageRequest.of(offset, size))
+                        .getContent());
     }
 
     public List<BookDto> getPageOfRecentBooks(Integer offset, Integer size) {
@@ -124,7 +123,7 @@ public class BookService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new))
                 .keySet()
                 .stream()
-                .map(k -> bookRepository.findById(k).get())
+                .map(k -> bookRepository.findById(k).orElseGet(BookEntity::new))
                 .collect(Collectors.toList());
         return getBooksPage(offset, size, popularBooks);
     }
@@ -266,4 +265,7 @@ public class BookService {
                 .build();
     }
 
+    public List<BookReviewEntity> getBookReviewList(String slug) {
+        return getBookBySlug(slug).getBook2Reviews();
+    }
 }

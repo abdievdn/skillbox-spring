@@ -42,9 +42,9 @@ public class UserEntity {
     @OneToMany(mappedBy = "userRating")
     private List<BookReviewRatingEntity> userRatingValues = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userLike")
+    @OneToMany(mappedBy = "user")
     private List<BookReviewLikeEntity> userLikeValues = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userReview")
+    @OneToMany(mappedBy = "user")
     private List<BookReviewEntity> reviews = new ArrayList<>();
 }

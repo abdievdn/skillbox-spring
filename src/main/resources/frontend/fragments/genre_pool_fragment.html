@@ -1,8 +1,12 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
 <th:block th:fragment="genreFragment(genres)" th:each="genre : ${genres}">
     <div th:class="${!genre.genres.isEmpty} ? 'Tags' : 'Tag'">
         <div th:class="${!genre.genres.isEmpty} ? 'Tags-title' : ''">
             <div class="Tag">
-                <a href="#" th:href="@{'/genres/' + ${genre.id}}" th:text="${genre.name} + ' (' + ${genre.booksCount} + ')'">
+                <a href="#" th:href="@{'/genres/' + ${genre.slug}}"
+                   th:text="${genre.name} + ' (' + ${genre.booksCount} + ')'">
                 </a>
             </div>
         </div>
@@ -11,3 +15,5 @@
         </th:block>
     </div>
 </th:block>
+</body>
+</html>
