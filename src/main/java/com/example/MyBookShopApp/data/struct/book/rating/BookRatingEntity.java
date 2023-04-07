@@ -2,13 +2,13 @@ package com.example.MyBookShopApp.data.struct.book.rating;
 
 import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.data.struct.user.UserEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "book_rating")
 public class BookRatingEntity {
@@ -22,9 +22,15 @@ public class BookRatingEntity {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", columnDefinition = "INT NOT NULL")
-    private BookEntity book2Rating;
+    private BookEntity book;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id" ,columnDefinition = "INT NOT NULL")
     private UserEntity user;
+
+    public BookRatingEntity(BookEntity book, UserEntity user, Short value) {
+        this.book = book;
+        this.user = user;
+        this.value = value;
+    };
 }

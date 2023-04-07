@@ -65,7 +65,7 @@
 
                             <div class="ProductCard-assessment"><span
                                     class="ProductCard-titleProp">Оцените книгу:</span>
-                                <span class="Rating Rating_input" data-bookid="2121">
+                                <span class="Rating Rating_input" th:data-bookid="${bookSlug.slug}">
                                     <th:block th:replace="fragments/rating_fragment::ratingStarsVote"></th:block>
                                 </span>
                             </div>
@@ -138,10 +138,24 @@
                 <div class="Product-comments">
                     <div class="Product-comments-header">
                         <h3 class="Product-comments-title">Отзывы
-                        </h3><span class="Product-comments-amount" th:text="${bookReviewList.size()}"> отзывов</span>
+                        </h3>
+                        <span class="Product-comments-amount" th:text="${bookReviewList.size()}"></span>
                     </div>
                 </div>
                 <div class="Comments">
+                    <strong class="Comments-title">Написать отзыв
+                    </strong>
+                    <div class="Comments-addComment">
+                        <form class="form" action="#" method="post" th:data-bookid="${bookSlug.slug}">
+                            <div class="form-group">
+                                <textarea class="form-textarea Comments-review" name="review" id="review" placeholder="Текст отзыва" data-validate="require"></textarea>
+                            </div>
+                            <div class="form-group Comments-sendReview">
+                                <button class="btn btn_warning" type="submit">Отправить отзыв
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                     <div class="Comment" th:each="comment : ${bookReviewList}">
                         <div class="Comment-column Comment-column_pict">
                             <div class="Comment-avatar">
@@ -159,15 +173,15 @@
                                         </span>
                                         </span>
                                     </strong>
-                                    <span class="Comment-date" th:text="${comment.time}"></span>
+                                    <span class="Comment-date" th:text="${#temporals.format(comment.time, 'yyyy-MM-dd HH:mm:ss')}"></span>
                                 </div>
                             </header>
                             <div class="Comment-content">
                                 <div class="Spoiler">
-                                    <span class="Spoiler-visible" th:text="${comment.text.substring(0, 40)}">
+                                    <span class="Spoiler-visible" th:text="${comment.text.length() > 40 ? comment.text.substring(0, 40) : comment.text}">
                                     </span>
                                     <span class="Spoiler-hide"
-                                          th:text="${comment.text.substring(41, comment.text.length() - 1)}">
+                                          th:text="${comment.text.length() > 40 ? comment.text.substring(41, comment.text.length() - 1) : ''}">
                                     </span>
                                     <div class="Comment-footer">
                                         <div class="Comment-appeal">

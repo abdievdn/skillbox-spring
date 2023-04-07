@@ -30,7 +30,7 @@ public class ResourceStorage {
 
     @Value("${path.upload}")
     private String uploadPath;
-    public void saveNewBookImage(MultipartFile file, String slug) throws IOException {
+    public void saveNewBookImage(MultipartFile file, String slug) throws Exception {
         String resourceURI = null;
         if (!file.isEmpty()) {
             if (!new File(uploadPath).exists()) {

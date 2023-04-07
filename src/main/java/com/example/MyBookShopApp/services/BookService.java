@@ -40,6 +40,7 @@ public class BookService {
     private final Book2UserRepository book2UserRepository;
 
     private final UserRepository userRepository;
+    private final RatingService ratingService;
     public static Long booksSearchCount;
 
     public BookEntity getBookBySlug(String slug) {
@@ -157,7 +158,7 @@ public class BookService {
                 .genre(bookEntity.getGenre2Book().getGenre())
                 .discount(bookEntity.getDiscount())
                 .isBestseller(bookEntity.getIsBestseller() == 1)
-                .rating(getBookRatingBySlug(bookEntity))
+                .rating(ratingService.getBookRatingBySlug(bookEntity))
                 .status(bookEntity.getBook2Users()
                         .stream()
                         .filter(u -> u.getUser().equals(user))
@@ -238,34 +239,5 @@ public class BookService {
                 response.addCookie(cookie);
             }
         }
-    }
-
-    private RatingDto getBookRatingBySlug(BookEntity book) {
-        List<BookRatingEntity> bookRatings = book.getBook2Ratings();
-        return RatingDto.builder()
-                .value((short) Math.round(bookRatings
-                        .stream()
-                        .mapToInt(BookRatingEntity::getValue)
-                        .average()
-                        .orElse(0)))
-                .count(bookRatings.size())
-                .values2Count(bookRatings
-                        .stream()
-                        .collect(Collectors.groupingBy(
-                                BookRatingEntity::getValue,
-                                collectingAndThen(counting(), Long::intValue)))
-                        .entrySet()
-                        .stream()
-                        .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue,
-                                (k, v) -> v,
-                                LinkedHashMap::new)))
-                .build();
-    }
-
-    public List<BookReviewEntity> getBookReviewList(String slug) {
-        return getBookBySlug(slug).getBook2Reviews();
     }
 }

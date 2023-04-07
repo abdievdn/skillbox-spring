@@ -1,6 +1,8 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.dto.ResultDto;
+import com.example.MyBookShopApp.services.BookReviewService;
+import com.example.MyBookShopApp.services.RatingService;
 import com.example.MyBookShopApp.services.ResourceStorage;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.services.BookService;
@@ -25,6 +27,8 @@ import java.nio.file.Path;
 public class BookController {
 
     private final BookService bookService;
+    private final RatingService ratingService;
+    private final BookReviewService bookReviewService;
     private final ResourceStorage storage;
 
     @GetMapping({"/recommended/page", "/books/recommended/slider"})
@@ -68,21 +72,21 @@ public class BookController {
     }
 
     @GetMapping("/{slug}")
-    public String bookPage(@PathVariable("slug") String slug, Model model) {
+    public String bookPage(@PathVariable(value = "slug", required = false) String slug, Model model) throws Exception {
         model.addAttribute("bookSlug", bookService.getBookDtoBySlug(slug));
-        model.addAttribute("bookReviewList", bookService.getBookReviewList(slug));
+        model.addAttribute("bookReviewList", bookReviewService.getBookReviewList(slug));
         return "/books/slug";
     }
 
     @PostMapping("/{slug}/img/save")
     public String saveNewBookImage(@RequestParam("file") MultipartFile file,
-                                   @PathVariable("slug") String slug) throws IOException {
+                                   @PathVariable(value = "slug", required = false) String slug) throws Exception {
         storage.saveNewBookImage(file, slug);
         return "redirect:/books/" + slug;
     }
 
     @GetMapping("/download/{hash}")
-    public ResponseEntity<ByteArrayResource> bookFile(@PathVariable("hash") String hash) throws IOException {
+    public ResponseEntity<ByteArrayResource> bookFile(@PathVariable(value = "hash", required = false) String hash) throws IOException {
         Path path = storage.getBookFilePath(hash);
         MediaType mediaType = storage.getBookFileMime(hash);
         byte[] data = storage.getBookFileByteArray(hash);
@@ -93,11 +97,25 @@ public class BookController {
                 .body(new ByteArrayResource(data));
     }
 
-
     @PostMapping("/rateBook")
+    @ResponseBody
     public ResultDto rateBook(@RequestParam("bookId") String slug,
                               @RequestParam("value") Short value) {
+        ratingService.saveBookRating(slug, value);
+        return new ResultDto(true);
+    }
 
+    @PostMapping("/bookReview")
+    @ResponseBody
+    public ResultDto bookReview(@RequestParam("bookId") String slug,
+                                @RequestParam("text") String text) {
+        bookReviewService.saveBookReview(slug, text);
+        return new ResultDto(true);
+    }
+
+    @PostMapping("/rateBookReview")
+    @ResponseBody
+    public ResultDto rateBookReview() {
         return new ResultDto(true);
     }
 }

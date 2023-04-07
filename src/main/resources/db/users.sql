@@ -1,4 +1,4 @@
-insert into users (id, hash, reg_time, balance, name) values (1, '42b7f69073f13a645e17e012c2436c141482bf67', '2023/02/23', 809.2, 'bcappineer0');
+insert into users (id, hash, reg_time, balance, name) values (1, '42b7f69073f13a645e17e012c2436c141482bf67', '2020/02/20', 809.2, 'guest');
 insert into users (id, hash, reg_time, balance, name) values (2, 'fedc03eaadf592cc77afdc870d8357d481c08ae0', '2022/09/03', 4744.14, 'djolliss1');
 insert into users (id, hash, reg_time, balance, name) values (3, '80868324ec1542f09f395b13ccadb851921358cb', '2022/04/03', 330.21, 'hoade2');
 insert into users (id, hash, reg_time, balance, name) values (4, '58ee95953b5b021233713046f43d9c436541e9da', '2022/08/22', 9702.29, 'zdory3');

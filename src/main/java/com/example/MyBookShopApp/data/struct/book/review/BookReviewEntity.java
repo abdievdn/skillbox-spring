@@ -4,6 +4,7 @@ import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.data.struct.book.rating.BookReviewRatingEntity;
 import com.example.MyBookShopApp.data.struct.user.UserEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,9 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "book_review")
 public class BookReviewEntity {
+
+    public BookReviewEntity(BookEntity book, UserEntity user, LocalDateTime time, String text) {
+        this.book = book;
+        this.user = user;
+        this.time = time;
+        this.text = text;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

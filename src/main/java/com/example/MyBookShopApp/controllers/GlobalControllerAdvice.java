@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -77,8 +78,8 @@ public class GlobalControllerAdvice {
         return "redirect:/";
     }
 
-//    @ExceptionHandler(NullPointerException.class)
-//    public String handleNullPointerException(Exception ex) {
-//        return "redirect:/";
-//    }
+    @ExceptionHandler(NoSuchElementException.class)
+    public String handleException(Exception ex) {
+        return "redirect:/";
+    }
 }

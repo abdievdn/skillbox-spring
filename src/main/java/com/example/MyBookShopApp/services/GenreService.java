@@ -36,7 +36,7 @@ public class GenreService {
     private List<BookEntity> getBooksByGenre(GenreEntity genre) {
         List<BookEntity> books = new ArrayList<>();
         for (Book2GenreEntity b : genre.getBooks()) {
-            books.add(bookRepository.findById(b.getBook2Genre().getId()).orElseThrow());
+            books.add(bookRepository.findById(b.getBook().getId()).orElseThrow());
         }
         if (!genre.getGenres().isEmpty()) {
             for (GenreEntity g : genre.getGenres()) {

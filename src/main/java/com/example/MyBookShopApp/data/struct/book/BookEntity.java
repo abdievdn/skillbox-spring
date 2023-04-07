@@ -56,7 +56,7 @@ public class BookEntity {
     @OneToMany(mappedBy = "book2Author")
     private List<Book2AuthorEntity> book2Authors = new ArrayList<>();
 
-    @OneToOne(mappedBy = "book2Genre")
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private Book2GenreEntity genre2Book;
 
     @OneToMany(mappedBy = "book2User")
@@ -72,7 +72,7 @@ public class BookEntity {
     @OneToMany(mappedBy = "book2File")
     private List<BookFileEntity> bookFileList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book2Rating")
+    @OneToMany(mappedBy = "book")
     private List<BookRatingEntity> book2Ratings = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")

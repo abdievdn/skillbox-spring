@@ -948,3 +948,4 @@ insert into book_rating (id, book_id, user_id, value) values (997, 837, 24, 2);
 insert into book_rating (id, book_id, user_id, value) values (998, 295, 22, 4);
 insert into book_rating (id, book_id, user_id, value) values (999, 991, 50, 1);
 insert into book_rating (id, book_id, user_id, value) values (1000, 392, 62, 2);
+ALTER SEQUENCE book_rating_id_seq RESTART WITH 1001;

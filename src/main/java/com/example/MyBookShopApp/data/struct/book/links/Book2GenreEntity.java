@@ -17,9 +17,9 @@ public class Book2GenreEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "book_id", columnDefinition = "INT NOT NULL")
-    private BookEntity book2Genre;
+    private BookEntity book;
 
     @ManyToOne
     @JoinColumn(name = "genre_id", columnDefinition = "INT NOT NULL")
