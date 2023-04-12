@@ -32,7 +32,6 @@ public class BookStatusController {
                            Model model) {
         if (contents != null && !contents.equals("")) {
             model.addAttribute("booksStatusList", bookService.getBooksStatusList(contents));
-            model.addAttribute("status", "cart");
         }
         return "cart";
     }
@@ -42,7 +41,6 @@ public class BookStatusController {
                                 Model model) {
         if (contents != null && !contents.equals("")) {
             model.addAttribute("booksStatusList", bookService.getBooksStatusList(contents));
-            model.addAttribute("status", "postponed");
         }
         return "postponed";
     }

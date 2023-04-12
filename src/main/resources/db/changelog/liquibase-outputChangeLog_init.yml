@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: 1677156568465-1
+    id: 1681291529635-1
     author: kainart (generated)
     changes:
     - createTable:
@@ -19,7 +19,12 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: name
+            name: first_name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: last_name
             type: VARCHAR(255)
         - column:
             name: photo
@@ -29,7 +34,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: author
 - changeSet:
-    id: 1677156568465-2
+    id: 1681291529635-2
     author: kainart (generated)
     changes:
     - createTable:
@@ -70,7 +75,7 @@ databaseChangeLog:
             type: INTEGER
         tableName: balance_transaction
 - changeSet:
-    id: 1677156568465-3
+    id: 1681291529635-3
     author: kainart (generated)
     changes:
     - createTable:
@@ -102,6 +107,8 @@ databaseChangeLog:
             name: pub_date
             type: date
         - column:
+            constraints:
+              nullable: false
             name: slug
             type: VARCHAR(255)
         - column:
@@ -111,7 +118,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: book
 - changeSet:
-    id: 1677156568465-4
+    id: 1681291529635-4
     author: kainart (generated)
     changes:
     - createTable:
@@ -127,6 +134,12 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
+            defaultValueNumeric: 0
+            name: sort_index
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
             name: author_id
             type: INTEGER
         - column:
@@ -134,15 +147,9 @@ databaseChangeLog:
               nullable: false
             name: book_id
             type: INTEGER
-        - column:
-            constraints:
-              nullable: false
-            defaultValueNumeric: 0
-            name: sort_index
-            type: INTEGER
         tableName: book2author
 - changeSet:
-    id: 1677156568465-5
+    id: 1681291529635-5
     author: kainart (generated)
     changes:
     - createTable:
@@ -167,7 +174,32 @@ databaseChangeLog:
             type: INTEGER
         tableName: book2genre
 - changeSet:
-    id: 1677156568465-6
+    id: 1681291529635-6
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book2tag_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: tag_id
+            type: INTEGER
+        tableName: book2tag
+- changeSet:
+    id: 1681291529635-7
     author: kainart (generated)
     changes:
     - createTable:
@@ -183,13 +215,13 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: book_id
-            type: INTEGER
+            name: time
+            type: TIMESTAMP WITHOUT TIME ZONE
         - column:
             constraints:
               nullable: false
-            name: time
-            type: TIMESTAMP WITHOUT TIME ZONE
+            name: book_id
+            type: INTEGER
         - column:
             constraints:
               nullable: false
@@ -202,7 +234,7 @@ databaseChangeLog:
             type: INTEGER
         tableName: book2user
 - changeSet:
-    id: 1677156568465-7
+    id: 1681291529635-8
     author: kainart (generated)
     changes:
     - createTable:
@@ -227,7 +259,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: book2user_type
 - changeSet:
-    id: 1677156568465-8
+    id: 1681291529635-9
     author: kainart (generated)
     changes:
     - createTable:
@@ -247,11 +279,16 @@ databaseChangeLog:
             name: path
             type: VARCHAR(255)
         - column:
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
             name: type_id
             type: INTEGER
         tableName: book_file
 - changeSet:
-    id: 1677156568465-9
+    id: 1681291529635-10
     author: kainart (generated)
     changes:
     - createTable:
@@ -274,7 +311,37 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: book_file_type
 - changeSet:
-    id: 1677156568465-10
+    id: 1681291529635-11
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book_rating_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: value
+            type: SMALLINT
+        - column:
+            constraints:
+              nullable: false
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        tableName: book_rating
+- changeSet:
+    id: 1681291529635-12
     author: kainart (generated)
     changes:
     - createTable:
@@ -290,11 +357,6 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: book_id
-            type: INTEGER
-        - column:
-            constraints:
-              nullable: false
             name: text
             type: TEXT
         - column:
@@ -305,11 +367,16 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
+            name: book_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
             name: user_id
             type: INTEGER
         tableName: book_review
 - changeSet:
-    id: 1677156568465-11
+    id: 1681291529635-13
     author: kainart (generated)
     changes:
     - createTable:
@@ -325,26 +392,56 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: review_id
-            type: INTEGER
-        - column:
-            constraints:
-              nullable: false
             name: time
             type: TIMESTAMP WITHOUT TIME ZONE
         - column:
             constraints:
               nullable: false
+            name: value
+            type: SMALLINT
+        - column:
+            constraints:
+              nullable: false
+            name: review_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
             name: user_id
+            type: INTEGER
+        tableName: book_review_like
+- changeSet:
+    id: 1681291529635-14
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: book_review_rating_pkey
+            name: id
             type: INTEGER
         - column:
             constraints:
               nullable: false
             name: value
             type: SMALLINT
-        tableName: book_review_like
+        - column:
+            constraints:
+              nullable: false
+            name: review_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        tableName: book_review_rating
 - changeSet:
-    id: 1677156568465-12
+    id: 1681291529635-15
     author: kainart (generated)
     changes:
     - createTable:
@@ -380,7 +477,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: document
 - changeSet:
-    id: 1677156568465-13
+    id: 1681291529635-16
     author: kainart (generated)
     changes:
     - createTable:
@@ -411,7 +508,7 @@ databaseChangeLog:
             type: INTEGER
         tableName: faq
 - changeSet:
-    id: 1677156568465-14
+    id: 1681291529635-17
     author: kainart (generated)
     changes:
     - createTable:
@@ -442,7 +539,7 @@ databaseChangeLog:
             type: INTEGER
         tableName: file_download
 - changeSet:
-    id: 1677156568465-15
+    id: 1681291529635-18
     author: kainart (generated)
     changes:
     - createTable:
@@ -461,16 +558,16 @@ databaseChangeLog:
             name: name
             type: VARCHAR(255)
         - column:
-            name: parent_id
-            type: INTEGER
-        - column:
             constraints:
               nullable: false
             name: slug
             type: VARCHAR(255)
+        - column:
+            name: parent_id
+            type: INTEGER
         tableName: genre
 - changeSet:
-    id: 1677156568465-16
+    id: 1681291529635-19
     author: kainart (generated)
     changes:
     - createTable:
@@ -509,7 +606,32 @@ databaseChangeLog:
             type: INTEGER
         tableName: message
 - changeSet:
-    id: 1677156568465-17
+    id: 1681291529635-20
+    author: kainart (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: tag_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: slug
+            type: VARCHAR(255)
+        tableName: tag
+- changeSet:
+    id: 1681291529635-21
     author: kainart (generated)
     changes:
     - createTable:
@@ -553,7 +675,7 @@ databaseChangeLog:
             type: INTEGER
         tableName: user_contact
 - changeSet:
-    id: 1677156568465-18
+    id: 1681291529635-22
     author: kainart (generated)
     changes:
     - createTable:
@@ -587,4 +709,312 @@ databaseChangeLog:
             name: reg_time
             type: TIMESTAMP WITHOUT TIME ZONE
         tableName: users
+- changeSet:
+    id: 1681291529635-23
+    author: kainart (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: book_id
+        constraintName: uk_ew706thlca5n1w283gy5qxn7j
+        tableName: book2genre
+- changeSet:
+    id: 1681291529635-24
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: parent_id
+        baseTableName: genre
+        constraintName: fk19g7t6b636h69dufjf98ofc0x
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: genre
+        validate: true
+- changeSet:
+    id: 1681291529635-25
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: book2user
+        constraintName: fk1i8i82uo8kbv1wepiujenmj7x
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1681291529635-26
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: book_id
+        baseTableName: book_review
+        constraintName: fk29oatdl4f30mtg65oxo1nkmjg
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book
+        validate: true
+- changeSet:
+    id: 1681291529635-27
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: book_id
+        baseTableName: book_rating
+        constraintName: fk5o8hnchc5tpupntaqau4ermh3
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book
+        validate: true
+- changeSet:
+    id: 1681291529635-28
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: book_id
+        baseTableName: book2user
+        constraintName: fk7cv34daf9pi5ie147slv010b3
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book
+        validate: true
+- changeSet:
+    id: 1681291529635-29
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: book_id
+        baseTableName: book_file
+        constraintName: fk9hhnrtr3w54i3cxuv1q6gjdbo
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book
+        validate: true
+- changeSet:
+    id: 1681291529635-30
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: type_id
+        baseTableName: book_file
+        constraintName: fkab7ynoex2ahy28trbmkk9uxu4
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book_file_type
+        validate: true
+- changeSet:
+    id: 1681291529635-31
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: book_id
+        baseTableName: book2author
+        constraintName: fkafij5snytuqywyya5gj5r30l3
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book
+        validate: true
+- changeSet:
+    id: 1681291529635-32
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: book_review_like
+        constraintName: fkbh4qufg71ntnx2v11gy8ldc5f
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1681291529635-33
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: author_id
+        baseTableName: book2author
+        constraintName: fkcdamvjmc66dxs94gpco2g5yyb
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: author
+        validate: true
+- changeSet:
+    id: 1681291529635-34
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: book_id
+        baseTableName: book2tag
+        constraintName: fkd2cxjv4d8sxiro6iqo91b0sgb
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book
+        validate: true
+- changeSet:
+    id: 1681291529635-35
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: book_id
+        baseTableName: book2genre
+        constraintName: fkdyiaf682r8d022a3gi1q16ypw
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book
+        validate: true
+- changeSet:
+    id: 1681291529635-36
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: book_rating
+        constraintName: fkflislrt3ttvkmyr8t40oqalel
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1681291529635-37
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: type_id
+        baseTableName: book2user
+        constraintName: fkgshsph8qmeq54ntxrfcodb94
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book2user_type
+        validate: true
+- changeSet:
+    id: 1681291529635-38
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: book_review_rating
+        constraintName: fkk1idbqtyp71ultyeuming1y6i
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1681291529635-39
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: genre_id
+        baseTableName: book2genre
+        constraintName: fkkdc8kcprnkl4ygg2f0v9588wi
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: genre
+        validate: true
+- changeSet:
+    id: 1681291529635-40
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: review_id
+        baseTableName: book_review_like
+        constraintName: fkl5konyr7ye2i76wv92vf9w6y2
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book_review
+        validate: true
+- changeSet:
+    id: 1681291529635-41
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: book_review
+        constraintName: fkntncp0b191bex8jkm3vy3l13x
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1681291529635-42
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: review_id
+        baseTableName: book_review_rating
+        constraintName: fkpj4olp0e265xsvqd47c3p75fr
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: book_review
+        validate: true
+- changeSet:
+    id: 1681291529635-43
+    author: kainart (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: tag_id
+        baseTableName: book2tag
+        constraintName: fkso4twdbaqtsrnfgtbr5qnl966
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: tag
+        validate: true
 
