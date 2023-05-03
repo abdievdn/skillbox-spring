@@ -19,7 +19,7 @@ public class Book2AuthorEntity {
     @JoinColumn(name = "book_id", columnDefinition = "INT NOT NULL")
     private BookEntity book2Author;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", columnDefinition = "INT NOT NULL")
     private AuthorEntity author;
 

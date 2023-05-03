@@ -47,4 +47,7 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user")
     private List<BookReviewEntity> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    List<UserContactEntity> contacts = new ArrayList<>();
 }

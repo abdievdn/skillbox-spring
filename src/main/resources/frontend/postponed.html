@@ -2,18 +2,20 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})">
 <body class="Site">
-  <header th:insert="~{fragments/header_fragment}"></header>
-  <div class="Middle">
+<header th:replace="~{fragments/header_fragment}"></header>
+<div class="Middle">
     <div class="wrap">
-      <main class="Middle-main">
-        <h1 class="Middle-title">Отложенное
-        </h1>
-        <form class="form Cart Cart_postponed" action="#" method="post">
-          <div class="Cart-messageInfo" th:if="${booksStatusList.isEmpty()}">Отложенных книг нет</div>
-          <th:block th:replace="~{fragments/books_status_list_fragment :: statusFragment(${booksStatusList}, 'postponed')}"></th:block>
-        </form>
-      </main>
+        <main class="Middle-main">
+            <h1 class="Middle-title">Отложенное
+            </h1>
+            <form class="form Cart Cart_postponed" action="#" method="post">
+                <div class="Cart-messageInfo" th:if="${booksStatusList.isEmpty()}">Отложенных книг нет</div>
+                <th:block
+                        th:replace="~{fragments/books_status_list_fragment :: statusFragment(${booksStatusList}, 'postponed')}"></th:block>
+            </form>
+        </main>
     </div>
-  </div>
-  <footer th:insert="~{fragments/footer_fragment :: footerFragment}"></footer>
-</body></html>
+</div>
+<footer th:replace="~{fragments/footer_fragment :: footerFragment}"></footer>
+</body>
+</html>

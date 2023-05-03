@@ -107,10 +107,13 @@
                             </div>
                         </div>
                         <div class="ProductCard-cart">
-                            <div class="ProductCard-cartElement"><a class="btn btn_primary btn_outline" href="#"><span
-                                    class="btn-icon"><img src="/assets/img/icons/download.svg"
-                                                          alt="download.svg"/></span><span
-                                    class="btn-content">Скачать</span></a>
+                            <div class="ProductCard-cartElement">
+                                <a class="btn btn_primary btn_outline" href="#">
+                                <span class="btn-icon"><img src="/assets/img/icons/download.svg"
+                                                            alt="download.svg"/></span><span
+                                        class="btn-content">Скачать
+                            </span>
+                                </a>
                             </div>
                             <div class="ProductCard-cartElement">
                                 <button class="btn btn_primary btn_outline" data-sendstatus="ARCHIVED"
@@ -148,7 +151,8 @@
                     <div class="Comments-addComment">
                         <form class="form" action="#" method="post" th:data-bookid="${bookSlug.slug}">
                             <div class="form-group">
-                                <textarea class="form-textarea Comments-review" name="review" id="review" placeholder="Текст отзыва" data-validate="require"></textarea>
+                                <textarea class="form-textarea Comments-review" name="review" id="review"
+                                          placeholder="Текст отзыва" data-validate="require"></textarea>
                             </div>
                             <div class="form-group Comments-sendReview">
                                 <button class="btn btn_warning" type="submit">Отправить отзыв
@@ -173,12 +177,14 @@
                                         </span>
                                         </span>
                                     </strong>
-                                    <span class="Comment-date" th:text="${#temporals.format(comment.time, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                    <span class="Comment-date"
+                                          th:text="${#temporals.format(comment.time, 'yyyy-MM-dd HH:mm:ss')}"></span>
                                 </div>
                             </header>
                             <div class="Comment-content">
                                 <div class="Spoiler">
-                                    <span class="Spoiler-visible" th:text="${comment.text.length() > 40 ? comment.text.substring(0, 40) : comment.text}">
+                                    <span class="Spoiler-visible"
+                                          th:text="${comment.text.length() > 40 ? comment.text.substring(0, 40) : comment.text}">
                                     </span>
                                     <span class="Spoiler-hide"
                                           th:text="${comment.text.length() > 40 ? comment.text.substring(41, comment.text.length() - 1) : ''}">

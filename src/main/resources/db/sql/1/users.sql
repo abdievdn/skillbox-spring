@@ -98,3 +98,4 @@ insert into users (id, hash, reg_time, balance, name) values (97, '5a962835a476c
 insert into users (id, hash, reg_time, balance, name) values (98, '329fcc321b0db76886608afa3d99d001161603b4', '2022/11/04', 984.75, 'asmitherham2p');
 insert into users (id, hash, reg_time, balance, name) values (99, '03f7b43145ae1bec9bd6724c59e8dbf66587e5c4', '2022/09/04', 9709.02, 'jneville2q');
 insert into users (id, hash, reg_time, balance, name) values (100, '54f7dced2178c700232fc3d005afbaa94821f1b4', '2022/11/08', 6976.52, 'rdanilishin2r');
+ALTER SEQUENCE users_id_seq RESTART WITH 101;

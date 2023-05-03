@@ -1,19 +1,25 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
+import com.example.MyBookShopApp.data.dto.CurrentUserDto;
 import com.example.MyBookShopApp.data.struct.book.BookEntity;
 import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
 import com.example.MyBookShopApp.data.struct.tag.TagEntity;
+import com.example.MyBookShopApp.data.struct.user.UserContactEntity;
 import com.example.MyBookShopApp.errors.CommonErrorException;
+import com.example.MyBookShopApp.security.BookShopUserDetails;
+import com.example.MyBookShopApp.security.RegistrationService;
 import com.example.MyBookShopApp.services.BookService;
 import com.example.MyBookShopApp.services.GenreService;
 import com.example.MyBookShopApp.services.TagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +32,12 @@ public class GlobalControllerAdvice {
     private final BookService bookService;
     private final GenreService genreService;
     private final TagService tagService;
+    private final RegistrationService registrationService;
+
+    @ModelAttribute("currentUser")
+    public CurrentUserDto getCurrentUser(Principal principal) {
+        return registrationService.getCurrentUser(principal);
+    }
 
     @ModelAttribute("booksList")
     public List<BookEntity> booksListModel() {

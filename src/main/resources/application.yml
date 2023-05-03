@@ -15,15 +15,12 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/changelog-master.yml
+    drop-first: true
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     hibernate:
       ddl-auto: validate
-  sql:
-    init:
-      mode: embedded
-      data-locations: classpath*:/db/*.sql, classpath*:/db/book_review/*.sql, classpath*:/db/links/*.sql
   mvc:
     path-match:
       matching-strategy: ant_path_matcher
