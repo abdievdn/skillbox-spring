@@ -2,11 +2,11 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.dto.ContactConfirmationDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
-import com.example.MyBookShopApp.security.RegistrationService;
-import com.example.MyBookShopApp.security.RegistrationForm;
+import com.example.MyBookShopApp.security.AuthService;
+import com.example.MyBookShopApp.security.AuthUserDto;
+import com.example.MyBookShopApp.security.jwt.JWTAuthDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,15 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthUserController {
 
-    private final RegistrationService registrationService;
+    private final AuthService authService;
 
     @GetMapping("/signin")
     public String signinPage() {
@@ -32,7 +31,7 @@ public class AuthController {
 
     @GetMapping("/signup")
     public String signupPage(Model model) {
-        model.addAttribute("regForm", new RegistrationForm());
+        model.addAttribute("regForm", new AuthUserDto());
         return "signup";
     }
 
@@ -42,7 +41,7 @@ public class AuthController {
         if (payload.getType()!= null && payload.getType().equals("signin")) {
             return new ResultDto(true);
         } else {
-            return registrationService.checkContact(payload);
+            return authService.checkContact(payload);
         }
     }
 
@@ -53,16 +52,20 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public String userRegistration(RegistrationForm registrationForm, Model model) {
-        registrationService.registerNewUser(registrationForm);
+    public String userRegistration(AuthUserDto authUserDto, Model model) {
+        authService.registerNewUser(authUserDto);
         model.addAttribute("registrationOk", true);
         return "signin";
     }
 
     @PostMapping("/login")
     @ResponseBody
-    public ResultDto login(@RequestBody ContactConfirmationDto payload) {
-        return registrationService.login(payload);
+    public JWTAuthDto login(@RequestBody ContactConfirmationDto payload,
+                            HttpServletResponse response) {
+        JWTAuthDto jwtAuthDto = authService.jwtLogin(payload);
+        Cookie cookie = new Cookie("token", jwtAuthDto.getResult());
+        response.addCookie(cookie);
+        return jwtAuthDto;
     }
 
     @GetMapping("/my")
@@ -71,20 +74,7 @@ public class AuthController {
     }
 
     @GetMapping("/profile")
-    public String profile(Model model) {
+    public String profile() {
         return "profile";
-    }
-
-    @GetMapping("/logout")
-    public String logout(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        SecurityContextHolder.clearContext();
-        if (session != null) {
-            session.invalidate();
-        }
-        for (Cookie cookie : request.getCookies()) {
-            cookie.setMaxAge(0);
-        }
-        return "redirect:/";
     }
 }

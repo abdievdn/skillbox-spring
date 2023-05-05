@@ -1,5 +1,9 @@
 server:
   port: 8085
+  servlet:
+    session:
+      tracking-modes: cookie
+
 
 spring:
   datasource:
@@ -15,7 +19,8 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/changelog-master.yml
-    drop-first: true
+    drop-first: false
+    default-schema: public
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
@@ -30,3 +35,6 @@ spring:
 path:
   upload: d:/files/book-covers
   download: d:/files/book-files
+
+auth:
+  secret: kainart

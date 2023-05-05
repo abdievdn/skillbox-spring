@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.data.dto.ChangeBookStatusDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.services.BookReviewService;
 import com.example.MyBookShopApp.services.RatingService;
@@ -99,17 +100,17 @@ public class BookController {
 
     @PostMapping("/rateBook")
     @ResponseBody
-    public ResultDto rateBook(@RequestParam("bookId") String slug,
+    public ResultDto rateBook(@RequestBody ChangeBookStatusDto bookStatusDto,
                               @RequestParam("value") Short value) {
-        ratingService.saveBookRating(slug, value);
+        ratingService.saveBookRating(bookStatusDto.getBooksId(), value);
         return new ResultDto(true);
     }
 
     @PostMapping("/bookReview")
     @ResponseBody
-    public ResultDto bookReview(@RequestParam("bookId") String slug,
+    public ResultDto bookReview(@RequestBody ChangeBookStatusDto bookStatusDto,
                                 @RequestParam("text") String text) {
-        bookReviewService.saveBookReview(slug, text);
+        bookReviewService.saveBookReview(bookStatusDto.getBooksId(), text);
         return new ResultDto(true);
     }
 
