@@ -16,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -77,24 +78,29 @@ public class AuthService {
 
     public CurrentUserDto getCurrentUser(Principal principal) {
         if (principal != null) {
-            BookShopUserDetails userDetails =
-                    (BookShopUserDetails) SecurityContextHolder
-                            .getContext()
-                            .getAuthentication()
-                            .getPrincipal();
-            UserContactEntity userContactEntity = userDetails.getUserContactEntity();
-            UserEntity user = userContactEntity.getUser();
-            String email = "";
-            String phone = "";
-            for (UserContactEntity contact : user.getContacts()) {
-                if (contact.getType().equals(ContactType.EMAIL)) {
-                    email = contact.getContact();
-                } else {
-                    phone = contact.getContact();
+            try {
+                BookShopUserDetails userDetails =
+                        (BookShopUserDetails) SecurityContextHolder
+                                .getContext()
+                                .getAuthentication()
+                                .getPrincipal();
+                UserContactEntity userContactEntity = userDetails.getUserContactEntity();
+                UserEntity user = userContactEntity.getUser();
+
+                String email = "";
+                String phone = "";
+                for (UserContactEntity contact : user.getContacts()) {
+                    if (contact.getType().equals(ContactType.EMAIL)) {
+                        email = contact.getContact();
+                    } else {
+                        phone = contact.getContact();
+                    }
                 }
+                CurrentUserDto currentUserDto = new CurrentUserDto(user.getName(), email, phone);
+                return currentUserDto;
+            } catch (Exception e) {
+                return new CurrentUserDto("", "", "");
             }
-            CurrentUserDto currentUserDto = new CurrentUserDto(user.getName(), email, phone);
-            return currentUserDto;
         } else {
             return null;
         }

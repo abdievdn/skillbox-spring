@@ -31,6 +31,13 @@ spring:
       matching-strategy: ant_path_matcher
   messages:
     basename: lang.messages
+  security:
+    oauth2:
+      client:
+        registration:
+          facebook:
+            client-id: 549770893750716
+            client-secret: b92de292add0b00a5ad6cae15fb88d1d
 
 path:
   upload: d:/files/book-covers
