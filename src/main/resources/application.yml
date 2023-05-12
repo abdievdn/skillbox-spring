@@ -38,6 +38,10 @@ spring:
           facebook:
             client-id: 549770893750716
             client-secret: b92de292add0b00a5ad6cae15fb88d1d
+            client-authentication-method: basic
+            scope:
+              - email
+              - public_profile
 
 path:
   upload: d:/files/book-covers

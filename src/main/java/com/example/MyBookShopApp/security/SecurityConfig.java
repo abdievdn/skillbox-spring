@@ -53,10 +53,10 @@ public class SecurityConfig   {
                .logoutUrl("/logout")
                .logoutSuccessUrl("/signin")
                .deleteCookies("token", "JSESSIONID", "cart", "postponed")
-               .and().oauth2Login()
+               .and().oauth2Login().defaultSuccessUrl("/my")
                .and().oauth2Client()
                .and().sessionManagement()
-//               .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+               .sessionCreationPolicy(SessionCreationPolicy.NEVER)
                .and()
                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                .build();

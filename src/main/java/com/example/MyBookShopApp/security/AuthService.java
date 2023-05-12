@@ -11,17 +11,26 @@ import com.example.MyBookShopApp.repositories.UserRepository;
 import com.example.MyBookShopApp.security.jwt.JWTAuthDto;
 import com.example.MyBookShopApp.security.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -72,23 +81,20 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode()));
         BookShopUserDetails userDetails =
                 (BookShopUserDetails) bookShopUserDetailsService.loadUserByUsername(payload.getContact());
-        String jwtToken = jwtUtil.generateToken(userDetails);
+        String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
         return new JWTAuthDto(jwtToken);
     }
 
     public CurrentUserDto getCurrentUser(Principal principal) {
         if (principal != null) {
-            try {
-                BookShopUserDetails userDetails =
-                        (BookShopUserDetails) SecurityContextHolder
-                                .getContext()
-                                .getAuthentication()
-                                .getPrincipal();
-                UserContactEntity userContactEntity = userDetails.getUserContactEntity();
-                UserEntity user = userContactEntity.getUser();
-
-                String email = "";
-                String phone = "";
+            String name = "";
+            String email = "";
+            String phone = "";
+            if (userContactRepository.findByContact(principal.getName()).isPresent()) {
+                BookShopUserDetails userDetails = (BookShopUserDetails) SecurityContextHolder
+                        .getContext().getAuthentication().getPrincipal();
+                UserEntity user = userDetails.getUserContactEntity().getUser();
+                name = user.getName();
                 for (UserContactEntity contact : user.getContacts()) {
                     if (contact.getType().equals(ContactType.EMAIL)) {
                         email = contact.getContact();
@@ -96,10 +102,12 @@ public class AuthService {
                         phone = contact.getContact();
                     }
                 }
-                CurrentUserDto currentUserDto = new CurrentUserDto(user.getName(), email, phone);
-                return currentUserDto;
-            } catch (Exception e) {
-                return new CurrentUserDto("", "", "");
+                return new CurrentUserDto(name, email, phone);
+            } else {
+                OAuth2AuthenticationToken userDetails = (OAuth2AuthenticationToken) principal;
+                name = userDetails.getPrincipal().getAttribute("name");
+                email = userDetails.getPrincipal().getAttribute("email");
+                return new CurrentUserDto(name, email, "");
             }
         } else {
             return null;
