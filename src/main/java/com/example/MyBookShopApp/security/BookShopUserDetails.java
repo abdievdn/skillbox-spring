@@ -7,8 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ public class BookShopUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(
+        return List.of(
                 new SimpleGrantedAuthority("ROLE_USER"));
     }
 

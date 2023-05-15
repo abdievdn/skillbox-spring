@@ -9,15 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 @Slf4j
 @Controller
@@ -40,7 +34,7 @@ public class AuthUserController {
     @PostMapping("/requestContactConfirmation")
     @ResponseBody
     public ResultDto requestContactConfirmation(@RequestBody ContactConfirmationDto payload) {
-        if (payload.getType()!= null && payload.getType().equals("signin")) {
+        if (payload.getType() != null && payload.getType().equals("signin")) {
             return new ResultDto(true);
         } else {
             return authService.checkContact(payload);
@@ -55,19 +49,16 @@ public class AuthUserController {
 
     @PostMapping("/registration")
     public String userRegistration(AuthUserDto authUserDto, Model model) {
-        authService.registerNewUser(authUserDto);
         model.addAttribute("registrationOk", true);
-        return "signin";
+        authService.registerNewUser(authUserDto);
+        return "/signin";
     }
 
     @PostMapping("/login")
     @ResponseBody
     public JWTAuthDto login(@RequestBody ContactConfirmationDto payload,
                             HttpServletResponse response) {
-        JWTAuthDto jwtAuthDto = authService.jwtLogin(payload);
-        Cookie cookie = new Cookie("token", jwtAuthDto.getResult());
-        response.addCookie(cookie);
-        return jwtAuthDto;
+        return authService.login(payload, response);
     }
 
     @GetMapping("/my")

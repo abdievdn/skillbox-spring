@@ -7,16 +7,17 @@ import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
 import com.example.MyBookShopApp.data.struct.tag.TagEntity;
 import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.security.AuthService;
+import com.example.MyBookShopApp.security.jwt.JWTUtil;
 import com.example.MyBookShopApp.services.BookService;
 import com.example.MyBookShopApp.services.GenreService;
 import com.example.MyBookShopApp.services.TagService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,5 +92,10 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(NoSuchElementException.class)
     public String handleException(Exception ex) {
         return "redirect:/";
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public String handleExpiredJwtException(Exception ex) {
+        return "redirect:/signin";
     }
 }

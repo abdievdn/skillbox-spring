@@ -3,3 +3,5 @@ databaseChangeLog:
     file: db/changelog/liquibase-outputChangeLog_init.yml
 - includeAll:
     path: db/sql/
+- include:
+      file: db/changelog/ChangeLog.yml

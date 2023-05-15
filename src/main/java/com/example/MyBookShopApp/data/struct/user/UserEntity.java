@@ -48,6 +48,6 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<BookReviewEntity> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     List<UserContactEntity> contacts = new ArrayList<>();
 }

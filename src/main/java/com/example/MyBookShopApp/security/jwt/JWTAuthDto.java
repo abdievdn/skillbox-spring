@@ -10,4 +10,9 @@ import lombok.NoArgsConstructor;
 public class JWTAuthDto {
 
     private String result;
+    private String error;
+
+    public JWTAuthDto(String result) {
+        this.result = result;
+    }
 }

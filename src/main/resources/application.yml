@@ -49,3 +49,4 @@ path:
 
 auth:
   secret: kainart
+  expiration: 360000
