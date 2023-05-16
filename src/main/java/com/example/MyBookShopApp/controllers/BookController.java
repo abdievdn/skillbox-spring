@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.dto.ChangeBookStatusDto;
+import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.services.BookReviewService;
 import com.example.MyBookShopApp.services.RatingService;
@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.Principal;
 
 @Slf4j
 @Controller
@@ -100,17 +101,15 @@ public class BookController {
 
     @PostMapping("/rateBook")
     @ResponseBody
-    public ResultDto rateBook(@RequestBody ChangeBookStatusDto bookStatusDto,
-                              @RequestParam("value") Short value) {
-        ratingService.saveBookRating(bookStatusDto.getBooksId(), value);
+    public ResultDto rateBook(@RequestBody InteractionWithBookDto interaction, Principal principal) {
+        ratingService.saveBookRating(interaction.getBookId(), interaction.getValue());
         return new ResultDto(true);
     }
 
     @PostMapping("/bookReview")
     @ResponseBody
-    public ResultDto bookReview(@RequestBody ChangeBookStatusDto bookStatusDto,
-                                @RequestParam("text") String text) {
-        bookReviewService.saveBookReview(bookStatusDto.getBooksId(), text);
+    public ResultDto bookReview(@RequestBody InteractionWithBookDto interaction, Principal principal) {
+        bookReviewService.saveBookReview(interaction.getBookId(), interaction.getText(), principal);
         return new ResultDto(true);
     }
 

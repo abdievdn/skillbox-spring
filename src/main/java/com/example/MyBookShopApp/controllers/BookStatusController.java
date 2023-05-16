@@ -1,7 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
-import com.example.MyBookShopApp.data.dto.ChangeBookStatusDto;
+import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.services.BookService;
 import lombok.RequiredArgsConstructor;
@@ -48,29 +48,29 @@ public class BookStatusController {
 
     @PostMapping("/changeBookStatus")
     @ResponseBody
-    public ResultDto changeBookStatus(@RequestBody ChangeBookStatusDto bookStatusDto,
+    public ResultDto changeBookStatus(@RequestBody InteractionWithBookDto interaction,
                                       HttpServletRequest request,
                                       HttpServletResponse response) {
-        bookService.addBookToCookie(bookStatusDto.getStatus(), bookStatusDto.getBooksIds(), request, response);
+        bookService.addBookToCookie(interaction.getStatus(), interaction.getBooksIds(), request, response);
         return new ResultDto(true);
     }
 
 
     @PostMapping("/changeBookStatus/remove/cart")
     @ResponseBody
-    public ResultDto removeCart(@RequestBody ChangeBookStatusDto bookStatusDto,
+    public ResultDto removeCart(@RequestBody InteractionWithBookDto interaction,
                                 @CookieValue(name = "cart", required = false) String contents,
                                 HttpServletResponse response, String status) {
-        bookService.removeBookFromCookie(bookStatusDto.getBooksIds(), contents, response, "cart");
+        bookService.removeBookFromCookie(interaction.getBooksIds(), contents, response, "cart");
         return new ResultDto(true);
     }
 
     @PostMapping("/changeBookStatus/remove/postponed")
     @ResponseBody
-    public ResultDto removePostponed(@RequestBody ChangeBookStatusDto bookStatusDto,
+    public ResultDto removePostponed(@RequestBody InteractionWithBookDto interaction,
                                      @CookieValue(name = "postponed", required = false) String contents,
                                      HttpServletResponse response, String status) {
-        bookService.removeBookFromCookie(bookStatusDto.getBooksIds(), contents, response, "postponed");
+        bookService.removeBookFromCookie(interaction.getBooksIds(), contents, response, "postponed");
         return new ResultDto(true);
     }
 }

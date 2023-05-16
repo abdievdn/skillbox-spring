@@ -63,12 +63,15 @@
                                 </button>
                             </div>
 
-                            <div class="ProductCard-assessment"><span
-                                    class="ProductCard-titleProp">Оцените книгу:</span>
-                                <span class="Rating Rating_input" th:data-bookid="${bookSlug.slug}">
+                            <th:block th:if="${currentUser != null}">
+                                <div class="ProductCard-assessment"><span
+                                        class="ProductCard-titleProp">Оцените книгу:</span>
+                                    <span class="Rating Rating_input" th:data-bookid="${bookSlug.slug}">
                                     <th:block th:replace="fragments/rating_fragment::ratingStarsVote"></th:block>
                                 </span>
-                            </div>
+                                </div>
+                            </th:block>
+
                             <div class="ProductCard-tags">
                                 <span class="ProductCard-titleProp">Тэги:</span>
                                 <th:block th:each="tag : ${bookSlug.tags}">
@@ -106,38 +109,42 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="ProductCard-cart">
-                            <div class="ProductCard-cartElement">
-                                <a class="btn btn_primary btn_outline" href="#">
+
+                        <th:block th:if="${currentUser != null}">
+                            <div class="ProductCard-cart">
+                                <div class="ProductCard-cartElement">
+                                    <a class="btn btn_primary btn_outline" href="#">
                                 <span class="btn-icon"><img src="/assets/img/icons/download.svg"
                                                             alt="download.svg"/></span><span
-                                        class="btn-content">Скачать
+                                            class="btn-content">Скачать
                             </span>
-                                </a>
+                                    </a>
+                                </div>
+                                <div class="ProductCard-cartElement">
+                                    <button class="btn btn_primary btn_outline" data-sendstatus="ARCHIVED"
+                                            data-bookid="[1111]" data-btntype="check" data-btnradio="buyblock"
+                                            data-check="false" data-alttext="Вернуть из архива"><span
+                                            class="btn-icon"><img
+                                            src="/assets/img/icons/archive.svg" alt="archive.svg"/></span><span
+                                            class="btn-content">В архив</span>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="ProductCard-cartElement">
-                                <button class="btn btn_primary btn_outline" data-sendstatus="ARCHIVED"
-                                        data-bookid="[1111]" data-btntype="check" data-btnradio="buyblock"
-                                        data-check="false" data-alttext="Вернуть из архива"><span class="btn-icon"><img
-                                        src="/assets/img/icons/archive.svg" alt="archive.svg"/></span><span
-                                        class="btn-content">В архив</span>
-                                </button>
-                            </div>
-                        </div>
+                            <div id="popupDownloadWindow">
+                                <p>Ссылки для скачивания:</p>
+                                <div th:each="bookFile : ${bookSlug.files}">
+                                    <a th:href="${'/books/download/' + bookFile.hash}" th:text="${bookFile}"></a>
+                                </div>
 
-                        <div id="popupDownloadWindow">
-                            <p>Ссылки для скачивания:</p>
-                            <div th:each="bookFile : ${bookSlug.files}">
-                                <a th:href="${'/books/download/' + bookFile.hash}" th:text="${bookFile}"></a>
-                            </div>
-
-                            <span id="popupDownloadWindow__close">
+                                <span id="popupDownloadWindow__close">
                                 <a class="modal-close" href="#"><span></span><span></span></a>
                             </span>
-                        </div>
-                        <div id="overlayWindow"></div>
+                            </div>
+                            <div id="overlayWindow"></div>
+                        </th:block>
                     </div>
                 </div>
+
                 <div class="Product-comments">
                     <div class="Product-comments-header">
                         <h3 class="Product-comments-title">Отзывы
@@ -146,20 +153,21 @@
                     </div>
                 </div>
                 <div class="Comments">
-                    <strong class="Comments-title">Написать отзыв
-                    </strong>
-                    <div class="Comments-addComment">
-                        <form class="form" action="#" method="post" th:data-bookid="${bookSlug.slug}">
-                            <div class="form-group">
+                    <th:block th:if="${currentUser != null}">
+                        <strong class="Comments-title">Написать отзыв</strong>
+                        <div class="Comments-addComment">
+                            <form class="form" action="#" method="post" th:data-bookid="${bookSlug.slug}">
+                                <div class="form-group">
                                 <textarea class="form-textarea Comments-review" name="review" id="review"
                                           placeholder="Текст отзыва" data-validate="require"></textarea>
-                            </div>
-                            <div class="form-group Comments-sendReview">
-                                <button class="btn btn_warning" type="submit">Отправить отзыв
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                                </div>
+                                <div class="form-group Comments-sendReview">
+                                    <button class="btn btn_warning" type="submit">Отправить отзыв
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </th:block>
                     <div class="Comment" th:each="comment : ${bookReviewList}">
                         <div class="Comment-column Comment-column_pict">
                             <div class="Comment-avatar">
@@ -193,21 +201,24 @@
                                         <div class="Comment-appeal">
                                             <button class="btn btn_white btn_like" data-btntype="check"
                                                     data-check="false"
-                                                    data-btnradio="two2" data-likeid="1111"><span class="btn-icon"><img
+                                                    data-btnradio="two2" data-likeid="1111"><span
+                                                    class="btn-icon"><img
                                                     src="/assets/img/icons/comment/like.svg" alt="like.svg"/></span>
                                                 <span class="btn-content"
                                                       th:text="${comment.getLikesCountByValue(1)}"></span>
                                             </button>
                                             <button class="btn btn_white btn_dislike" data-btntype="check"
                                                     data-check="false" data-btnradio="two2" data-likeid="1111"><span
-                                                    class="btn-icon"><img src="/assets/img/icons/comment/dislike.svg"
-                                                                          alt="dislike.svg"/></span>
+                                                    class="btn-icon"><img
+                                                    src="/assets/img/icons/comment/dislike.svg"
+                                                    alt="dislike.svg"/></span>
                                                 <span class="btn-content"
                                                       th:text="${comment.getLikesCountByValue(-1)}"></span>
                                             </button>
                                         </div>
                                         <button class="Spoiler-trigger btn btn_primary btn_nr" type="button"
-                                                data-showtext="Свернуть отзыв" data-hidetext="Показать отзыв полностью">
+                                                data-showtext="Свернуть отзыв"
+                                                data-hidetext="Показать отзыв полностью">
                                         </button>
                                     </div>
                                 </div>
@@ -215,6 +226,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </main>
     </div>

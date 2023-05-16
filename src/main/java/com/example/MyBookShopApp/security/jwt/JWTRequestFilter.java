@@ -5,6 +5,7 @@ import com.example.MyBookShopApp.security.BookShopUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -16,10 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
 import java.io.IOException;
-import java.security.Principal;
 
 @Slf4j
 @Component
@@ -28,9 +26,12 @@ public class JWTRequestFilter extends OncePerRequestFilter {
 
     private final BookShopUserDetailsService bookShopUserDetailsService;
     private final JWTUtil jwtUtil;
+    private final JWTBlacklistRepository blacklistRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         String token = null;
         String username = null;
@@ -43,14 +44,16 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                         username = jwtUtil.extractUsername(token);
                     }
                     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                        BookShopUserDetails userDetails =
-                                (BookShopUserDetails) bookShopUserDetailsService.loadUserByUsername(username);
-                        if (jwtUtil.validateToken(token, userDetails)) {
-                            UsernamePasswordAuthenticationToken authenticationToken =
-                                    new UsernamePasswordAuthenticationToken(
-                                            userDetails, null, userDetails.getAuthorities());
-                            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        if (!blacklistRepository.existsByJwtValue(token)) {
+                            BookShopUserDetails userDetails =
+                                    (BookShopUserDetails) bookShopUserDetailsService.loadUserByUsername(username);
+                            if (jwtUtil.validateToken(token, userDetails)) {
+                                UsernamePasswordAuthenticationToken authenticationToken =
+                                        new UsernamePasswordAuthenticationToken(
+                                                userDetails, null, userDetails.getAuthorities());
+                                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                            }
                         }
                     }
                 }

@@ -7,8 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangeBookStatusDto {
+public class InteractionWithBookDto {
     private String booksIds;
     private String booksId;
     private String status;
+    private String bookId;
+    private String text;
+    private Short value;
 }

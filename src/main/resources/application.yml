@@ -49,4 +49,5 @@ path:
 
 auth:
   secret: kainart
-  expiration: 360000
+  expiration: 120000
+  schedule-clear-period: 86400000

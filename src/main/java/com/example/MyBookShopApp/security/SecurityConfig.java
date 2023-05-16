@@ -64,15 +64,11 @@ public class SecurityConfig {
                 .and()
                 .oauth2Login()
                 .loginPage("/signin")
-                .userInfoEndpoint()
-                .userService(oAuth2UserService)
-                .and().successHandler((request, response, authentication) -> {
+                .successHandler((request, response, authentication) -> {
                     CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
                     oAuth2UserService.processOAuth2PostLogin(oAuth2User);
                     response.sendRedirect("/my");
                 })
-                .and()
-                .oauth2Client()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

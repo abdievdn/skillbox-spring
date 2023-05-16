@@ -1,26 +1,17 @@
 package com.example.MyBookShopApp.security.jwt;
 
-import com.example.MyBookShopApp.security.BookShopUserDetails;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.RequestContextListener;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
 import java.util.*;
 import java.util.function.Function;
 
@@ -30,13 +21,12 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JWTUtil {
 
-    private final HttpServletRequest request;
-    private final HttpServletResponse response;
-
     @Value("${auth.secret}")
     private String secret;
     @Value("${auth.expiration}")
     private long expiration;
+
+    private final JWTBlacklistRepository blacklistRepository;
 
     private String createToken(Map<String, Object> claims, String username) {
         return Jwts
@@ -64,7 +54,11 @@ public class JWTUtil {
     }
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (ExpiredJwtException ex) {
+            return null;
+        }
     }
 
     public Date extractExpiration(String token) {
@@ -78,5 +72,17 @@ public class JWTUtil {
     public Boolean validateToken(String token, UserDetails userDetails) {
         return (extractUsername(token).equals(userDetails.getUsername()) &&
                 !isTokenExpired(token));
+    }
+
+    @Scheduled(fixedRateString = "${auth.schedule-clear-period}")
+    public void clearJWTBlacklist() {
+        for (JWTBlacklistEntity jwt : blacklistRepository.findAll()) {
+            try {
+                isTokenExpired(jwt.getJwtValue());
+            } catch (ExpiredJwtException ex) {
+                log.info(ex.getMessage());
+                blacklistRepository.delete(jwt);
+            }
+        }
     }
 }
