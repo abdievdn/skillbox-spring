@@ -6,7 +6,6 @@ import com.example.MyBookShopApp.security.oauth2.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,8 +15,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -50,7 +50,7 @@ public class SecurityConfig {
         return http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/my", "/profile").authenticated()//.hasRole("USER")
+//                .antMatchers("/my", "/profile").authenticated()//.hasRole("USER")
                 .antMatchers("/**").permitAll()
                 .and()
                 .formLogin()
@@ -60,21 +60,24 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .addLogoutHandler(logoutHandler)
                 .logoutSuccessUrl("/signin")
-                .deleteCookies("token", "JSESSIONID", "cart", "postponed")
+                .deleteCookies("token", "cart", "postponed")
                 .and()
                 .oauth2Login()
                 .loginPage("/signin")
                 .successHandler((request, response, authentication) -> {
                     CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-                    oAuth2UserService.processOAuth2PostLogin(oAuth2User);
+                    oAuth2UserService.processOAuth2PostLogin(request, response, oAuth2User);
                     response.sendRedirect("/my");
                 })
                 .and()
                 .exceptionHandling()
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.sendRedirect("/signin");
+                })
                 .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .build();

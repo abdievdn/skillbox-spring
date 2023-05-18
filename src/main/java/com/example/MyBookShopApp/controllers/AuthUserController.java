@@ -7,6 +7,7 @@ import com.example.MyBookShopApp.security.AuthUserDto;
 import com.example.MyBookShopApp.security.jwt.JWTAuthDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -61,11 +62,13 @@ public class AuthUserController {
         return authService.login(payload, response);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/my")
     public String my() {
         return "my";
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/profile")
     public String profile() {
         return "profile";

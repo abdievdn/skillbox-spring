@@ -13,6 +13,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -87,6 +88,7 @@ public class BookController {
         return "redirect:/books/" + slug;
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/download/{hash}")
     public ResponseEntity<ByteArrayResource> bookFile(@PathVariable(value = "hash", required = false) String hash) throws IOException {
         Path path = storage.getBookFilePath(hash);
@@ -99,13 +101,14 @@ public class BookController {
                 .body(new ByteArrayResource(data));
     }
 
-    @PostMapping("/rateBook")
+    @PostMapping("/rateBook")@PreAuthorize("hasRole('USER')")
     @ResponseBody
     public ResultDto rateBook(@RequestBody InteractionWithBookDto interaction, Principal principal) {
         ratingService.saveBookRating(interaction.getBookId(), interaction.getValue());
         return new ResultDto(true);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/bookReview")
     @ResponseBody
     public ResultDto bookReview(@RequestBody InteractionWithBookDto interaction, Principal principal) {
@@ -113,6 +116,7 @@ public class BookController {
         return new ResultDto(true);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/rateBookReview")
     @ResponseBody
     public ResultDto rateBookReview() {
