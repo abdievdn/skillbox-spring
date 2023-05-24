@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.security.jwt;
 
-import com.example.MyBookShopApp.data.struct.user.UserContactEntity;
+import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
 import lombok.Getter;
 import lombok.Setter;
 

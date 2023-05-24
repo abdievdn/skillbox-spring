@@ -1,7 +1,6 @@
 package com.example.MyBookShopApp.services;
 
-import com.example.MyBookShopApp.data.struct.book.file.BookFileEntity;
-import com.example.MyBookShopApp.errors.CommonErrorException;
+import com.example.MyBookShopApp.data.entity.book.file.BookFileEntity;
 import com.example.MyBookShopApp.repositories.BookFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;

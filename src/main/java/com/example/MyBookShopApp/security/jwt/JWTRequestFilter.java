@@ -1,7 +1,8 @@
 package com.example.MyBookShopApp.security.jwt;
 
-import com.example.MyBookShopApp.security.BookShopUserDetails;
-import com.example.MyBookShopApp.security.BookShopUserDetailsService;
+import com.example.MyBookShopApp.security.BookShopUser;
+import com.example.MyBookShopApp.security.BookShopUserService;
+import com.example.MyBookShopApp.services.util.CookieUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JWTRequestFilter extends OncePerRequestFilter {
 
-    private final BookShopUserDetailsService bookShopUserDetailsService;
+    private final BookShopUserService bookShopUserService;
     private final JWTUtil jwtUtil;
     private final JWTBlacklistRepository blacklistRepository;
 
@@ -45,8 +46,8 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                     }
                     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                         if (!blacklistRepository.existsByJwtValue(token)) {
-                            BookShopUserDetails userDetails =
-                                    (BookShopUserDetails) bookShopUserDetailsService.loadUserByUsername(username);
+                            BookShopUser userDetails =
+                                    (BookShopUser) bookShopUserService.loadUserByUsername(username);
                             if (jwtUtil.validateToken(token, userDetails)) {
                                 UsernamePasswordAuthenticationToken authenticationToken =
                                         new UsernamePasswordAuthenticationToken(
@@ -59,14 +60,8 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                 }
             }
         } catch (ExpiredJwtException ex) {
-            log.info(SecurityContextHolder.getContext().toString());
             SecurityContextHolder.clearContext();
-            for (Cookie c : cookies) {
-                c.setMaxAge(0);
-                c.setSecure(false);
-                c.setHttpOnly(false);
-                response.addCookie(c);
-            }
+            CookieUtil.deleteAllCookies(request, response);
             response.sendRedirect("/signin");
         }
         filterChain.doFilter(request, response);

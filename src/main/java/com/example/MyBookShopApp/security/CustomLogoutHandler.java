@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.security;
 
-import com.example.MyBookShopApp.data.struct.user.UserContactEntity;
+import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
 import com.example.MyBookShopApp.security.jwt.JWTBlacklistEntity;
 import com.example.MyBookShopApp.security.jwt.JWTBlacklistRepository;

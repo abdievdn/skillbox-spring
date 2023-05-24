@@ -1,8 +1,8 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
-import com.example.MyBookShopApp.data.struct.book.BookEntity;
-import com.example.MyBookShopApp.data.struct.tag.TagEntity;
+import com.example.MyBookShopApp.data.entity.book.BookEntity;
+import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.repositories.TagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.repositories;
 
-import com.example.MyBookShopApp.data.struct.tag.TagEntity;
+import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

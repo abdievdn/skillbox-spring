@@ -1,18 +1,16 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
-import com.example.MyBookShopApp.data.dto.RatingDto;
-import com.example.MyBookShopApp.data.struct.book.BookEntity;
-import com.example.MyBookShopApp.data.struct.book.links.Book2AuthorEntity;
-import com.example.MyBookShopApp.data.struct.book.links.Book2TagEntity;
-import com.example.MyBookShopApp.data.struct.book.links.Book2UserEntity;
-import com.example.MyBookShopApp.data.struct.book.rating.BookRatingEntity;
-import com.example.MyBookShopApp.data.struct.book.review.BookReviewEntity;
-import com.example.MyBookShopApp.data.struct.user.UserEntity;
+import com.example.MyBookShopApp.data.entity.book.BookEntity;
+import com.example.MyBookShopApp.data.entity.book.links.Book2AuthorEntity;
+import com.example.MyBookShopApp.data.entity.book.links.Book2TagEntity;
+import com.example.MyBookShopApp.data.entity.book.links.Book2UserEntity;
+import com.example.MyBookShopApp.data.entity.enums.BookStatus;
+import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
+import com.example.MyBookShopApp.repositories.Book2UserTypeRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
-import com.example.MyBookShopApp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.support.PagedListHolder;
@@ -23,13 +21,12 @@ import org.springframework.web.util.WebUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.counting;
 
 @Slf4j
 @Service
@@ -38,9 +35,9 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final Book2UserRepository book2UserRepository;
-
-    private final UserRepository userRepository;
+    private final Book2UserTypeRepository book2UserTypeRepository;
     private final RatingService ratingService;
+    private final UserService userService;
     public static Long booksSearchCount;
 
     public BookEntity getBookBySlug(String slug) {
@@ -98,24 +95,24 @@ public class BookService {
         Map<Integer, Double> popularBooksMap = new TreeMap<>();
         for (Book2UserEntity b : allBooks2User) {
             double popIndex;
-            switch (b.getType().getId()) {
-                case 1:
+            switch (b.getType().getCode()) {
+                case KEPT:
                     popIndex = 0.4;
                     break;
-                case 2:
+                case CART:
                     popIndex = 0.7;
                     break;
-                case 3:
+                case PAID:
                     popIndex = 1;
                     break;
                 default:
                     popIndex = 0;
                     break;
             }
-            if (popularBooksMap.containsKey(b.getBook2User().getId())) {
-                popIndex = popIndex + popularBooksMap.get(b.getBook2User().getId());
+            if (popularBooksMap.containsKey(b.getBook().getId())) {
+                popIndex = popIndex + popularBooksMap.get(b.getBook().getId());
             }
-            popularBooksMap.put(b.getBook2User().getId(), popIndex);
+            popularBooksMap.put(b.getBook().getId(), popIndex);
         }
         List<BookEntity> popularBooks = popularBooksMap
                 .entrySet()
@@ -140,8 +137,7 @@ public class BookService {
     }
 
     private BookDto getBookDto(BookEntity bookEntity) {
-        UserEntity user = userRepository.findById(1).orElseThrow();
-        return BookDto.builder()
+        BookDto book = BookDto.builder()
                 .id(bookEntity.getId())
                 .slug(bookEntity.getSlug())
                 .image(bookEntity.getImage())
@@ -159,15 +155,16 @@ public class BookService {
                 .discount(bookEntity.getDiscount())
                 .isBestseller(bookEntity.getIsBestseller() == 1)
                 .rating(ratingService.getBookRatingBySlug(bookEntity))
-                .status(bookEntity.getBook2Users()
-                        .stream()
-                        .filter(u -> u.getUser().equals(user))
-                        .map(Book2UserEntity::getType)
-                        .toString())
                 .price(bookEntity.getPrice())
                 .discountPrice(bookEntity.discountPrice())
                 .files(bookEntity.getBookFileList())
                 .build();
+        UserEntity user = userService.getCurrentUser();
+        if (user != null) {
+            Optional<Book2UserEntity> book2User = book2UserRepository.findByBookAndUser(bookEntity, user);
+            book2User.ifPresent(book2UserEntity -> book.setStatus(book2UserEntity.getType().toString()));
+        }
+        return book;
     }
 
     private List<BookDto> bookEntityListToBookDtoList(List<BookEntity> books) {
@@ -182,34 +179,48 @@ public class BookService {
         bookRepository.save(book);
     }
 
-    public List<BookDto> getBooksStatusList(String contents) {
-        String[] cookieSlugs = contents.split("/");
-        List<BookEntity> booksFromCookie = bookRepository.findAllBySlugIn(cookieSlugs);
-        return bookEntityListToBookDtoList(booksFromCookie);
+    public void addBookStatus(BookStatus status, String slug, Principal principal,
+                              HttpServletRequest request, HttpServletResponse response) {
+        if (principal != null) {
+            addBookToUser(status, slug, principal);
+        } else {
+            addBookToCookie(status.name(), slug, request, response);
+        }
     }
 
-    public void addBookToCookie(String status, String slug,
-                                HttpServletRequest request,
-                                HttpServletResponse response) {
-        String cookieName = "";
-        if (status.equals("CART")) {
-            cookieName = "cart";
-            Cookie cookie = getCookie(request, "postponed");
-            if (cookie != null) {
-                removeBookFromCookie(slug, cookie.getValue(), response, "postponed");
-            }
+    private void addBookToUser(BookStatus status, String id, Principal principal) {
+        UserEntity user = userService.getCurrentUserByPrincipal(principal);
+        List<Book2UserEntity> book2UserEntityList = user.getUser2books();
+        if (book2UserEntityList.isEmpty()) {
+            book2UserRepository.save(Book2UserEntity.builder()
+                    .book(bookRepository.findBySlug(id).orElseThrow())
+                    .user(user)
+                    .type(book2UserTypeRepository.findByCode(status))
+                    .time(LocalDateTime.now())
+                    .build());
+        } else {
+            book2UserEntityList.forEach(b -> {
+                if (b.getUser().equals(user) && !b.getType().getCode().equals(status)) {
+                    b.setType(book2UserTypeRepository.findByCode(status));
+                    book2UserRepository.save(b);
+                }
+            });
         }
-        if (status.equals("KEPT")) {
-            cookieName = "postponed";
-            Cookie cookie = getCookie(request, "cart");
-            if (cookie != null) {
-                removeBookFromCookie(slug, cookie.getValue(), response, "cart");
+    }
+
+    private void addBookToCookie(String status, String slug,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) {
+        if (!status.equals("")) {
+            if (status.equals(BookStatus.CART.name())) {
+                checkAndRemoveFromCookie(BookStatus.KEPT.name(), slug, request, response);
             }
-        }
-        if (!cookieName.equals("")) {
-            Cookie getCookie = getCookie(request, cookieName);
+            if (status.equals(BookStatus.KEPT.name())) {
+                checkAndRemoveFromCookie(BookStatus.CART.name(), slug, request, response);
+            }
+            Cookie getCookie = WebUtils.getCookie(request, status);
             if (getCookie == null) {
-                Cookie cookie = new Cookie(cookieName, slug);
+                Cookie cookie = new Cookie(status, slug);
                 cookie.setPath("/books");
                 response.addCookie(cookie);
             } else {
@@ -217,7 +228,7 @@ public class BookService {
                 if (!contents.contains(slug)) {
                     StringJoiner stringJoiner = new StringJoiner("/");
                     stringJoiner.add(contents).add(slug);
-                    Cookie cookie = new Cookie(cookieName, stringJoiner.toString());
+                    Cookie cookie = new Cookie(status, stringJoiner.toString());
                     cookie.setPath("/books");
                     response.addCookie(cookie);
                 }
@@ -225,16 +236,62 @@ public class BookService {
         }
     }
 
-    private Cookie getCookie(HttpServletRequest request, String cookieName) {
-        return WebUtils.getCookie(request, cookieName);
+    private void checkAndRemoveFromCookie(String removedCookieName, String slug,
+                                          HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = WebUtils.getCookie(request, removedCookieName);
+        if (cookie != null) {
+            removeBookFromCookie(slug, removedCookieName, cookie.getValue(), response);
+        }
     }
 
-    public void removeBookFromCookie(String slug, String contents, HttpServletResponse response, String status) {
+    public List<BookDto> getBooksStatusList(BookStatus status, String contents, Principal principal) {
+        List<BookEntity> books = new ArrayList<>();
+        if (principal != null) {
+            getBooksFromUser(status, principal, books);
+        } else {
+            return getBooksFromCookie(contents);
+        }
+        return bookEntityListToBookDtoList(books);
+    }
+
+    private void getBooksFromUser(BookStatus status, Principal principal, List<BookEntity> books) {
+        UserEntity user = userService.getCurrentUserByPrincipal(principal);
+        user.getUser2books().forEach(b -> {
+            if (b.getType().getCode().equals(status)) {
+                books.add(b.getBook());
+            }
+        });
+    }
+
+    private List<BookDto> getBooksFromCookie(String contents) {
+        String[] cookieSlugs = contents.split("/");
+        List<BookEntity> booksFromCookie = bookRepository.findAllBySlugIn(cookieSlugs);
+        return bookEntityListToBookDtoList(booksFromCookie);
+    }
+
+    public void removeBook(String slug, String cookieName, String contents, HttpServletResponse response, Principal principal) {
+        if (principal != null) {
+            removeBookFromUser(slug, principal);
+        } else {
+            removeBookFromCookie(slug, cookieName, contents, response);
+        }
+    }
+
+    private void removeBookFromUser(String slug, Principal principal) {
+        BookEntity book = bookRepository.findBySlug(slug).orElseThrow();
+        UserEntity user = userService.getCurrentUserByPrincipal(principal);
+        book2UserRepository.deleteByBookAndUser(book, user);
+    }
+
+    private void removeBookFromCookie(String slug, String cookieName, String contents, HttpServletResponse response) {
         if (contents != null && !contents.equals("")) {
             if (contents.contains(slug)) {
+                log.info(slug);
+                log.info(contents);
+                log.info(cookieName);
                 ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(contents.split("/")));
                 cookieBooks.remove(slug);
-                Cookie cookie = new Cookie(status, String.join("/", cookieBooks));
+                Cookie cookie = new Cookie(cookieName, String.join("/", cookieBooks));
                 cookie.setPath("/books");
                 response.addCookie(cookie);
             }

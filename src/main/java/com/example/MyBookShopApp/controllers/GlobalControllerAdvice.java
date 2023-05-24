@@ -1,14 +1,15 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
-import com.example.MyBookShopApp.data.dto.CurrentUserDto;
-import com.example.MyBookShopApp.data.struct.book.BookEntity;
-import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
-import com.example.MyBookShopApp.data.struct.tag.TagEntity;
+import com.example.MyBookShopApp.data.dto.UserDto;
+import com.example.MyBookShopApp.data.entity.book.BookEntity;
+import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
+import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.security.AuthService;
 import com.example.MyBookShopApp.services.BookService;
 import com.example.MyBookShopApp.services.GenreService;
 import com.example.MyBookShopApp.services.TagService;
+import com.example.MyBookShopApp.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,11 +28,11 @@ public class GlobalControllerAdvice {
     private final BookService bookService;
     private final GenreService genreService;
     private final TagService tagService;
-    private final AuthService authService;
+    private final UserService userService;
 
     @ModelAttribute("currentUser")
-    public CurrentUserDto getCurrentUser(Principal principal) {
-        return authService.getCurrentUser(principal);
+    public UserDto getCurrentUser(Principal principal) {
+        return userService.getCurrentUserDto(principal);
     }
 
     @ModelAttribute("booksList")

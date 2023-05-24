@@ -2,7 +2,7 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.config.SpringfoxConfig;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
-import com.example.MyBookShopApp.data.struct.author.AuthorEntity;
+import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
 import com.example.MyBookShopApp.services.AuthorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

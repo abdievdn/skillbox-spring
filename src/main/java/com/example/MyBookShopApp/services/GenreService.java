@@ -1,9 +1,9 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
-import com.example.MyBookShopApp.data.struct.book.BookEntity;
-import com.example.MyBookShopApp.data.struct.book.links.Book2GenreEntity;
-import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
+import com.example.MyBookShopApp.data.entity.book.BookEntity;
+import com.example.MyBookShopApp.data.entity.book.links.Book2GenreEntity;
+import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
 import com.example.MyBookShopApp.repositories.Book2GenreRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import com.example.MyBookShopApp.repositories.GenreRepository;

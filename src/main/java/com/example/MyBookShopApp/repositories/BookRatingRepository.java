@@ -1,8 +1,8 @@
 package com.example.MyBookShopApp.repositories;
 
-import com.example.MyBookShopApp.data.struct.book.BookEntity;
-import com.example.MyBookShopApp.data.struct.book.rating.BookRatingEntity;
-import com.example.MyBookShopApp.data.struct.user.UserEntity;
+import com.example.MyBookShopApp.data.entity.book.BookEntity;
+import com.example.MyBookShopApp.data.entity.book.rating.BookRatingEntity;
+import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

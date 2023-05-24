@@ -1,15 +1,15 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.data.dto.RatingDto;
-import com.example.MyBookShopApp.data.struct.book.BookEntity;
-import com.example.MyBookShopApp.data.struct.book.rating.BookRatingEntity;
-import com.example.MyBookShopApp.data.struct.user.UserEntity;
+import com.example.MyBookShopApp.data.entity.book.BookEntity;
+import com.example.MyBookShopApp.data.entity.book.rating.BookRatingEntity;
+import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.BookRatingRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
-import com.example.MyBookShopApp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,7 +22,7 @@ public class RatingService {
 
     private final BookRatingRepository bookRatingRepository;
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     public RatingDto getBookRatingBySlug(BookEntity book) {
         List<BookRatingEntity> bookRatings = book.getBook2Ratings();
@@ -49,9 +49,9 @@ public class RatingService {
                 .build();
     }
 
-    public void saveBookRating(String slug, Short value) {
+    public void saveBookRating(String slug, Short value, Principal principal) {
         BookEntity book = bookRepository.findBySlug(slug).orElseThrow();
-        UserEntity user = userRepository.findById(1).orElseThrow();
+        UserEntity user = userService.getCurrentUserByPrincipal(principal);
         Optional<BookRatingEntity> bookRatingEntity = bookRatingRepository.findByUserAndBook(user, book);
         if (bookRatingEntity.isPresent()) {
             bookRatingEntity.get().setValue(value);

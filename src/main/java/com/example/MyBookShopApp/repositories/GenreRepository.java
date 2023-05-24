@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.repositories;
 
-import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
+import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

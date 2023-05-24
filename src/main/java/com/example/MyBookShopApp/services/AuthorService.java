@@ -1,9 +1,9 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
-import com.example.MyBookShopApp.data.struct.author.AuthorEntity;
-import com.example.MyBookShopApp.data.struct.book.BookEntity;
-import com.example.MyBookShopApp.data.struct.book.links.Book2AuthorEntity;
+import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
+import com.example.MyBookShopApp.data.entity.book.BookEntity;
+import com.example.MyBookShopApp.data.entity.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.repositories.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

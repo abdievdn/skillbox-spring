@@ -104,7 +104,7 @@ public class BookController {
     @PostMapping("/rateBook")@PreAuthorize("hasRole('USER')")
     @ResponseBody
     public ResultDto rateBook(@RequestBody InteractionWithBookDto interaction, Principal principal) {
-        ratingService.saveBookRating(interaction.getBookId(), interaction.getValue());
+        ratingService.saveBookRating(interaction.getBookId(), interaction.getValue(), principal);
         return new ResultDto(true);
     }
 

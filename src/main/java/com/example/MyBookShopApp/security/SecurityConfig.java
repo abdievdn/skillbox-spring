@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final BookShopUserDetailsService bookShopUserDetailsService;
+    private final BookShopUserService bookShopUserService;
     private final CustomLogoutHandler logoutHandler;
     private final JWTRequestFilter filter;
     private final CustomOAuth2UserService oAuth2UserService;
@@ -39,7 +39,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity http)
             throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(bookShopUserDetailsService)
+                .userDetailsService(bookShopUserService)
                 .passwordEncoder(passwordEncoder())
                 .and()
                 .build();
@@ -50,7 +50,6 @@ public class SecurityConfig {
         return http
                 .csrf().disable()
                 .authorizeRequests()
-//                .antMatchers("/my", "/profile").authenticated()//.hasRole("USER")
                 .antMatchers("/**").permitAll()
                 .and()
                 .formLogin()

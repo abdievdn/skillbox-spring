@@ -1,8 +1,8 @@
 package com.example.MyBookShopApp.security;
 
-import com.example.MyBookShopApp.data.struct.enums.ContactType;
-import com.example.MyBookShopApp.data.struct.user.UserContactEntity;
-import com.example.MyBookShopApp.data.struct.user.UserEntity;
+import com.example.MyBookShopApp.data.entity.enums.ContactType;
+import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
+import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
 import com.example.MyBookShopApp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

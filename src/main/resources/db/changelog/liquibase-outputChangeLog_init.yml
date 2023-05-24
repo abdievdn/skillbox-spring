@@ -251,7 +251,7 @@ databaseChangeLog:
             constraints:
               nullable: false
             name: code
-            type: VARCHAR(255)
+            type: INTEGER
         - column:
             constraints:
               nullable: false

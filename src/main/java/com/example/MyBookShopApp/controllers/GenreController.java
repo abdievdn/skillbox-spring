@@ -1,7 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
-import com.example.MyBookShopApp.data.struct.genre.GenreEntity;
+import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
 import com.example.MyBookShopApp.services.GenreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

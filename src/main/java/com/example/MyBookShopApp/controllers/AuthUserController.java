@@ -3,7 +3,7 @@ package com.example.MyBookShopApp.controllers;
 import com.example.MyBookShopApp.data.dto.ContactConfirmationDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.security.AuthService;
-import com.example.MyBookShopApp.security.AuthUserDto;
+import com.example.MyBookShopApp.data.dto.UserDto;
 import com.example.MyBookShopApp.security.jwt.JWTAuthDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class AuthUserController {
 
     @GetMapping("/signup")
     public String signupPage(Model model) {
-        model.addAttribute("regForm", new AuthUserDto());
+        model.addAttribute("regForm", new UserDto());
         return "signup";
     }
 
@@ -49,9 +49,9 @@ public class AuthUserController {
     }
 
     @PostMapping("/registration")
-    public String userRegistration(AuthUserDto authUserDto, Model model) {
+    public String userRegistration(UserDto userDto, Model model) {
         model.addAttribute("registrationOk", true);
-        authService.registerNewUser(authUserDto);
+        authService.registerNewUser(userDto);
         return "/signin";
     }
 
