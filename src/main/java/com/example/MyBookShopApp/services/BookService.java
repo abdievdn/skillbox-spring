@@ -286,9 +286,6 @@ public class BookService {
     private void removeBookFromCookie(String slug, String cookieName, String contents, HttpServletResponse response) {
         if (contents != null && !contents.equals("")) {
             if (contents.contains(slug)) {
-                log.info(slug);
-                log.info(contents);
-                log.info(cookieName);
                 ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(contents.split("/")));
                 cookieBooks.remove(slug);
                 Cookie cookie = new Cookie(cookieName, String.join("/", cookieBooks));

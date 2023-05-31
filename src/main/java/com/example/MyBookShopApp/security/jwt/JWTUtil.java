@@ -74,15 +74,15 @@ public class JWTUtil {
                 !isTokenExpired(token));
     }
 
-    @Scheduled(fixedRateString = "${auth.schedule-clear-period}")
-    public void clearJWTBlacklist() {
-        for (JWTBlacklistEntity jwt : blacklistRepository.findAll()) {
-            try {
-                isTokenExpired(jwt.getJwtValue());
-            } catch (ExpiredJwtException ex) {
-                log.info(ex.getMessage());
-                blacklistRepository.delete(jwt);
-            }
-        }
-    }
+//    @Scheduled(fixedRateString = "${auth.schedule-clear-period}")
+//    public void clearJWTBlacklist() {
+//        for (JWTBlacklistEntity jwt : blacklistRepository.findAll()) {
+//            try {
+//                isTokenExpired(jwt.getJwtValue());
+//            } catch (ExpiredJwtException ex) {
+//                log.info(ex.getMessage());
+//                blacklistRepository.delete(jwt);
+//            }
+//        }
+//    }
 }

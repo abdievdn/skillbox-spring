@@ -57,7 +57,7 @@ public class UserService {
             String name = "";
             String email = "";
             String phone = "";
-            UserContactEntity userContactEntity = contactRepository.findByContact(principal.getName()).orElseThrow();
+            UserContactEntity userContactEntity = contactRepository.findByContact(principal.getName()).orElse(null);
             UserEntity user = userContactEntity.getUser();
             if (user != null) {
                 name = user.getName();

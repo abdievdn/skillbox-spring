@@ -4,14 +4,12 @@ import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
 import com.example.MyBookShopApp.data.entity.book.file.BookFileEntity;
 import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -19,7 +19,8 @@ public class RegisterService {
 
     public void registerUser(String name, String email, String phone, String password) {
         if (userContactRepository.findByContact(email).isEmpty() &&
-                userContactRepository.findByContact(phone).isEmpty()) {
+                userContactRepository.findByContact(phone).isEmpty() &&
+                userRepository.findByName(name).isEmpty()) {
             UserEntity userEntity = new UserEntity();
             userEntity.setName(name);
             userEntity.setHash(String.valueOf(System.identityHashCode(userEntity)));

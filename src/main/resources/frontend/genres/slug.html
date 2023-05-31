@@ -13,7 +13,7 @@
                 <li class="breadcrumbs-item"><a th:href="@{'/genres/'}" href="/genres/">Жанры</a>
                 </li>
                 <th:block th:each="genre : ${genreBreadcrumbs}">
-                    <li class="breadcrumbs-item"><a th:href="@{'/genres/' + ${genre.id}}" href="#"
+                    <li class="breadcrumbs-item"><a th:href="@{'/genres/' + ${genre.slug}}" href="#"
                                                     th:text="${genre.name}"></a>
                     </li>
                 </th:block>

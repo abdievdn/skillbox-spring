@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +20,10 @@ public class BookReviewService {
     private final UserService userService;
 
     public List<BookReviewEntity> getBookReviewList(String slug) {
-        return bookService.getBookBySlug(slug).getBook2Reviews();
+        return bookService.getBookBySlug(slug).getBook2Reviews()
+                .stream()
+                .sorted(Comparator.comparing(BookReviewEntity::getTime).reversed())
+                .collect(Collectors.toList());
     }
 
     public void saveBookReview(String slug, String text, Principal principal) {

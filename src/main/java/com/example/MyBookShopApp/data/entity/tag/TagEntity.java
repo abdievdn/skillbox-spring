@@ -1,13 +1,16 @@
 package com.example.MyBookShopApp.data.entity.tag;
 
 import com.example.MyBookShopApp.data.entity.book.links.Book2TagEntity;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "tag")
 public class TagEntity {

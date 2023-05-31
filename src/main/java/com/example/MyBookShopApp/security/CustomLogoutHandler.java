@@ -31,22 +31,19 @@ public class CustomLogoutHandler implements LogoutHandler {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
                 UserContactEntity contact = contactRepository
-                        .findByContact(jwtUtil.extractUsername(cookie.getValue()))
-                        .orElse(null);
+                        .findByContact(jwtUtil.extractUsername(cookie.getValue())).orElseThrow();
                 JWTBlacklistEntity blacklistEntity = new JWTBlacklistEntity();
                 blacklistEntity.setJwtValue(cookie.getValue());
                 blacklistEntity.setUserContact(contact);
                 blacklistRepository.save(blacklistEntity);
-                if (contact != null) {
-                    for (JWTBlacklistEntity jwt : contact.getJwtList()) {
-                        deleteToken(jwt);
-                    }
+                for (JWTBlacklistEntity jwt : contact.getJwtList()) {
+                    deleteExpiredToken(jwt);
                 }
             }
         }
     }
 
-    private void deleteToken(JWTBlacklistEntity jwt) {
+    private void deleteExpiredToken(JWTBlacklistEntity jwt) {
         try {
             jwtUtil.isTokenExpired(jwt.getJwtValue());
         } catch (ExpiredJwtException ex) {

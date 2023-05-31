@@ -16,7 +16,7 @@ public class BookShopUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String contact) throws UsernameNotFoundException {
-        UserContactEntity userContactEntity = userContactRepository.findByContact(contact).orElseThrow();
+        UserContactEntity userContactEntity = userContactRepository.findByContact(contact).orElse(null);
         return new BookShopUser(userContactEntity);
     }
 }
