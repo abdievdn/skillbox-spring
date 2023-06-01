@@ -5,17 +5,14 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.function.Function;
 
-@Slf4j
 @Service
 @EnableAsync
 @RequiredArgsConstructor
@@ -25,8 +22,6 @@ public class JWTUtil {
     private String secret;
     @Value("${auth.expiration}")
     private long expiration;
-
-    private final JWTBlacklistRepository blacklistRepository;
 
     private String createToken(Map<String, Object> claims, String username) {
         return Jwts
@@ -44,7 +39,7 @@ public class JWTUtil {
         return createToken(claims, username);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    private  <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -73,16 +68,4 @@ public class JWTUtil {
         return (extractUsername(token).equals(userDetails.getUsername()) &&
                 !isTokenExpired(token));
     }
-
-//    @Scheduled(fixedRateString = "${auth.schedule-clear-period}")
-//    public void clearJWTBlacklist() {
-//        for (JWTBlacklistEntity jwt : blacklistRepository.findAll()) {
-//            try {
-//                isTokenExpired(jwt.getJwtValue());
-//            } catch (ExpiredJwtException ex) {
-//                log.info(ex.getMessage());
-//                blacklistRepository.delete(jwt);
-//            }
-//        }
-//    }
 }

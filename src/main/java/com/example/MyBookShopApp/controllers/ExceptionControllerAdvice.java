@@ -19,11 +19,11 @@ public class ExceptionControllerAdvice {
         return "redirect:/";
     }
 
-    @ExceptionHandler({NoSuchElementException.class, NullPointerException.class, IllegalStateException.class})
-    public String handleException(Exception ex) {
-        log.info(ex.getMessage());
-        return "redirect:/";
-    }
+//    @ExceptionHandler({NoSuchElementException.class, NullPointerException.class, IllegalStateException.class})
+//    public String handleException(Exception ex) {
+//        log.info(ex.getMessage());
+//        return "redirect:/";
+//    }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public String handleExpiredJwtException(Exception ex) {

@@ -25,7 +25,7 @@ public class RatingService {
     private final UserService userService;
 
     public RatingDto getBookRatingBySlug(BookEntity book) {
-        List<BookRatingEntity> bookRatings = book.getBook2Ratings();
+        List<BookRatingEntity> bookRatings = book.getRatings();
         return RatingDto.builder()
                 .value((short) Math.round(bookRatings
                         .stream()

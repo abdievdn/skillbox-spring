@@ -1,12 +1,16 @@
 package com.example.MyBookShopApp.data.entity.book.links;
 
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "book2user_type")
 public class Book2UserTypeEntity {

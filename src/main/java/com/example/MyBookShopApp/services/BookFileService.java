@@ -1,7 +1,9 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.file.BookFileEntity;
 import com.example.MyBookShopApp.repositories.BookFileRepository;
+import com.example.MyBookShopApp.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,9 +20,9 @@ import java.nio.file.Paths;
 
 @Service
 @RequiredArgsConstructor
-public class ResourceStorage {
+public class BookFileService {
 
-    private final BookService bookService;
+    private final BookRepository bookRepository;
     private final BookFileRepository bookFileRepository;
 
     @Value("${path.download}")
@@ -40,12 +42,13 @@ public class ResourceStorage {
             resourceURI = "/book-covers/" + fileName;
             file.transferTo(path);
         }
-        bookService.saveBookImage(slug, resourceURI);
+        saveBookImage(slug, resourceURI);
     }
 
-    public BookFileEntity getBookFileByHash(String hash) {
-        return bookFileRepository.findByHash(hash);
-
+    public void saveBookImage(String slug, String savePath) {
+        BookEntity book = bookRepository.findBySlug(slug).orElseThrow();
+        book.setImage(savePath);
+        bookRepository.save(book);
     }
 
     public Path getBookFilePath(String hash) {
@@ -64,5 +67,10 @@ public class ResourceStorage {
     public byte[] getBookFileByteArray(String hash) throws IOException {
         Path path = Paths.get(downloadPath, getBookFileByHash(hash).getPath());
         return Files.readAllBytes(path);
+    }
+
+    private BookFileEntity getBookFileByHash(String hash) {
+        return bookFileRepository.findByHash(hash);
+
     }
 }

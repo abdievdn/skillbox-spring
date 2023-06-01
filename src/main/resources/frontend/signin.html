@@ -6,8 +6,7 @@
 <div class="Middle Middle_form">
     <div class="Middle-top">
         <div class="wrap">
-            <h1 class="Middle-title">Вход
-            </h1>
+            <h1 class="Middle-title">Вход</h1>
         </div>
     </div>
     <div class="wrap">
@@ -17,8 +16,9 @@
                     <div class="Login-step">
                         <div class="form-group">
                             <label class="form-label Login-title">Введите e-mail или телефон
-                              <br>
-                              <span th:if="${registrationOk}">Регистрация прошла успешно</span>
+                                <th:block th:if="${registrationOk}"><br />
+                                    <span>Регистрация прошла успешно</span>
+                                </th:block>
                             </label>
                         </div>
                         <div class="form-group">

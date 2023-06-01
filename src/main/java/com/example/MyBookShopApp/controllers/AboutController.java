@@ -10,7 +10,4 @@ public class AboutController {
     public String authPage() {
         return "/about";
     }
-
-
-
 }

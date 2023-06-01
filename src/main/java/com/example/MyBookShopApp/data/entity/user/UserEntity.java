@@ -5,8 +5,7 @@ import com.example.MyBookShopApp.data.entity.book.rating.BookRatingEntity;
 import com.example.MyBookShopApp.data.entity.book.rating.BookReviewRatingEntity;
 import com.example.MyBookShopApp.data.entity.book.review.BookReviewEntity;
 import com.example.MyBookShopApp.data.entity.book.review.BookReviewLikeEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,13 +14,16 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String hash;
@@ -30,25 +32,25 @@ public class UserEntity {
     private LocalDateTime regTime;
 
     @Column(columnDefinition = "INT NOT NULL")
-    private int balance;
+    private Integer balance;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String name;
 
     @OneToMany(mappedBy = "user")
-    private List<Book2UserEntity> user2books = new ArrayList<>();
+    private List<Book2UserEntity> booksLink = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<BookRatingEntity> valuesForBooks = new ArrayList<>();
+    private List<BookRatingEntity> bookRatings = new ArrayList<>();
 
     @OneToMany(mappedBy = "userRating")
-    private List<BookReviewRatingEntity> userRatingValues = new ArrayList<>();
+    private List<BookReviewRatingEntity> bookReviewRatings = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<BookReviewLikeEntity> userLikeValues = new ArrayList<>();
+    private List<BookReviewLikeEntity> bookReviewLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<BookReviewEntity> reviews = new ArrayList<>();
+    private List<BookReviewEntity> bookReviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<UserContactEntity> contacts = new ArrayList<>();

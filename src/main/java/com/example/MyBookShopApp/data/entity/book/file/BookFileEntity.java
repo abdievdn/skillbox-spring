@@ -24,7 +24,7 @@ public class BookFileEntity {
 
     @ManyToOne
     @JoinColumn(name = "book_id", referencedColumnName = "id")
-    private BookEntity book2File;
+    private BookEntity book;
 
     @Override
     public String toString() {

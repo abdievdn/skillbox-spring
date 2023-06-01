@@ -1,11 +1,14 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
+import com.example.MyBookShopApp.data.dto.BooksPageDto;
+import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2TagEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2UserEntity;
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
+import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
@@ -38,62 +41,69 @@ public class BookService {
     private final Book2UserTypeRepository book2UserTypeRepository;
     private final RatingService ratingService;
     private final UserService userService;
-    public static Long booksSearchCount;
+    private final AuthorService authorService;
+    private final TagService tagService;
+    private final GenreService genreService;
 
     public BookEntity getBookBySlug(String slug) {
-        return bookRepository.findBySlug(slug).orElseThrow();
+        return bookRepository.findBySlug(slug).orElse(null);
     }
 
     public BookDto getBookDtoBySlug(String slug) {
         return getBookDto(getBookBySlug(slug));
     }
 
-    public List<BookEntity> getBooksData() {
-        return bookRepository.findAll();
+    private List<BookDto> getBookDtoListFromBookEntityPage(Page<BookEntity> booksPage) {
+        return bookEntityListToBookDtoList(booksPage.getContent());
     }
 
-    public List<BookDto> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer size) throws CommonErrorException {
+    public BooksPageDto getPageOfSearchResultBooks(String searchWord, Integer offset, Integer size) throws CommonErrorException {
         if (searchWord == null || searchWord.length() < 1) {
             throw new CommonErrorException("Не введено значение поиска!");
         } else {
-            Pageable page = PageRequest.of(offset, size);
-            Page<BookEntity> books = bookRepository.findAllByTitleContainingIgnoreCase(searchWord, page);
-            BookService.booksSearchCount = books.getTotalElements();
-            return bookEntityListToBookDtoList(books.getContent());
+            Page<BookEntity> books = bookRepository.findAllByTitleContainingIgnoreCase(searchWord, PageRequest.of(offset, size));
+            return new BooksPageDto(books.getTotalElements(), getBookDtoListFromBookEntityPage(books));
         }
     }
 
-    public List<BookDto> getPageOfRecommendedBooks(Integer offset, Integer size) {
-        return bookEntityListToBookDtoList(
-                bookRepository.findAllByIsBestsellerOrderByPriceAsc(
-                                (short) 1,
-                                PageRequest.of(offset, size))
-                        .getContent());
+    public BooksPageDto getPageOfRecommendedBooks(Integer offset, Integer size) {
+        Page<BookEntity> books = bookRepository.findAllByIsBestsellerOrderByPriceAsc((short) 1, PageRequest.of(offset, size));
+        return new BooksPageDto(getBookDtoListFromBookEntityPage(books));
     }
 
-    public List<BookDto> getPageOfRecentBooks(Integer offset, Integer size) {
-        Pageable page = PageRequest.of(offset, size);
-        return bookEntityListToBookDtoList(bookRepository.findAllByOrderByPubDateDesc(page).getContent());
+    public BooksPageDto getPageOfRecentBooks(Integer offset, Integer size) {
+        Page<BookEntity> books = bookRepository.findAllByOrderByPubDateDesc(PageRequest.of(offset, size));
+        return new BooksPageDto(getBookDtoListFromBookEntityPage(books));
     }
 
-    public List<BookDto> getPageOfRecentBooks(String fromDate, String toDate, Integer offset, Integer size) {
+    public BooksPageDto getPageOfRecentBooks(String fromDate, String toDate, Integer offset, Integer size) {
         Pageable page = PageRequest.of(offset, size);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         if (fromDate == null || toDate == null) {
-            return bookEntityListToBookDtoList(bookRepository.findAllByPubDateBetweenOrderByPubDateDesc(
-                    LocalDate.now().minusMonths(1),
-                    LocalDate.now(), page).getContent());
+            return getPageOfRecentBooks(offset, size);
         }
-        return bookEntityListToBookDtoList(bookRepository.findAllByPubDateBetweenOrderByPubDateDesc(
-                LocalDate.parse(fromDate, dateTimeFormatter),
-                LocalDate.parse(toDate, dateTimeFormatter),
-                page).getContent());
+        Page<BookEntity> books = bookRepository.findAllByPubDateBetweenOrderByPubDateDesc(
+                LocalDate.parse(fromDate, dateTimeFormatter), LocalDate.parse(toDate, dateTimeFormatter), page);
+        return new BooksPageDto(getBookDtoListFromBookEntityPage(books));
     }
 
-    public List<BookDto> getPageOfPopularBooks(Integer offset, Integer size) {
-        List<Book2UserEntity> allBooks2User = book2UserRepository.findAll();
+    public BooksPageDto getPageOfPopularBooks(Integer offset, Integer size) {
+        List<BookEntity> popularBooks = getPopularBooksMap()
+                .entrySet()
+                .stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new))
+                .keySet()
+                .stream()
+                .map(k -> bookRepository.findById(k).orElseGet(BookEntity::new))
+                .collect(Collectors.toList());
+        return new BooksPageDto(getPageOfBookDtoAsList(offset, size, popularBooks));
+    }
+
+    private Map<Integer, Double> getPopularBooksMap() {
+        List<Book2UserEntity> allBooks2Users = book2UserRepository.findAll();
         Map<Integer, Double> popularBooksMap = new TreeMap<>();
-        for (Book2UserEntity b : allBooks2User) {
+        for (Book2UserEntity b : allBooks2Users) {
             double popIndex;
             switch (b.getType().getCode()) {
                 case KEPT:
@@ -114,20 +124,35 @@ public class BookService {
             }
             popularBooksMap.put(b.getBook().getId(), popIndex);
         }
-        List<BookEntity> popularBooks = popularBooksMap
-                .entrySet()
-                .stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new))
-                .keySet()
-                .stream()
-                .map(k -> bookRepository.findById(k).orElseGet(BookEntity::new))
-                .collect(Collectors.toList());
-        return getBooksPage(offset, size, popularBooks);
+        return popularBooksMap;
     }
 
-    public List<BookDto> getBooksPage(Integer offset, Integer size, List<BookEntity> authorBooks) {
-        PagedListHolder<BookEntity> page = new PagedListHolder<>(authorBooks);
+    public BooksPageDto getBooksByAuthor(String slug, Integer offset, Integer size) {
+        AuthorEntity author = authorService.getAuthorData(slug);
+        List<BookEntity> authorBooks = new ArrayList<>();
+        for (Book2AuthorEntity a : author.getBooksLink()) {
+            authorBooks.add(a.getBook());
+        }
+//        AuthorService.booksCount = authorBooks.size();
+        return new BooksPageDto((long) authorBooks.size(), getPageOfBookDtoAsList(offset, size, authorBooks));
+    }
+
+    public BooksPageDto getBooksByTag(Integer id, Integer offset, Integer size) {
+        List<BookEntity> books = new ArrayList<>();
+        TagEntity tag = tagService.getTagById(id);
+        for (Book2TagEntity b : tag.getBooksLink()) {
+            books.add(b.getBook());
+        }
+        return new BooksPageDto(getPageOfBookDtoAsList(offset, size, books));
+    }
+
+    public BooksPageDto getBooksByGenreAndSubGenres(String slug, Integer offset, Integer size) {
+        List<BookEntity> booksByGenre = genreService.getBooksByGenre(slug);
+        return new BooksPageDto(getPageOfBookDtoAsList(offset, size, booksByGenre));
+    }
+
+    private List<BookDto> getPageOfBookDtoAsList(Integer offset, Integer size, List<BookEntity> books) {
+        PagedListHolder<BookEntity> page = new PagedListHolder<>(books);
         page.setPageSize(size);
         if (offset >= page.getPageCount()) {
             return new ArrayList<>();
@@ -137,46 +162,45 @@ public class BookService {
     }
 
     private BookDto getBookDto(BookEntity bookEntity) {
-        BookDto book = BookDto.builder()
-                .id(bookEntity.getId())
-                .slug(bookEntity.getSlug())
-                .image(bookEntity.getImage())
-                .authors(bookEntity.getBook2Authors()
-                        .stream()
-                        .map(Book2AuthorEntity::getAuthor)
-                        .collect(Collectors.toList()))
-                .tags(bookEntity.getBook2Tags()
-                        .stream()
-                        .map(Book2TagEntity::getTag)
-                        .collect(Collectors.toList()))
-                .title(bookEntity.getTitle())
-                .description(bookEntity.getDescription())
-                .genre(bookEntity.getGenre2Book().getGenre())
-                .discount(bookEntity.getDiscount())
-                .isBestseller(bookEntity.getIsBestseller() == 1)
-                .rating(ratingService.getBookRatingBySlug(bookEntity))
-                .price(bookEntity.getPrice())
-                .discountPrice(bookEntity.discountPrice())
-                .files(bookEntity.getBookFileList())
-                .build();
-        UserEntity user = userService.getCurrentUser();
-        if (user != null) {
-            Optional<Book2UserEntity> book2User = book2UserRepository.findByBookAndUser(bookEntity, user);
-            book2User.ifPresent(book2UserEntity -> book.setStatus(book2UserEntity.getType().toString()));
+        if (bookEntity != null) {
+            BookDto book = BookDto.builder()
+                    .id(bookEntity.getId())
+                    .slug(bookEntity.getSlug())
+                    .image(bookEntity.getImage())
+                    .authors(bookEntity.getAuthorsLink()
+                            .stream()
+                            .map(a -> authorService.getAuthorDto(a.getAuthor()))
+                            .collect(Collectors.toList()))
+                    .tags(bookEntity.getTagsLink()
+                            .stream()
+                            .map(t -> tagService.getTagDto(t.getTag()))
+                            .collect(Collectors.toList()))
+                    .title(bookEntity.getTitle())
+                    .description(bookEntity.getDescription())
+                    .genre(genreService.getGenreDto(bookEntity.getGenreLink().getGenre()))
+                    .discount(bookEntity.getDiscount())
+                    .isBestseller(bookEntity.getIsBestseller() == 1)
+                    .rating(ratingService.getBookRatingBySlug(bookEntity))
+                    .price(bookEntity.getPrice())
+                    .discountPrice(bookEntity.discountPrice())
+                    .files(bookEntity.getBookFileList())
+                    .build();
+            UserEntity user = userService.getCurrentUser();
+            if (user != null) {
+                Optional<Book2UserEntity> book2User = book2UserRepository.findByBookAndUser(bookEntity, user);
+                book2User.ifPresent(book2UserEntity -> book.setStatus(book2UserEntity.getType().toString()));
+            }
+            return book;
         }
-        return book;
+        return BookDto.builder().build();
     }
 
     private List<BookDto> bookEntityListToBookDtoList(List<BookEntity> books) {
         List<BookDto> booksDto = new ArrayList<>();
-        books.forEach(b -> booksDto.add(getBookDto(b)));
+       for (BookEntity b : books) {
+           booksDto.add(getBookDto(b));
+       }
         return booksDto;
-    }
-
-    public void saveBookImage(String slug, String savePath) {
-        BookEntity book = getBookBySlug(slug);
-        book.setImage(savePath);
-        bookRepository.save(book);
     }
 
     public void addBookStatus(BookStatus status, String slug, Principal principal,
@@ -188,24 +212,27 @@ public class BookService {
         }
     }
 
-    private void addBookToUser(BookStatus status, String id, Principal principal) {
+    private void addBookToUser(BookStatus status, String slug, Principal principal) {
         UserEntity user = userService.getCurrentUserByPrincipal(principal);
-        List<Book2UserEntity> book2UserEntityList = user.getUser2books();
-        if (book2UserEntityList.isEmpty()) {
-            book2UserRepository.save(Book2UserEntity.builder()
-                    .book(bookRepository.findBySlug(id).orElseThrow())
-                    .user(user)
-                    .type(book2UserTypeRepository.findByCode(status))
-                    .time(LocalDateTime.now())
-                    .build());
-        } else {
-            book2UserEntityList.forEach(b -> {
-                if (b.getUser().equals(user) && !b.getType().getCode().equals(status)) {
+        BookEntity book = bookRepository.findBySlug(slug).orElseThrow();
+        List<Book2UserEntity> book2UserEntityList = user.getBooksLink();
+        if (!book2UserEntityList.isEmpty()) {
+            for (Book2UserEntity b : book2UserEntityList) {
+                if (b.getUser().equals(user) &&
+                        b.getBook().equals(book) &&
+                        !b.getType().getCode().equals(status)) {
                     b.setType(book2UserTypeRepository.findByCode(status));
                     book2UserRepository.save(b);
+                    return;
                 }
-            });
+            }
         }
+        book2UserRepository.save(Book2UserEntity.builder()
+                .book(book)
+                .user(user)
+                .type(book2UserTypeRepository.findByCode(status))
+                .time(LocalDateTime.now())
+                .build());
     }
 
     private void addBookToCookie(String status, String slug,
@@ -256,7 +283,7 @@ public class BookService {
 
     private void getBooksFromUser(BookStatus status, Principal principal, List<BookEntity> books) {
         UserEntity user = userService.getCurrentUserByPrincipal(principal);
-        user.getUser2books().forEach(b -> {
+        user.getBooksLink().forEach(b -> {
             if (b.getType().getCode().equals(status)) {
                 books.add(b.getBook());
             }
@@ -280,7 +307,8 @@ public class BookService {
     private void removeBookFromUser(String slug, Principal principal) {
         BookEntity book = bookRepository.findBySlug(slug).orElseThrow();
         UserEntity user = userService.getCurrentUserByPrincipal(principal);
-        book2UserRepository.deleteByBookAndUser(book, user);
+        Book2UserEntity book2User = book2UserRepository.findByBookAndUser(book, user).orElseThrow();
+        book2UserRepository.delete(book2User);
     }
 
     private void removeBookFromCookie(String slug, String cookieName, String contents, HttpServletResponse response) {

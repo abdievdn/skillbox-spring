@@ -4,6 +4,7 @@ import com.example.MyBookShopApp.config.SpringfoxConfig;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
 import com.example.MyBookShopApp.services.AuthorService;
+import com.example.MyBookShopApp.services.BookService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,16 @@ import java.util.Map;
 public class AuthorController {
 
     private final AuthorService authorService;
+    private final BookService bookService;
+
+    private void setModelAttributes(Model model, String slug, int size) {
+        model.addAttribute("authorData", authorService.getAuthorData(slug));
+        model.addAttribute("authorBooks", bookService.getBooksByAuthor(slug, 0, size));
+        model.addAttribute("authorId", slug);
+    }
 
     @ModelAttribute("authorsMap")
-    public Map<String, List<AuthorEntity>> authorsMap() {
+    private Map<String, List<AuthorEntity>> authorsMap() {
         return authorService.getAuthorsMap();
     }
 
@@ -33,24 +41,9 @@ public class AuthorController {
     }
 
     @GetMapping("/authors/{slug}")
-    public String authorsidPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
+    public String authorsSlugPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
         setModelAttributes(model, slug, 10);
-        model.addAttribute("booksCount", AuthorService.booksCount);
         return "/authors/slug";
-    }
-
-    private void setModelAttributes(Model model, String slug, int size) {
-        model.addAttribute("authorData", authorService.getAuthorData(slug));
-        model.addAttribute("authorBooks", authorService.getBooksByAuthor(slug, 0, size));
-        model.addAttribute("authorId", slug);
-    }
-
-    @GetMapping("/authors/page/{slug}")
-    @ResponseBody
-    public BooksPageDto recentBooks(@PathVariable(value = "slug", required = false) String slug,
-                                    @RequestParam("offset") Integer offset,
-                                    @RequestParam("limit") Integer size) {
-        return new BooksPageDto(authorService.getBooksByAuthor(slug, offset, size));
     }
 
     @GetMapping("/books/author/{slug}")
@@ -64,6 +57,6 @@ public class AuthorController {
     public BooksPageDto bookByAuthorPage(@PathVariable(value = "slug", required = false) String slug,
                                          @RequestParam("offset") Integer offset,
                                          @RequestParam("limit") Integer size) {
-        return new BooksPageDto(authorService.getBooksByAuthor(slug, offset, size));
+        return bookService.getBooksByAuthor(slug, offset, size);
     }
 }

@@ -3,7 +3,6 @@ package com.example.MyBookShopApp.config;
 import io.swagger.annotations.Api;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -37,8 +36,8 @@ public class SpringfoxConfig {
                 "Bookshop API",
                 "API for Bookstore",
                 "1.0",
-                "http://www.termsofservice.org",
-                new Contact("API owner", "http://www.ownersite.com", "owner@mail.com"),
+                "https://www.termsofservice.org",
+                new Contact("API owner", "https://www.ownersite.com", "owner@mail.com"),
                 "api_license",
                 "https://www.license.edu.org",
                 new ArrayList<>()

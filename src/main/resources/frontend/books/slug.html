@@ -181,7 +181,7 @@
                                         <span class="Comment-rating">
                                         <span class="Rating Rating_comment">
                                             <th:block
-                                                    th:replace="fragments/rating_fragment::ratingStarsFragment(${comment.getCommonRatingValue()}, ${comment.getRatings().size()})"></th:block>
+                                                    th:replace="fragments/rating_fragment::ratingStarsFragment(${comment.getCommonRatingValue()}, ${comment.getReviewRatingsLink().size()})"></th:block>
                                         </span>
                                         </span>
                                     </strong>

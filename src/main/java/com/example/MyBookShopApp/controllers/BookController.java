@@ -4,7 +4,7 @@ import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.services.BookReviewService;
 import com.example.MyBookShopApp.services.RatingService;
-import com.example.MyBookShopApp.services.ResourceStorage;
+import com.example.MyBookShopApp.services.BookFileService;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.services.BookService;
 import lombok.RequiredArgsConstructor;
@@ -32,20 +32,20 @@ public class BookController {
     private final BookService bookService;
     private final RatingService ratingService;
     private final BookReviewService bookReviewService;
-    private final ResourceStorage storage;
+    private final BookFileService storage;
 
-    @GetMapping({"/recommended/page", "/books/recommended/slider"})
+    @GetMapping({"/recommended/page", "/recommended/slider"})
     @ResponseBody
     public BooksPageDto recommendedBooks(@RequestParam("offset") Integer offset,
                                          @RequestParam("limit") Integer size) {
-        return new BooksPageDto(bookService.getPageOfRecommendedBooks(offset, size));
+        return bookService.getPageOfRecommendedBooks(offset, size);
     }
 
     @GetMapping("/recent/slider")
     @ResponseBody
     public BooksPageDto recentBooks(@RequestParam("offset") Integer offset,
                                     @RequestParam("limit") Integer size) {
-        return new BooksPageDto(bookService.getPageOfRecentBooks(offset, size));
+        return bookService.getPageOfRecentBooks(offset, size);
     }
 
     @GetMapping("/recent/page")
@@ -54,7 +54,7 @@ public class BookController {
                                     @RequestParam("to") String to,
                                     @RequestParam("offset") Integer offset,
                                     @RequestParam("limit") Integer size) {
-        return new BooksPageDto(bookService.getPageOfRecentBooks(from, to, offset, size));
+        return bookService.getPageOfRecentBooks(from, to, offset, size);
     }
 
     @GetMapping("/recent")
@@ -62,11 +62,11 @@ public class BookController {
         return "/books/recent";
     }
 
-    @GetMapping({"/popular/page", "/books/popular/slider"})
+    @GetMapping({"/popular/page", "/popular/slider"})
     @ResponseBody
     public BooksPageDto popularBooks(@RequestParam("offset") Integer offset,
                                      @RequestParam("limit") Integer size) {
-        return new BooksPageDto(bookService.getPageOfPopularBooks(offset, size));
+        return bookService.getPageOfPopularBooks(offset, size);
     }
 
     @GetMapping("/popular")
@@ -75,7 +75,7 @@ public class BookController {
     }
 
     @GetMapping("/{slug}")
-    public String bookPage(@PathVariable(value = "slug", required = false) String slug, Model model) throws Exception {
+    public String bookPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
         model.addAttribute("bookSlug", bookService.getBookDtoBySlug(slug));
         model.addAttribute("bookReviewList", bookReviewService.getBookReviewList(slug));
         return "/books/slug";
@@ -101,7 +101,8 @@ public class BookController {
                 .body(new ByteArrayResource(data));
     }
 
-    @PostMapping("/rateBook")@PreAuthorize("hasRole('USER')")
+    @PostMapping("/rateBook")
+    @PreAuthorize("hasRole('USER')")
     @ResponseBody
     public ResultDto rateBook(@RequestBody InteractionWithBookDto interaction, Principal principal) {
         ratingService.saveBookRating(interaction.getBookId(), interaction.getValue(), principal);

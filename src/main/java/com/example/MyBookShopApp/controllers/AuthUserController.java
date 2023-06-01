@@ -6,7 +6,6 @@ import com.example.MyBookShopApp.security.AuthService;
 import com.example.MyBookShopApp.data.dto.UserDto;
 import com.example.MyBookShopApp.security.jwt.JWTAuthDto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class AuthUserController {
@@ -52,7 +50,7 @@ public class AuthUserController {
     public String userRegistration(UserDto userDto, Model model) {
         model.addAttribute("registrationOk", true);
         authService.registerNewUser(userDto);
-        return "/signin";
+        return "signin";
     }
 
     @PostMapping("/login")

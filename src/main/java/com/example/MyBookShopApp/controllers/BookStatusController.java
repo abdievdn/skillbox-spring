@@ -6,7 +6,6 @@ import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
 import com.example.MyBookShopApp.services.BookService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -59,18 +57,18 @@ public class BookStatusController {
 
     @PostMapping("/changeBookStatus/remove/cart")
     @ResponseBody
-    public ResultDto removeCart(@RequestBody InteractionWithBookDto interaction,
-                                @CookieValue(name = "CART", required = false) String contents,
-                                HttpServletResponse response, Principal principal) {
+    public ResultDto removeFromCart(@RequestBody InteractionWithBookDto interaction,
+                                    @CookieValue(name = "CART", required = false) String contents,
+                                    HttpServletResponse response, Principal principal) {
         bookService.removeBook(interaction.getBooksIds(), BookStatus.CART.name(), contents, response, principal);
         return new ResultDto(true);
     }
 
     @PostMapping("/changeBookStatus/remove/postponed")
     @ResponseBody
-    public ResultDto removePostponed(@RequestBody InteractionWithBookDto interaction,
-                                     @CookieValue(name = "KEPT", required = false) String contents,
-                                     HttpServletResponse response, Principal principal) {
+    public ResultDto removeFromPostponed(@RequestBody InteractionWithBookDto interaction,
+                                         @CookieValue(name = "KEPT", required = false) String contents,
+                                         HttpServletResponse response, Principal principal) {
         bookService.removeBook(interaction.getBooksIds(), BookStatus.KEPT.name(), contents, response, principal);
         return new ResultDto(true);
     }

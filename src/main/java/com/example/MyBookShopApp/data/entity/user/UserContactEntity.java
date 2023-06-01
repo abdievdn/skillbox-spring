@@ -2,8 +2,7 @@ package com.example.MyBookShopApp.data.entity.user;
 
 import com.example.MyBookShopApp.data.entity.enums.ContactType;
 import com.example.MyBookShopApp.security.jwt.JWTBlacklistEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,6 +10,9 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "user_contact")
 public class UserContactEntity {

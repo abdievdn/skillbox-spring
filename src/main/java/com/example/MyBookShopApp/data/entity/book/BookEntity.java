@@ -19,6 +19,9 @@ import java.util.List;
 @ApiModel(description = "entity represents a book")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "book")
 public class BookEntity {
@@ -53,28 +56,28 @@ public class BookEntity {
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String slug;
 
-    @OneToMany(mappedBy = "book2Author")
-    private List<Book2AuthorEntity> book2Authors = new ArrayList<>();
+    @OneToMany(mappedBy = "book")
+    private List<Book2AuthorEntity> authorsLink = new ArrayList<>();
 
-    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    private Book2GenreEntity genre2Book;
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, optional = false)
+    private Book2GenreEntity genreLink;
 
     @OneToMany(mappedBy = "book")
-    private List<Book2UserEntity> users = new ArrayList<>();
+    private List<Book2UserEntity> usersLink = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book2Tag")
-    private List<Book2TagEntity> book2Tags = new ArrayList<>();
+    @OneToMany(mappedBy = "book")
+    private List<Book2TagEntity> tagsLink = new ArrayList<>();
 
     public Integer discountPrice() {
         return price - (price * discount / 100);
     }
 
-    @OneToMany(mappedBy = "book2File")
+    @OneToMany(mappedBy = "book")
     private List<BookFileEntity> bookFileList = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
-    private List<BookRatingEntity> book2Ratings = new ArrayList<>();
+    private List<BookRatingEntity> ratings = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
-    private List<BookReviewEntity> book2Reviews = new ArrayList<>();
+    private List<BookReviewEntity> reviews = new ArrayList<>();
 }

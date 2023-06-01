@@ -43,10 +43,10 @@
                     <h2 class="Section-title">Книги автора
                     </h2>
                 </header>
-                <div th:replace="~{fragments/books_pool_fragment :: cardsSlider(${authorBooks}, 'author')}"></div>
+                <div th:replace="~{fragments/books_pool_fragment :: cardsSlider(${authorBooks.books}, 'author')}"></div>
                 <footer class="Section-footer">
                     <a class="Author-books" th:href="@{'/books/author/' + ${authorId}}">Все книги автора
-                        <span class="Author-amount" th:text="${booksCount}"></span>
+                        <span class="Author-amount" th:text="${authorBooks.count}"></span>
                     </a>
                 </footer>
             </div>

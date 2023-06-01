@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})">
+<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
 <body class="Site">
 <header th:replace="~{fragments/header_fragment}"></header>
 <div class="Middle">
@@ -31,6 +31,5 @@
     </div>
 </div>
 <footer th:replace="~{fragments/footer_fragment :: footerFragment}"></footer>
-<script src="assets/plg/jQuery/jquery-3.5.1.min.js"></script>
 </body>
 </html>

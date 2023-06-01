@@ -1,6 +1,7 @@
 package com.example.MyBookShopApp.data.entity.tag;
 
 import com.example.MyBookShopApp.data.entity.book.links.Book2TagEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -25,6 +27,7 @@ public class TagEntity {
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "tag")
-    private List<Book2TagEntity> tag2books = new ArrayList<>();
+    private List<Book2TagEntity> booksLink = new ArrayList<>();
 }

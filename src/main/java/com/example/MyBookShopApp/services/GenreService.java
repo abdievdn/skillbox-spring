@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.services;
 
-import com.example.MyBookShopApp.data.dto.BookDto;
+import com.example.MyBookShopApp.data.dto.GenreDto;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2GenreEntity;
 import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
@@ -22,25 +22,20 @@ public class GenreService {
     private final GenreRepository genreRepository;
     private final BookRepository bookRepository;
     private final Book2GenreRepository book2GenreRepository;
-    private final BookService bookService;
-
-    public List<BookDto> getBooksByGenreAndSubGenres(String slug, Integer offset, Integer size) {
-        List<BookEntity> booksByGenre = getBooksByGenre(getGenreEntity(slug));
-        return bookService.getBooksPage(offset, size, booksByGenre);
-    }
 
     private GenreEntity getGenreEntity(String slug) {
         return genreRepository.findBySlug(slug).orElseGet(GenreEntity::new);
     }
 
-    private List<BookEntity> getBooksByGenre(GenreEntity genre) {
+    public List<BookEntity> getBooksByGenre(String slug) {
+        GenreEntity genre = getGenreEntity(slug);
         List<BookEntity> books = new ArrayList<>();
-        for (Book2GenreEntity b : genre.getBooks()) {
+        for (Book2GenreEntity b : genre.getBooksLink()) {
             books.add(bookRepository.findById(b.getBook().getId()).orElseThrow());
         }
-        if (!genre.getGenres().isEmpty()) {
+        if (hasChildren(genre)) {
             for (GenreEntity g : genre.getGenres()) {
-                books.addAll(getBooksByGenre(g));
+                books.addAll(getBooksByGenre(g.getSlug()));
             }
         }
         return books;
@@ -60,9 +55,17 @@ public class GenreService {
     }
 
     public List<GenreEntity> getGenresData() {
-        List<GenreEntity> genres = genreRepository.findAllByParentId(null);
+        List<GenreEntity> genres = genreRepository.findAllByParent(null);
         setBooksCountToGenre(genres);
         return genres;
+    }
+
+    public GenreDto getGenreDto(GenreEntity genre) {
+        return GenreDto.builder()
+                .id(genre.getId())
+                .name(genre.getName())
+                .slug(genre.getSlug())
+                .build();
     }
 
     private void setBooksCountToGenre(List<GenreEntity> genres) {
@@ -70,13 +73,17 @@ public class GenreService {
         for (GenreEntity g : genres) {
             count = book2GenreRepository.countAllByGenreId(g.getId());
             g.setBooksCount(count);
-            if (!g.getGenres().isEmpty()) {
+            if (hasChildren(g)) {
                 setBooksCountToGenre(g.getGenres());
                 for (GenreEntity c : g.getGenres()) {
                     g.setBooksCount(g.getBooksCount() + c.getBooksCount());
                 }
             }
         }
+    }
+
+    private boolean hasChildren(GenreEntity genre) {
+        return genre.getGenres() != null && !genre.getGenres().isEmpty();
     }
 }
 

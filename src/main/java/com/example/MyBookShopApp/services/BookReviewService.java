@@ -20,7 +20,7 @@ public class BookReviewService {
     private final UserService userService;
 
     public List<BookReviewEntity> getBookReviewList(String slug) {
-        return bookService.getBookBySlug(slug).getBook2Reviews()
+        return bookService.getBookBySlug(slug).getReviews()
                 .stream()
                 .sorted(Comparator.comparing(BookReviewEntity::getTime).reversed())
                 .collect(Collectors.toList());

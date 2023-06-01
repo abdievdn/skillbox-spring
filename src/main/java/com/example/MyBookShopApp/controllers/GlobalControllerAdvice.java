@@ -21,6 +21,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GlobalControllerAdvice {
 
+    public static final int DEFAULT_SLIDER_SIZE = 10;
+    public static final int DEFAULT_SLIDER_OFFSET = 0;
     private final BookService bookService;
     private final TagService tagService;
     private final UserService userService;
@@ -30,24 +32,19 @@ public class GlobalControllerAdvice {
         return userService.getCurrentUserDto(principal);
     }
 
-    @ModelAttribute("booksList")
-    public List<BookEntity> booksListModel() {
-        return bookService.getBooksData();
-    }
-
     @ModelAttribute("recommendedBooks")
     public List<BookDto> recommendedBooksModel() {
-        return bookService.getPageOfRecommendedBooks(0, 20);
+        return bookService.getPageOfRecommendedBooks(DEFAULT_SLIDER_OFFSET, DEFAULT_SLIDER_SIZE).getBooks();
     }
 
     @ModelAttribute("recentBooks")
     public List<BookDto> recentBooksModel() {
-        return bookService.getPageOfRecentBooks(0, 20);
+        return bookService.getPageOfRecentBooks(DEFAULT_SLIDER_OFFSET, DEFAULT_SLIDER_SIZE).getBooks();
     }
 
     @ModelAttribute("popularBooks")
     public List<BookDto> popularBooksModel() {
-        return bookService.getPageOfPopularBooks(0, 20);
+        return bookService.getPageOfPopularBooks(DEFAULT_SLIDER_OFFSET, DEFAULT_SLIDER_SIZE).getBooks();
     }
 
     @ModelAttribute("tagsList")

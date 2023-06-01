@@ -1,8 +1,7 @@
 package com.example.MyBookShopApp.data.entity.genre;
 
 import com.example.MyBookShopApp.data.entity.book.links.Book2GenreEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -10,6 +9,9 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "genre")
 public class GenreEntity {
@@ -35,5 +37,5 @@ public class GenreEntity {
     private List<GenreEntity> genres = new ArrayList<>();
 
     @OneToMany(mappedBy = "genre")
-    private List<Book2GenreEntity> books = new ArrayList<>();
+    private List<Book2GenreEntity> booksLink = new ArrayList<>();
 }

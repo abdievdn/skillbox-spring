@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface GenreRepository extends JpaRepository<GenreEntity, Integer> {
 
-    List<GenreEntity> findAllByParentId(Integer parentId);
+    List<GenreEntity> findAllByParent(GenreEntity parent);
 
     Optional<GenreEntity> findBySlug(String slug);
 }

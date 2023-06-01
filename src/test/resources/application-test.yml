@@ -4,3 +4,5 @@ spring:
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
+  liquibase:
+    test-rollback-on-update: true

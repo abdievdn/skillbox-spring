@@ -17,14 +17,16 @@ public class RegisterService {
     private final UserContactRepository userContactRepository;
     private final UserRepository userRepository;
 
-    public void registerUser(String name, String email, String phone, String password) {
+    public UserEntity registerUser(String name, String email, String phone, String password) {
+        UserEntity userEntity = null;
         if (userContactRepository.findByContact(email).isEmpty() &&
                 userContactRepository.findByContact(phone).isEmpty() &&
                 userRepository.findByName(name).isEmpty()) {
-            UserEntity userEntity = new UserEntity();
+            userEntity = new UserEntity();
             userEntity.setName(name);
             userEntity.setHash(String.valueOf(System.identityHashCode(userEntity)));
             userEntity.setRegTime(LocalDateTime.now());
+            userEntity.setBalance(0);
             userRepository.save(userEntity);
             if (!email.isBlank()) {
                 saveUserContact(email, password, userEntity);
@@ -33,6 +35,7 @@ public class RegisterService {
                 saveUserContact(phone, password, userEntity);
             }
         }
+        return userEntity;
     }
 
     private void saveUserContact(String contact, String password, UserEntity userEntity) {

@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.security;
 
+import com.example.MyBookShopApp.data.entity.enums.ContactType;
 import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
@@ -13,24 +14,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class RegisterServiceTest {
 
     private final RegisterService registerService;
 
-    String name, email, phone, password;
-    UserEntity user = new UserEntity();
+    private UserEntity user;
+    private UserContactEntity userContactEmail, userContactPhone;
+    private String name, email, phone, password;
 
     @MockBean
-    private UserRepository userRepositoryMock;
+    private UserRepository userRepository;
 
     @MockBean
-    private UserContactRepository contactRepositoryMock;
+    private UserContactRepository contactRepository;
 
     @Autowired
     public RegisterServiceTest(RegisterService registerService) {
@@ -43,32 +45,51 @@ class RegisterServiceTest {
         email = "test@mail.org";
         phone = "+7889877845";
         password = "123123";
-        user.setName(name);
-        user.setHash(String.valueOf(System.identityHashCode(user)));
-        user.setId(1);
-        user.setRegTime(LocalDateTime.now());
+        user = UserEntity.builder()
+                .id(1)
+                .name(name)
+                .hash(String.valueOf(System.identityHashCode(user)))
+                .build();
+        userContactEmail = UserContactEntity.builder()
+                .id(1)
+                .user(user)
+                .contact(email)
+                .type(ContactType.EMAIL)
+                .code(password)
+                .build();
+        userContactPhone = UserContactEntity.builder()
+                .id(2)
+                .user(user)
+                .contact(phone)
+                .type(ContactType.PHONE)
+                .code(password)
+                .build();
+        user.setContacts(List.of(userContactEmail, userContactPhone));
     }
 
     @AfterEach
     void tearDown() {
+        user = null;
+        userContactEmail = null;
+        userContactPhone = null;
         name = email = phone = password = null;
     }
 
     @Test
     void registerUser() {
-        registerService.registerUser(name, email, phone, password);
-//        assertTrue(CoreMatchers.is(user.getName()).matches(name));
-        Mockito.verify(userRepositoryMock, Mockito.times(1)).save(Mockito.any(UserEntity.class));
-        Mockito.verify(contactRepositoryMock, Mockito.times(2)).save(Mockito.any(UserContactEntity.class));
+        UserEntity userEntity = registerService.registerUser(name, email, phone, password);
+        assertTrue(CoreMatchers.is(user.getName()).matches(userEntity.getName()));
+        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(UserEntity.class));
+        Mockito.verify(contactRepository, Mockito.times(2)).save(Mockito.any(UserContactEntity.class));
     }
 
     @Test
     void registerUserFail() {
         Mockito.doReturn(Optional.of(user))
-                .when(userRepositoryMock)
+                .when(userRepository)
                 .findByName(name);
         registerService.registerUser(name, email, phone, password);
-        Mockito.verify(userRepositoryMock, Mockito.times(0)).save(Mockito.any(UserEntity.class));
-        Mockito.verify(contactRepositoryMock, Mockito.times(0)).save(Mockito.any(UserContactEntity.class));
+        Mockito.verify(userRepository, Mockito.times(0)).save(Mockito.any(UserEntity.class));
+        Mockito.verify(contactRepository, Mockito.times(0)).save(Mockito.any(UserContactEntity.class));
     }
 }

@@ -1,11 +1,14 @@
 package com.example.MyBookShopApp.data.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BooksPageDto {
 
     private Long count;
@@ -14,10 +17,5 @@ public class BooksPageDto {
     public BooksPageDto(List<BookDto> books) {
         this.books = books;
         this.count = (long) books.size();
-    }
-
-    public BooksPageDto(List<BookDto> books, Long count) {
-        this.books = books;
-        this.count = count;
     }
 }

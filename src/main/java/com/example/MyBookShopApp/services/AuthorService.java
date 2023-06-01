@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.data.dto.AuthorDto;
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
@@ -18,7 +19,6 @@ import java.util.stream.Collectors;
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
-    private final BookService bookService;
     public static Integer booksCount;
 
     public Map<String, List<AuthorEntity>> getAuthorsMap() {
@@ -27,16 +27,17 @@ public class AuthorService {
     }
 
     public AuthorEntity getAuthorData(String slug) {
-        return authorRepository.findBySlug(slug).orElseThrow();
+        return authorRepository.findBySlug(slug).orElse(null);
     }
 
-    public List<BookDto> getBooksByAuthor(String slug, Integer offset, Integer size) {
-        AuthorEntity author = getAuthorData(slug);
-        List<BookEntity> authorBooks = new ArrayList<>();
-        for (Book2AuthorEntity a : author.getAuthor2books()) {
-            authorBooks.add(a.getBook2Author());
-        }
-        AuthorService.booksCount = authorBooks.size();
-        return bookService.getBooksPage(offset, size, authorBooks);
+    public AuthorDto getAuthorDto(AuthorEntity author) {
+        return AuthorDto.builder()
+                .id(author.getId())
+                .description(author.getDescription())
+                .firstName(author.getFirstName())
+                .lastName(author.getLastName())
+                .slug(author.getSlug())
+                .photo(author.getPhoto())
+                .build();
     }
 }

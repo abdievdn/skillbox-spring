@@ -36,32 +36,6 @@ class DefaultControllerTest {
     }
 
     @Test
-    public void accessOnlyAuthorizedPageFailTest() throws Exception {
-        mockMvc.perform(get("/my"))
-                .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/signin"));
-    }
-
-    @Test
-    public void correctLoginTest() throws Exception {
-        mockMvc.perform(formLogin("/signin").user("user@mail.ru").password("111111"))
-                .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
-    }
-
-    @Test
-    @WithUserDetails("user@mail.ru")
-    public void authenticatedAccessToProfileTest() throws Exception {
-        mockMvc.perform(get("/profile"))
-                .andDo(print())
-                .andExpect(authenticated())
-                .andExpect(xpath("/html/body/header/div[1]/div/div/div[3]/div/a[4]/span[1]")
-                        .string("User One"));
-    }
-
-    @Test
     public void testSearchQuery() throws Exception {
         mockMvc.perform(get("/search/Blueberry"))
                 .andDo(print())

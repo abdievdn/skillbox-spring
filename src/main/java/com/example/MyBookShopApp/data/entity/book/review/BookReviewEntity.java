@@ -3,16 +3,17 @@ package com.example.MyBookShopApp.data.entity.book.review;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.rating.BookReviewRatingEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "book_review")
 public class BookReviewEntity {
@@ -43,13 +44,13 @@ public class BookReviewEntity {
     private String text;
 
     @OneToMany(mappedBy = "reviewRating")
-    private List<BookReviewRatingEntity> ratings = new ArrayList<>();
+    private List<BookReviewRatingEntity> reviewRatingsLink = new ArrayList<>();
 
     @OneToMany(mappedBy = "review")
-    private List<BookReviewLikeEntity> likes = new ArrayList<>();
+    private List<BookReviewLikeEntity> reviewLikesLink = new ArrayList<>();
 
     public Integer getCommonRatingValue() {
-        return (int) Math.round(ratings
+        return (int) Math.round(reviewRatingsLink
                 .stream()
                 .mapToInt(BookReviewRatingEntity::getValue)
                 .average()
@@ -57,7 +58,7 @@ public class BookReviewEntity {
     }
 
     public Integer getLikesCountByValue(Short value) {
-        return  (int) likes
+        return  (int) reviewLikesLink
                 .stream()
                 .filter(l -> l.getValue() == value)
                 .count();

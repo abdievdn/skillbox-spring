@@ -44,8 +44,8 @@ public class UserService {
     }
 
     public UserEntity getCurrentUser() {
-        String contact = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (contact != null) {
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            String contact = SecurityContextHolder.getContext().getAuthentication().getName();
             return getUserByContact(contactRepository.findByContact(contact).orElse(null));
         } else {
             return null;
