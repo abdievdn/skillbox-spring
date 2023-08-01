@@ -5,9 +5,10 @@ import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookDto {
     private Integer id;
     private String slug;

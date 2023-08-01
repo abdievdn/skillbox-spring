@@ -24,7 +24,7 @@ public class BookStatusController {
     private final BookService bookService;
 
     @ModelAttribute(name = "booksStatusList")
-    public List<BookDto> booksCart() {
+    private List<BookDto> booksCart() {
         return new ArrayList<>();
     }
 

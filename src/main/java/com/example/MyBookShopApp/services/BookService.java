@@ -291,9 +291,13 @@ public class BookService {
     }
 
     private List<BookDto> getBooksFromCookie(String contents) {
-        String[] cookieSlugs = contents.split("/");
-        List<BookEntity> booksFromCookie = bookRepository.findAllBySlugIn(cookieSlugs);
-        return bookEntityListToBookDtoList(booksFromCookie);
+        if (contents != null && !contents.isEmpty()) {
+            String[] cookieSlugs = contents.split("/");
+            List<BookEntity> booksFromCookie = bookRepository.findAllBySlugIn(cookieSlugs);
+            return bookEntityListToBookDtoList(booksFromCookie);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public void removeBook(String slug, String cookieName, String contents, HttpServletResponse response, Principal principal) {

@@ -36,21 +36,21 @@ public class BookController {
 
     @GetMapping({"/recommended/page", "/recommended/slider"})
     @ResponseBody
-    public BooksPageDto recommendedBooks(@RequestParam("offset") Integer offset,
+    public BooksPageDto recommendedBooksPage(@RequestParam("offset") Integer offset,
                                          @RequestParam("limit") Integer size) {
         return bookService.getPageOfRecommendedBooks(offset, size);
     }
 
     @GetMapping("/recent/slider")
     @ResponseBody
-    public BooksPageDto recentBooks(@RequestParam("offset") Integer offset,
+    public BooksPageDto recentBooksSlider(@RequestParam("offset") Integer offset,
                                     @RequestParam("limit") Integer size) {
         return bookService.getPageOfRecentBooks(offset, size);
     }
 
     @GetMapping("/recent/page")
     @ResponseBody
-    public BooksPageDto recentBooks(@RequestParam("from") String from,
+    public BooksPageDto recentBooksFromToPage(@RequestParam("from") String from,
                                     @RequestParam("to") String to,
                                     @RequestParam("offset") Integer offset,
                                     @RequestParam("limit") Integer size) {
@@ -64,7 +64,7 @@ public class BookController {
 
     @GetMapping({"/popular/page", "/popular/slider"})
     @ResponseBody
-    public BooksPageDto popularBooks(@RequestParam("offset") Integer offset,
+    public BooksPageDto popularBooksPage(@RequestParam("offset") Integer offset,
                                      @RequestParam("limit") Integer size) {
         return bookService.getPageOfPopularBooks(offset, size);
     }

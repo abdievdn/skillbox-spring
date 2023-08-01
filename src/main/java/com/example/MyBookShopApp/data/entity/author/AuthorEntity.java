@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Transactional
 @Table(name = "author")
 public class AuthorEntity {
 
@@ -35,7 +34,7 @@ public class AuthorEntity {
 
     private String slug;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author")
     private List<Book2AuthorEntity> booksLink = new ArrayList<>();
 
     @Override

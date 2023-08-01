@@ -13,10 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,15 +31,41 @@ class BookStatusControllerTest {
     }
 
     @Test
-    void booksCart() {
+    @WithUserDetails("user@mail.ru")
+    void cartPageWithUser() throws Exception {
+        mockMvc.perform(get("/books/cart"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(xpath("/html/body/div/div/main/form/div[1]/div/div[2]/div[1]/div[2]/a")
+                        .string("Tai Chi Zero"));
     }
 
     @Test
-    void cartPage() {
+    void cartPage() throws Exception {
+        mockMvc.perform(get("/books/cart"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(xpath("/html/body/div/div/main/h1/text()")
+                        .string("Корзина"));
     }
 
     @Test
-    void postponedPage() {
+    @WithUserDetails("user@mail.ru")
+    void postponedPageWithUser() throws Exception {
+        mockMvc.perform(get("/books/postponed"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(xpath("/html/body/div/div/main/form/div[1]/div/div[2]/div[1]/div[2]/a")
+                        .string("Aya of Yop City"));
+    }
+
+    @Test
+    void postponedPage() throws Exception {
+        mockMvc.perform(get("/books/postponed"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(xpath("/html/body/div/div/main/h1/text()")
+                        .string("Отложенное"));
     }
 
     @Test
