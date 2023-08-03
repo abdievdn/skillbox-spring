@@ -1,5 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.aspect.annotations.ControllerParamsCatch;
+import com.example.MyBookShopApp.aspect.annotations.ControllerResponseCatch;
 import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.services.BookReviewService;
@@ -8,7 +10,6 @@ import com.example.MyBookShopApp.services.BookFileService;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.services.BookService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,7 +24,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.security.Principal;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -34,6 +34,8 @@ public class BookController {
     private final BookReviewService bookReviewService;
     private final BookFileService storage;
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @GetMapping({"/recommended/page", "/recommended/slider"})
     @ResponseBody
     public BooksPageDto recommendedBooksPage(@RequestParam("offset") Integer offset,
@@ -41,6 +43,8 @@ public class BookController {
         return bookService.getPageOfRecommendedBooks(offset, size);
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @GetMapping("/recent/slider")
     @ResponseBody
     public BooksPageDto recentBooksSlider(@RequestParam("offset") Integer offset,
@@ -48,6 +52,8 @@ public class BookController {
         return bookService.getPageOfRecentBooks(offset, size);
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @GetMapping("/recent/page")
     @ResponseBody
     public BooksPageDto recentBooksFromToPage(@RequestParam("from") String from,
@@ -62,6 +68,8 @@ public class BookController {
         return "/books/recent";
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @GetMapping({"/popular/page", "/popular/slider"})
     @ResponseBody
     public BooksPageDto popularBooksPage(@RequestParam("offset") Integer offset,
@@ -74,6 +82,7 @@ public class BookController {
         return "/books/popular";
     }
 
+    @ControllerParamsCatch
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
         model.addAttribute("bookSlug", bookService.getBookDtoBySlug(slug));
@@ -81,6 +90,7 @@ public class BookController {
         return "/books/slug";
     }
 
+    @ControllerParamsCatch
     @PostMapping("/{slug}/img/save")
     public String saveNewBookImage(@RequestParam("file") MultipartFile file,
                                    @PathVariable(value = "slug", required = false) String slug) throws Exception {
@@ -88,6 +98,8 @@ public class BookController {
         return "redirect:/books/" + slug;
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/download/{hash}")
     public ResponseEntity<ByteArrayResource> bookFile(@PathVariable(value = "hash", required = false) String hash) throws IOException {
@@ -101,6 +113,8 @@ public class BookController {
                 .body(new ByteArrayResource(data));
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PostMapping("/rateBook")
     @PreAuthorize("hasRole('USER')")
     @ResponseBody
@@ -109,6 +123,8 @@ public class BookController {
         return new ResultDto(true);
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/bookReview")
     @ResponseBody
@@ -117,6 +133,8 @@ public class BookController {
         return new ResultDto(true);
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/rateBookReview")
     @ResponseBody

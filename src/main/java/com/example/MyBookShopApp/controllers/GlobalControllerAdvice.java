@@ -1,14 +1,13 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.aspect.annotations.NoLogging;
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.UserDto;
-import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.services.BookService;
 import com.example.MyBookShopApp.services.TagService;
 import com.example.MyBookShopApp.services.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -16,7 +15,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
+@NoLogging
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalControllerAdvice {

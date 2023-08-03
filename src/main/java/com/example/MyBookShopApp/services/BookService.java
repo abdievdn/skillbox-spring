@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
@@ -57,6 +58,7 @@ public class BookService {
         return bookEntityListToBookDtoList(booksPage.getContent());
     }
 
+    @ServiceProcessTrackable
     public BooksPageDto getPageOfSearchResultBooks(String searchWord, Integer offset, Integer size) throws CommonErrorException {
         if (searchWord == null || searchWord.length() < 1) {
             throw new CommonErrorException("Не введено значение поиска!");
@@ -66,16 +68,19 @@ public class BookService {
         }
     }
 
+    @ServiceProcessTrackable
     public BooksPageDto getPageOfRecommendedBooks(Integer offset, Integer size) {
         Page<BookEntity> books = bookRepository.findAllByIsBestsellerOrderByPriceAsc((short) 1, PageRequest.of(offset, size));
         return new BooksPageDto(getBookDtoListFromBookEntityPage(books));
     }
 
+    @ServiceProcessTrackable
     public BooksPageDto getPageOfRecentBooks(Integer offset, Integer size) {
         Page<BookEntity> books = bookRepository.findAllByOrderByPubDateDesc(PageRequest.of(offset, size));
         return new BooksPageDto(getBookDtoListFromBookEntityPage(books));
     }
 
+    @ServiceProcessTrackable
     public BooksPageDto getPageOfRecentBooks(String fromDate, String toDate, Integer offset, Integer size) {
         Pageable page = PageRequest.of(offset, size);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -87,6 +92,7 @@ public class BookService {
         return new BooksPageDto(getBookDtoListFromBookEntityPage(books));
     }
 
+    @ServiceProcessTrackable
     public BooksPageDto getPageOfPopularBooks(Integer offset, Integer size) {
         List<BookEntity> popularBooks = getPopularBooksMap()
                 .entrySet()
@@ -100,6 +106,7 @@ public class BookService {
         return new BooksPageDto(getPageOfBookDtoAsList(offset, size, popularBooks));
     }
 
+    @ServiceProcessTrackable
     private Map<Integer, Double> getPopularBooksMap() {
         List<Book2UserEntity> allBooks2Users = book2UserRepository.findAll();
         Map<Integer, Double> popularBooksMap = new TreeMap<>();
@@ -127,16 +134,17 @@ public class BookService {
         return popularBooksMap;
     }
 
+    @ServiceProcessTrackable
     public BooksPageDto getBooksByAuthor(String slug, Integer offset, Integer size) {
         AuthorEntity author = authorService.getAuthorData(slug);
         List<BookEntity> authorBooks = new ArrayList<>();
         for (Book2AuthorEntity a : author.getBooksLink()) {
             authorBooks.add(a.getBook());
         }
-//        AuthorService.booksCount = authorBooks.size();
         return new BooksPageDto((long) authorBooks.size(), getPageOfBookDtoAsList(offset, size, authorBooks));
     }
 
+    @ServiceProcessTrackable
     public BooksPageDto getBooksByTag(Integer id, Integer offset, Integer size) {
         List<BookEntity> books = new ArrayList<>();
         TagEntity tag = tagService.getTagById(id);
@@ -146,6 +154,7 @@ public class BookService {
         return new BooksPageDto(getPageOfBookDtoAsList(offset, size, books));
     }
 
+    @ServiceProcessTrackable
     public BooksPageDto getBooksByGenreAndSubGenres(String slug, Integer offset, Integer size) {
         List<BookEntity> booksByGenre = genreService.getBooksByGenre(slug);
         return new BooksPageDto(getPageOfBookDtoAsList(offset, size, booksByGenre));
@@ -203,6 +212,7 @@ public class BookService {
         return booksDto;
     }
 
+    @ServiceProcessTrackable
     public void addBookStatus(BookStatus status, String slug, Principal principal,
                               HttpServletRequest request, HttpServletResponse response) {
         if (principal != null) {
@@ -271,6 +281,7 @@ public class BookService {
         }
     }
 
+    @ServiceProcessTrackable
     public List<BookDto> getBooksStatusList(BookStatus status, String contents, Principal principal) {
         List<BookEntity> books = new ArrayList<>();
         if (principal != null) {
@@ -300,6 +311,7 @@ public class BookService {
         }
     }
 
+    @ServiceProcessTrackable
     public void removeBook(String slug, String cookieName, String contents, HttpServletResponse response, Principal principal) {
         if (principal != null) {
             removeBookFromUser(slug, principal);

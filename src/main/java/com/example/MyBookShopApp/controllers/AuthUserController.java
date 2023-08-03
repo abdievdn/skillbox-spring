@@ -1,5 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.aspect.annotations.ControllerParamsCatch;
+import com.example.MyBookShopApp.aspect.annotations.ControllerResponseCatch;
 import com.example.MyBookShopApp.data.dto.ContactConfirmationDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.security.AuthService;
@@ -30,6 +32,8 @@ public class AuthUserController {
         return "signup";
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PostMapping("/requestContactConfirmation")
     @ResponseBody
     public ResultDto requestContactConfirmation(@RequestBody ContactConfirmationDto payload) {
@@ -40,6 +44,8 @@ public class AuthUserController {
         }
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PostMapping("/approveContact")
     @ResponseBody
     public ResultDto approveContact(@RequestBody ContactConfirmationDto payload) {
@@ -53,6 +59,8 @@ public class AuthUserController {
         return "signin";
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PostMapping("/login")
     @ResponseBody
     public JWTAuthDto login(@RequestBody ContactConfirmationDto payload,

@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
 import com.example.MyBookShopApp.data.entity.book.review.BookReviewEntity;
 import com.example.MyBookShopApp.repositories.BookReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class BookReviewService {
     private final BookReviewRepository bookReviewRepository;
     private final UserService userService;
 
+    @ServiceProcessTrackable
     public List<BookReviewEntity> getBookReviewList(String slug) {
         return bookService.getBookBySlug(slug).getReviews()
                 .stream()
@@ -26,6 +28,7 @@ public class BookReviewService {
                 .collect(Collectors.toList());
     }
 
+    @ServiceProcessTrackable
     public void saveBookReview(String slug, String text, Principal principal) {
         bookReviewRepository.save(new BookReviewEntity(
                 bookService.getBookBySlug(slug),

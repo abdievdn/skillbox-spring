@@ -1,10 +1,8 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
 import com.example.MyBookShopApp.data.dto.AuthorDto;
-import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
-import com.example.MyBookShopApp.data.entity.book.BookEntity;
-import com.example.MyBookShopApp.data.entity.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.repositories.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +17,14 @@ import java.util.stream.Collectors;
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
-    public static Integer booksCount;
 
+    @ServiceProcessTrackable
     public Map<String, List<AuthorEntity>> getAuthorsMap() {
         List<AuthorEntity> authors = authorRepository.findAll();
         return authors.stream().collect(Collectors.groupingBy(a -> a.getLastName().substring(0, 1)));
     }
 
+    @ServiceProcessTrackable
     public AuthorEntity getAuthorData(String slug) {
         return authorRepository.findBySlug(slug).orElse(null);
     }

@@ -1,23 +1,17 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
 import com.example.MyBookShopApp.data.dto.UserDto;
-import com.example.MyBookShopApp.data.entity.book.BookEntity;
-import com.example.MyBookShopApp.data.entity.book.links.Book2UserEntity;
 import com.example.MyBookShopApp.data.entity.enums.ContactType;
 import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
-import com.example.MyBookShopApp.repositories.UserRepository;
-import com.example.MyBookShopApp.security.BookShopUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -25,7 +19,6 @@ import java.util.Objects;
 public class UserService {
 
     private final UserContactRepository contactRepository;
-    private final UserRepository userRepository;
 
     private UserEntity getUserByContact(UserContactEntity contact) {
         if (contact != null) {
@@ -58,6 +51,7 @@ public class UserService {
             String email = "";
             String phone = "";
             UserContactEntity userContactEntity = contactRepository.findByContact(principal.getName()).orElse(null);
+            assert userContactEntity != null;
             UserEntity user = userContactEntity.getUser();
             if (user != null) {
                 name = user.getName();

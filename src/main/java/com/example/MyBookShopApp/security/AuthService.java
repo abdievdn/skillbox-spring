@@ -1,11 +1,9 @@
 package com.example.MyBookShopApp.security;
 
+import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
 import com.example.MyBookShopApp.data.dto.ContactConfirmationDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.data.dto.UserDto;
-import com.example.MyBookShopApp.data.entity.enums.ContactType;
-import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
-import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
 import com.example.MyBookShopApp.security.jwt.JWTAuthDto;
 import com.example.MyBookShopApp.security.jwt.JWTUtil;
@@ -13,13 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
 
 @Slf4j
 @Service
@@ -41,6 +37,7 @@ public class AuthService {
         }
     }
 
+    @ServiceProcessTrackable
     public void registerNewUser(UserDto userDto) {
         registerService.registerUser(
                 userDto.getName(),
@@ -61,6 +58,7 @@ public class AuthService {
         return new JWTAuthDto(jwtToken);
     }
 
+    @ServiceProcessTrackable
     public JWTAuthDto login(ContactConfirmationDto payload, HttpServletResponse response) {
         JWTAuthDto jwtAuthDto = jwtLogin(payload);
         Cookie cookie = new Cookie("token", jwtAuthDto.getResult());

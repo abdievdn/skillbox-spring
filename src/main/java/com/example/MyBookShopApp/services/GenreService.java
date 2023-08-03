@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
 import com.example.MyBookShopApp.data.dto.GenreDto;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2GenreEntity;
@@ -27,6 +28,7 @@ public class GenreService {
         return genreRepository.findBySlug(slug).orElseGet(GenreEntity::new);
     }
 
+    @ServiceProcessTrackable
     public List<BookEntity> getBooksByGenre(String slug) {
         GenreEntity genre = getGenreEntity(slug);
         List<BookEntity> books = new ArrayList<>();
@@ -41,6 +43,7 @@ public class GenreService {
         return books;
     }
 
+    @ServiceProcessTrackable
     public List<GenreEntity> getGenreBreadcrumbs(String slug) {
         GenreEntity genre = getGenreEntity(slug);
         List<GenreEntity> breadcrumbs = new ArrayList<>();
@@ -54,6 +57,7 @@ public class GenreService {
         return breadcrumbs;
     }
 
+    @ServiceProcessTrackable
     public List<GenreEntity> getGenresData() {
         List<GenreEntity> genres = genreRepository.findAllByParent(null);
         setBooksCountToGenre(genres);

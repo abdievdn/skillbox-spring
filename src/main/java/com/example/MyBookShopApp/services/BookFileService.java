@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.file.BookFileEntity;
 import com.example.MyBookShopApp.repositories.BookFileRepository;
@@ -31,6 +32,8 @@ public class BookFileService {
 
     @Value("${path.upload}")
     private String uploadPath;
+
+    @ServiceProcessTrackable
     public void saveNewBookImage(MultipartFile file, String slug) throws Exception {
         String resourceURI = null;
         if (!file.isEmpty()) {
@@ -45,6 +48,7 @@ public class BookFileService {
         saveBookImage(slug, resourceURI);
     }
 
+    @ServiceProcessTrackable
     public void saveBookImage(String slug, String savePath) {
         BookEntity book = bookRepository.findBySlug(slug).orElseThrow();
         book.setImage(savePath);
@@ -64,6 +68,7 @@ public class BookFileService {
         }
     }
 
+    @ServiceProcessTrackable
     public byte[] getBookFileByteArray(String hash) throws IOException {
         Path path = Paths.get(downloadPath, getBookFileByHash(hash).getPath());
         return Files.readAllBytes(path);

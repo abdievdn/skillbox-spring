@@ -1,5 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.aspect.annotations.ControllerParamsCatch;
+import com.example.MyBookShopApp.aspect.annotations.ControllerResponseCatch;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.services.BookService;
@@ -17,6 +19,7 @@ public class SearchController {
 
     private final BookService bookService;
 
+    @ControllerParamsCatch
     @GetMapping(value = {"/search", "/search/{searchWord}"})
     public String getSearchResults(@PathVariable(value = "searchWord", required = false) String searchWord, Model model) throws CommonErrorException {
         BooksPageDto searchResultBooks = bookService.getPageOfSearchResultBooks(searchWord, 0, 20);
@@ -26,6 +29,8 @@ public class SearchController {
         return "/search/index";
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @GetMapping("/search/page/{searchWord}")
     @ResponseBody
     public BooksPageDto getSearchPage(@RequestParam("offset") Integer offset,

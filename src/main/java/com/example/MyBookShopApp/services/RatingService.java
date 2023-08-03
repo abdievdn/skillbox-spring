@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
 import com.example.MyBookShopApp.data.dto.RatingDto;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.rating.BookRatingEntity;
@@ -49,6 +50,7 @@ public class RatingService {
                 .build();
     }
 
+    @ServiceProcessTrackable
     public void saveBookRating(String slug, Short value, Principal principal) {
         BookEntity book = bookRepository.findBySlug(slug).orElseThrow();
         UserEntity user = userService.getCurrentUserByPrincipal(principal);

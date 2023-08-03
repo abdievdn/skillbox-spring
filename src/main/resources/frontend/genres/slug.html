@@ -22,7 +22,7 @@
                 <h1 class="Middle-title" th:text="${genreBreadcrumbs[genreBreadcrumbs.size() - 1].name}"></h1>
             </header>
             <div class="Section">
-                <div th:replace="~{fragments/books_pool_fragment :: cards(${booksByGenreList})}"></div>
+                <div th:replace="~{fragments/books_pool_fragment :: cards(${booksByGenreList.books})}"></div>
                 <div class="Cards-footer Cards-footer_center">
                     <a class="btn btn_primary" href="#"
                        data-refreshshow="genre"

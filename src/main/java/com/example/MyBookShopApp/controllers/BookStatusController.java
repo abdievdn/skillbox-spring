@@ -1,5 +1,8 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.aspect.annotations.ControllerParamsCatch;
+import com.example.MyBookShopApp.aspect.annotations.ControllerResponseCatch;
+import com.example.MyBookShopApp.aspect.annotations.NoLogging;
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
@@ -23,11 +26,13 @@ public class BookStatusController {
 
     private final BookService bookService;
 
+    @NoLogging
     @ModelAttribute(name = "booksStatusList")
     private List<BookDto> booksCart() {
         return new ArrayList<>();
     }
 
+    @ControllerParamsCatch
     @GetMapping("/cart")
     public String cartPage(@CookieValue(value = "CART", required = false) String contents,
                            Model model, Principal principal) {
@@ -35,6 +40,7 @@ public class BookStatusController {
         return "cart";
     }
 
+    @ControllerParamsCatch
     @GetMapping("/postponed")
     public String postponedPage(@CookieValue(value = "KEPT", required = false) String contents,
                                 Model model, Principal principal) {
@@ -42,6 +48,8 @@ public class BookStatusController {
         return "postponed";
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PostMapping("/changeBookStatus")
     @ResponseBody
     public ResultDto changeBookStatus(@RequestBody InteractionWithBookDto interaction,
@@ -54,7 +62,8 @@ public class BookStatusController {
         return new ResultDto(true);
     }
 
-
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PostMapping("/changeBookStatus/remove/cart")
     @ResponseBody
     public ResultDto removeFromCart(@RequestBody InteractionWithBookDto interaction,
@@ -64,6 +73,8 @@ public class BookStatusController {
         return new ResultDto(true);
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @PostMapping("/changeBookStatus/remove/postponed")
     @ResponseBody
     public ResultDto removeFromPostponed(@RequestBody InteractionWithBookDto interaction,

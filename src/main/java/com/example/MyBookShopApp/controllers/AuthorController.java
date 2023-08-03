@@ -1,5 +1,8 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.aspect.annotations.ControllerParamsCatch;
+import com.example.MyBookShopApp.aspect.annotations.ControllerResponseCatch;
+import com.example.MyBookShopApp.aspect.annotations.NoLogging;
 import com.example.MyBookShopApp.config.SpringfoxConfig;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
@@ -29,6 +32,7 @@ public class AuthorController {
         model.addAttribute("authorId", slug);
     }
 
+    @NoLogging
     @ModelAttribute("authorsMap")
     private Map<String, List<AuthorEntity>> authorsMap() {
         return authorService.getAuthorsMap();
@@ -40,18 +44,22 @@ public class AuthorController {
         return "/authors/index";
     }
 
+    @ControllerParamsCatch
     @GetMapping("/authors/{slug}")
     public String authorsSlugPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
         setModelAttributes(model, slug, 10);
         return "/authors/slug";
     }
 
+    @ControllerParamsCatch
     @GetMapping("/books/author/{slug}")
     public String booksByAuthor(@PathVariable(value = "slug", required = false) String slug, Model model) {
         setModelAttributes(model, slug, 20);
         return "/books/author";
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @GetMapping("/books/author/page/{slug}")
     @ResponseBody
     public BooksPageDto bookByAuthorPage(@PathVariable(value = "slug", required = false) String slug,

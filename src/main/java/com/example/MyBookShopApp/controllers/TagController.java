@@ -1,5 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.aspect.annotations.ControllerParamsCatch;
+import com.example.MyBookShopApp.aspect.annotations.ControllerResponseCatch;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.services.BookService;
 import com.example.MyBookShopApp.services.TagService;
@@ -15,6 +17,7 @@ public class TagController {
     private final TagService tagService;
     private final BookService bookService;
 
+    @ControllerParamsCatch
     @GetMapping("/tags/slug/{id}")
     public String booksByTag(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("booksByTagList", bookService.getBooksByTag(id, 0, 20));
@@ -23,6 +26,8 @@ public class TagController {
         return "/tags/slug";
     }
 
+    @ControllerParamsCatch
+    @ControllerResponseCatch
     @GetMapping("/tags/page/{id}")
     @ResponseBody
     public BooksPageDto tagsSlugPage(@PathVariable(value = "id", required = false) Integer id,

@@ -1,8 +1,6 @@
 package com.example.MyBookShopApp.repositories;
 
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
-import com.example.MyBookShopApp.data.entity.book.links.Book2UserEntity;
-import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

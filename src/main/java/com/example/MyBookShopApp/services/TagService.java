@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
 import com.example.MyBookShopApp.data.dto.TagDto;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.repositories.TagRepository;
@@ -22,6 +23,7 @@ public class TagService {
         return tagRepository.findAll();
     }
 
+    @ServiceProcessTrackable
     public Map<TagEntity, Integer> getTagsWithValues() {
         Map<TagEntity, Integer> tags = new HashMap<>();
         for (TagEntity t : getAllTags()) {
