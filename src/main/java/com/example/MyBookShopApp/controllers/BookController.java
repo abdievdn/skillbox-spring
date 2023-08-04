@@ -120,7 +120,7 @@ public class BookController {
     @ResponseBody
     public ResultDto rateBook(@RequestBody InteractionWithBookDto interaction, Principal principal) {
         ratingService.saveBookRating(interaction.getBookId(), interaction.getValue(), principal);
-        return new ResultDto(true);
+        return new ResultDto();
     }
 
     @ControllerParamsCatch
@@ -130,7 +130,7 @@ public class BookController {
     @ResponseBody
     public ResultDto bookReview(@RequestBody InteractionWithBookDto interaction, Principal principal) {
         bookReviewService.saveBookReview(interaction.getBookId(), interaction.getText(), principal);
-        return new ResultDto(true);
+        return new ResultDto();
     }
 
     @ControllerParamsCatch
@@ -139,6 +139,6 @@ public class BookController {
     @PostMapping("/rateBookReview")
     @ResponseBody
     public ResultDto rateBookReview() {
-        return new ResultDto(true);
+        return new ResultDto();
     }
 }

@@ -22,7 +22,7 @@ public class UserContactEntity {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", columnDefinition = "INT NOT NULL")
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 
     private ContactType type;
@@ -30,7 +30,7 @@ public class UserContactEntity {
     @Column(columnDefinition = "SMALLINT NOT NULL")
     private short approved;
 
-    @Column(columnDefinition = "VARCHAR(255) NOT NULL")
+    @Column(columnDefinition = "VARCHAR(255)")
     private String code;
 
     @Column(columnDefinition = "INT")
@@ -44,4 +44,8 @@ public class UserContactEntity {
 
     @OneToMany(mappedBy = "userContact", fetch = FetchType.EAGER)
     private List<JWTBlacklistEntity> jwtList;
+
+    public Boolean isCodeExpired() {
+        return LocalDateTime.now().isAfter(codeTime);
+    }
 }

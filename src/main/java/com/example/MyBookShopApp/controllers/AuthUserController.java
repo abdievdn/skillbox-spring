@@ -6,7 +6,6 @@ import com.example.MyBookShopApp.data.dto.ContactConfirmationDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.security.AuthService;
 import com.example.MyBookShopApp.data.dto.UserDto;
-import com.example.MyBookShopApp.security.jwt.JWTAuthDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -37,11 +36,14 @@ public class AuthUserController {
     @PostMapping("/requestContactConfirmation")
     @ResponseBody
     public ResultDto requestContactConfirmation(@RequestBody ContactConfirmationDto payload) {
-        if (payload.getType() != null && payload.getType().equals("signin")) {
-            return new ResultDto(true);
-        } else {
-            return authService.checkContact(payload);
+        if (payload.getConfirmationType() != null) {
+            if (payload.getConfirmationType().equals("signin")) {
+                return authService.checkSigninContact(payload);
+            } else if (payload.getConfirmationType().equals("signup")) {
+                return authService.checkSignupContact(payload);
+            }
         }
+        return new ResultDto("Неизвестная ошибка!");
     }
 
     @ControllerParamsCatch
@@ -49,9 +51,10 @@ public class AuthUserController {
     @PostMapping("/approveContact")
     @ResponseBody
     public ResultDto approveContact(@RequestBody ContactConfirmationDto payload) {
-        return new ResultDto(true);
+        return authService.isSecretCodeValid(payload);
     }
 
+    @ControllerParamsCatch
     @PostMapping("/registration")
     public String userRegistration(UserDto userDto, Model model) {
         model.addAttribute("registrationOk", true);
@@ -63,8 +66,12 @@ public class AuthUserController {
     @ControllerResponseCatch
     @PostMapping("/login")
     @ResponseBody
-    public JWTAuthDto login(@RequestBody ContactConfirmationDto payload,
-                            HttpServletResponse response) {
+    public ResultDto login(@RequestBody ContactConfirmationDto payload,
+                           HttpServletResponse response) {
+        ResultDto resultDto = authService.isSecretCodeValid(payload);
+        if (!resultDto.getResult()) {
+            return resultDto;
+        }
         return authService.login(payload, response);
     }
 

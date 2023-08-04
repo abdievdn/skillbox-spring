@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -19,15 +21,17 @@ public class ExceptionControllerAdvice {
         return "redirect:/";
     }
 
-//    @ExceptionHandler({NoSuchElementException.class, NullPointerException.class, IllegalStateException.class})
-//    public String handleException(Exception ex) {
-//        log.info(ex.getMessage());
-//        return "redirect:/";
-//    }
+    @ExceptionHandler({NoSuchElementException.class, NullPointerException.class, IllegalStateException.class})
+    public void handleException(Exception ex, HttpServletResponse response) throws IOException {
+        log.info(ex.getMessage());
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.sendRedirect("redirect:/signup");
+    }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public String handleExpiredJwtException(Exception ex) {
+    public void handleExpiredJwtException(Exception ex, HttpServletResponse response) throws IOException {
         log.info(ex.getMessage());
-        return "redirect:/signin";
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.sendRedirect("redirect:/signup");
     }
 }

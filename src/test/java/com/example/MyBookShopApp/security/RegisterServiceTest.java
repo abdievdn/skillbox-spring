@@ -26,7 +26,7 @@ class RegisterServiceTest {
 
     private UserEntity user;
     private UserContactEntity userContactEmail, userContactPhone;
-    private String name, email, phone, password;
+    private String name, email, phone;
 
     @MockBean
     private UserRepository userRepository;
@@ -44,7 +44,6 @@ class RegisterServiceTest {
         name = "Tester";
         email = "test@mail.org";
         phone = "+7889877845";
-        password = "123123";
         user = UserEntity.builder()
                 .id(1)
                 .name(name)
@@ -55,14 +54,12 @@ class RegisterServiceTest {
                 .user(user)
                 .contact(email)
                 .type(ContactType.EMAIL)
-                .code(password)
                 .build();
         userContactPhone = UserContactEntity.builder()
                 .id(2)
                 .user(user)
                 .contact(phone)
                 .type(ContactType.PHONE)
-                .code(password)
                 .build();
         user.setContacts(List.of(userContactEmail, userContactPhone));
     }
@@ -72,12 +69,12 @@ class RegisterServiceTest {
         user = null;
         userContactEmail = null;
         userContactPhone = null;
-        name = email = phone = password = null;
+        name = email = phone = null;
     }
 
     @Test
     void registerUser() {
-        UserEntity userEntity = registerService.registerUser(name, email, phone, password);
+        UserEntity userEntity = registerService.registerUser(name, email, phone);
         assertTrue(CoreMatchers.is(user.getName()).matches(userEntity.getName()));
         Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(UserEntity.class));
         Mockito.verify(contactRepository, Mockito.times(2)).save(Mockito.any(UserContactEntity.class));
@@ -88,7 +85,7 @@ class RegisterServiceTest {
         Mockito.doReturn(Optional.of(user))
                 .when(userRepository)
                 .findByName(name);
-        registerService.registerUser(name, email, phone, password);
+        registerService.registerUser(name, email, phone);
         Mockito.verify(userRepository, Mockito.times(0)).save(Mockito.any(UserEntity.class));
         Mockito.verify(contactRepository, Mockito.times(0)).save(Mockito.any(UserContactEntity.class));
     }

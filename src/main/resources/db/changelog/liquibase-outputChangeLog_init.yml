@@ -650,8 +650,6 @@ databaseChangeLog:
             name: approved
             type: SMALLINT
         - column:
-            constraints:
-              nullable: false
             name: code
             type: VARCHAR(255)
         - column:
@@ -669,8 +667,6 @@ databaseChangeLog:
             name: type
             type: INTEGER
         - column:
-            constraints:
-              nullable: false
             name: user_id
             type: INTEGER
         tableName: user_contact

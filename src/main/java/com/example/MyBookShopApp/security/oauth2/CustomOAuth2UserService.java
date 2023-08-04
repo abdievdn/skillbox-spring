@@ -29,7 +29,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     public void processOAuth2PostLogin(HttpServletRequest request, HttpServletResponse response, CustomOAuth2User oAuth2User) {
-        registerService.registerUser(oAuth2User.getUsername(), oAuth2User.getName(), "", "");
+        registerService.registerUser(oAuth2User.getUsername(), oAuth2User.getName(), "");
         CookieUtil.deleteCookieByName(request, response,"JSESSIONID");
         CookieUtil.addCookieByName(response, "token", jwtUtil.generateToken(oAuth2User.getName()));
     }

@@ -45,6 +45,21 @@ spring:
             scope:
               - email
               - public_profile
+  mail:
+    host: smtp.yandex.ru
+    port: 465
+    username: ${email_username}
+    password: ${email_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+        debug: true
 
 path:
   upload: d:/files/book-covers
@@ -53,4 +68,11 @@ path:
 auth:
   secret: kainart
   expiration: 3600000
-  schedule-clear-period: 86400000
+
+twilio:
+  ACCOUNT_SID: ${twilio_account_sid}
+  AUTH_TOKEN: ${twilio_auth_token}
+  TWILIO_NUMBER: ${twilio_phone_number}
+
+mail:
+  ADDRESS: adzmit@yandex.by
