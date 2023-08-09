@@ -1,6 +1,7 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
+import com.example.MyBookShopApp.data.dto.AuthorDto;
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
@@ -11,15 +12,20 @@ import com.example.MyBookShopApp.data.entity.book.links.Book2UserEntity;
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
+import com.example.MyBookShopApp.data.google.api.books.Item;
+import com.example.MyBookShopApp.data.google.api.books.Root;
 import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
 import com.example.MyBookShopApp.repositories.Book2UserTypeRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.support.PagedListHolder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
@@ -45,6 +51,7 @@ public class BookService {
     private final AuthorService authorService;
     private final TagService tagService;
     private final GenreService genreService;
+    private final RestTemplate restTemplate;
 
     public BookEntity getBookBySlug(String slug) {
         return bookRepository.findBySlug(slug).orElse(null);
@@ -206,9 +213,9 @@ public class BookService {
 
     private List<BookDto> bookEntityListToBookDtoList(List<BookEntity> books) {
         List<BookDto> booksDto = new ArrayList<>();
-       for (BookEntity b : books) {
-           booksDto.add(getBookDto(b));
-       }
+        for (BookEntity b : books) {
+            booksDto.add(getBookDto(b));
+        }
         return booksDto;
     }
 
@@ -337,5 +344,40 @@ public class BookService {
                 response.addCookie(cookie);
             }
         }
+    }
+
+    @Value("${google.books.api.key}")
+    private String googleApiKey;
+
+    public BooksPageDto getPageOfGoogleBooksApiSearchResult(String searchWord, Integer offset, Integer size) {
+        String REQUEST_URL = "https://www.googleapis.com/books/v1/volumes" +
+                "?q=" + searchWord +
+                "&key=" + googleApiKey +
+                "&filter=paid-ebooks" +
+                "&startIndex=" + offset +
+                "&maxResults=" + size;
+        Root root = restTemplate.getForEntity(REQUEST_URL, Root.class).getBody();
+        ArrayList<BookDto> booksList = new ArrayList<>();
+        if (root != null) {
+            for (Item item : root.getItems()) {
+                BookDto book = new BookDto();
+                if (item.getVolumeInfo() != null && item.getSaleInfo() != null) {
+                    book = BookDto.builder()
+                            .authors(item.getVolumeInfo().getAuthors().stream()
+                                    .map(a -> AuthorDto.builder()
+                                            .firstName(a.substring(0, a.indexOf(" ")))
+                                            .lastName(a.substring(a.indexOf(" ") + 1, a.length() - 1))
+                                            .build())
+                                    .collect(Collectors.toList()))
+                            .title(item.getVolumeInfo().getTitle())
+                            .image(item.getVolumeInfo().getImageLinks().getThumbnail())
+                            .price((int) item.getSaleInfo().getRetailPrice().getAmount())
+                            .discountPrice(item.getSaleInfo().getListPrice().getAmount())
+                            .build();
+                }
+                booksList.add(book);
+            }
+        }
+        return new BooksPageDto(booksList);
     }
 }

@@ -35,9 +35,11 @@
         <a th:href="@{'/books/' + ${book.slug}}">
             <img th:src="${book.image}" src="" alt="card.jpg"/>
         </a>
+        <th:block th:if="${book.discount} != null">
         <div th:if="${book.discount} > 0">
             <div th:replace="~{this :: cardSale}"></div>
         </div>
+        </th:block>
         <div th:if="${book.isBestseller}">
             <div th:replace="~{this :: cardBestseller}"></div>
         </div>

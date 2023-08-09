@@ -76,3 +76,8 @@ twilio:
 
 mail:
   ADDRESS: adzmit@yandex.by
+
+google:
+  books:
+    api:
+      key: ${google_books_api_key}
