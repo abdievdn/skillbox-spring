@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,12 @@ public class GlobalControllerAdvice {
     private final BookService bookService;
     private final TagService tagService;
     private final UserService userService;
+
+
+    @ModelAttribute("searchOptions")
+    public List<String> searchOptions() {
+        return List.of("BookShop", "Google");
+    }
 
     @ModelAttribute("currentUser")
     public UserDto getCurrentUser(Principal principal) {

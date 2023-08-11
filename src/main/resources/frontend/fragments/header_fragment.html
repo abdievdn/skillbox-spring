@@ -37,10 +37,12 @@
                                 <input class="search-input" id="query" name="query" type="text"
                                        placeholder="Search over 30 million book titles"
                                        th:value="${searchWord}"/>
-                                <div style="width: 100px">
+                                <div style="width: 110px">
                                 <select style="margin: 0; padding: 0; border: 0">
-                                    <option value="google">google</option>
-                                    <option value="default">bookshop</option>
+                                    <option th:each="option : ${searchOptions}"
+                                            th:value="${option}"
+                                            th:text="${option}"
+                                            th:selected="${option == searchType}"></option>
                                 </select>
                                 </div>
                                 <button class="search-button" type="submit" name="search" id="search">Поиск</button>

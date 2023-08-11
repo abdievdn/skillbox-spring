@@ -15,24 +15,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class SearchController {
 
+    public static final int DEFAULT_OFFSET = 0;
+    public static final int DEFAULT_SIZE = 20;
     private final BookService bookService;
 
     @ControllerParamsCatch
-    @GetMapping(value = {"/search", "/search/{searchWord}/{searchType}"})
+    @GetMapping(value = {"/search/{searchType}/{searchWord}"})
     public String getSearchResults(@PathVariable(value = "searchWord", required = false) String searchWord,
-                                   @PathVariable(value = "searchType", required = false) String searchType,
+                                   @PathVariable(value = "searchType") String searchType,
                                    Model model) throws CommonErrorException {
-        BooksPageDto searchResultBooks = new BooksPageDto();
-        if (searchType.equals("default")) {
-            searchResultBooks = bookService.getPageOfSearchResultBooks(searchWord, 0, 20);
-        } else if (searchType.equals("google")) {
-            searchResultBooks = bookService.getPageOfGoogleBooksApiSearchResult(searchWord, 0, 20);
-        }
+        BooksPageDto searchResultBooks = getBooksPageDto(DEFAULT_OFFSET, DEFAULT_SIZE, searchWord, searchType);
         model.addAttribute("searchType", searchType);
         model.addAttribute("searchWord", searchWord);
         model.addAttribute("searchResults", searchResultBooks.getBooks());
@@ -42,16 +41,20 @@ public class SearchController {
 
     @ControllerParamsCatch
     @ControllerResponseCatch
-    @GetMapping("/search/page/{searchWord}/{searchType}")
+    @GetMapping("/search/page/{searchType}/{searchWord}")
     @ResponseBody
     public BooksPageDto getSearchPage(@RequestParam("offset") Integer offset,
                                       @RequestParam("limit") Integer size,
                                       @PathVariable(value = "searchWord", required = false) String searchWord,
                                       @PathVariable(value = "searchType", required = false) String searchType) throws CommonErrorException {
+        return getBooksPageDto(offset, size, searchWord, searchType);
+    }
+
+    private BooksPageDto getBooksPageDto(Integer offset, Integer size, String searchWord, String searchType) throws CommonErrorException {
         BooksPageDto searchResultBooks = new BooksPageDto();
-        if (searchType.equals("default")) {
+        if (searchType.equals("BookShop")) {
             searchResultBooks = bookService.getPageOfSearchResultBooks(searchWord, offset, size);
-        } else if (searchType.equals("google")) {
+        } else if (searchType.equals("Google")) {
             searchResultBooks = bookService.getPageOfGoogleBooksApiSearchResult(searchWord, offset, size);
         }
         return searchResultBooks;
