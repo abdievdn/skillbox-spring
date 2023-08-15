@@ -1,6 +1,7 @@
 package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.aspect.annotations.NoLogging;
+import com.example.MyBookShopApp.controllers.enums.SearchSource;
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.UserDto;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
@@ -30,7 +31,8 @@ public class GlobalControllerAdvice {
 
     @ModelAttribute("searchOptions")
     public List<String> searchOptions() {
-        return List.of("BookShop", "Google");
+        return List.of(SearchSource.BOOKSHOP.toString(),
+                SearchSource.GOOGLE.toString());
     }
 
     @ModelAttribute("currentUser")

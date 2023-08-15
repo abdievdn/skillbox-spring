@@ -24,6 +24,7 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler({NoSuchElementException.class, NullPointerException.class, IllegalStateException.class})
     public void handleException(Exception ex, HttpServletResponse response) throws IOException {
         log.info(ex.getMessage());
+        ex.printStackTrace();
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.sendRedirect("redirect:/signup");
     }

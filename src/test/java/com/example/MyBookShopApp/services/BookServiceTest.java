@@ -9,7 +9,6 @@ import com.example.MyBookShopApp.data.entity.book.links.*;
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
 import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
-import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.repositories.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,17 +121,6 @@ class BookServiceTest {
         assertEquals(bookDto.getId(), 1);
         assertEquals(bookDto.getSlug(), "book1");
         assertEquals(bookDto.getTitle(), "Success");
-    }
-
-    @Test
-    void getPageOfSearchResultBooks() throws CommonErrorException {
-        Mockito.when(bookRepository.findAllByTitleContainingIgnoreCase(Mockito.matches("Success"), Mockito.any()))
-                .thenReturn(booksPage);
-        BooksPageDto booksPageDto = bookService.getPageOfSearchResultBooks("Success", 0, 10);
-        assertNotNull(booksPageDto);
-        assertEquals(booksPageDto.getBooks().size(), 1);
-        assertEquals(booksPageDto.getBooks().get(0).getTitle(), "Success");
-        assertNotEquals(booksPageDto.getBooks().get(0).getTitle(), "Failed");
     }
 
     @Test

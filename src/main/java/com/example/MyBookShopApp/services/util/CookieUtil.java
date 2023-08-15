@@ -7,9 +7,13 @@ import javax.servlet.http.HttpServletResponse;
 public class CookieUtil {
 
     public static void deleteCookieByName(HttpServletRequest request, HttpServletResponse response, String name) {
+        deleteCookieByName(request, response, name, "/");
+    }
+
+    public static void deleteCookieByName(HttpServletRequest request, HttpServletResponse response, String name, String path) {
         for (Cookie c : request.getCookies()) {
             if (c.getName().equals(name)) {
-                c.setPath("/");
+                c.setPath(path);
                 c.setMaxAge(0);
                 response.addCookie(c);
             }

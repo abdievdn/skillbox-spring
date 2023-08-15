@@ -80,4 +80,9 @@ mail:
 google:
   books:
     api:
-      key: ${google_books_api_key}
+      KEY: ${google_books_api_key}
+
+yookassa:
+  shop:
+    ID: 243032
+    KEY: test_LoWe-HA_6cb-ltoRVKKrh585nZl15sW1hLRQKVW_WcQ

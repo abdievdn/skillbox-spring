@@ -6,5 +6,5 @@ import lombok.Data;
 public class RetailPrice {
     public double amount;
     public String currencyCode;
-    public int amountInMicros;
+    public String amountInMicros;
 }

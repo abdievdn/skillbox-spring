@@ -42,7 +42,7 @@
                                     <option th:each="option : ${searchOptions}"
                                             th:value="${option}"
                                             th:text="${option}"
-                                            th:selected="${option == searchType}"></option>
+                                            th:selected="${option == searchSource}"></option>
                                 </select>
                                 </div>
                                 <button class="search-button" type="submit" name="search" id="search">Поиск</button>

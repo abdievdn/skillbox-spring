@@ -6,7 +6,7 @@
 <div class="Middle Middle_search">
     <div class="wrap">
         <main class="Middle-main">
-            <h1 class="Middle-title" th:text="${'Поиск по выражению ' + searchWord + ' в ' + searchType}"></h1>
+            <h1 class="Middle-title" th:text="${'Поиск по выражению ' + searchWord + ' в ' + searchSource}"></h1>
 <!--            <div class="Section">-->
 <!--                <div class="search">-->
 <!--                    <form class="form form_search" action="#" method="post" data-searchlimit="20">-->
@@ -36,7 +36,7 @@
                        data-refreshshow="search"
                        data-refreshoffset="1"
                        data-refreshlimit="20"
-                       th:attr="data-refreshquery=${searchWord}, data-searchtype=${searchType}"
+                       th:attr="data-refreshquery=${searchWord}, data-searchsource=${searchSource}"
                        data-refreshquery="Техника">Показать еще</a>
                 </div>
             </div>

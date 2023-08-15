@@ -7,7 +7,7 @@ import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
-import com.example.MyBookShopApp.services.BookService;
+import com.example.MyBookShopApp.services.BookStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +24,7 @@ import java.util.List;
 @RequestMapping("/books")
 public class BookStatusController {
 
-    private final BookService bookService;
+    private final BookStatusService bookStatusService;
 
     @NoLogging
     @ModelAttribute(name = "booksStatusList")
@@ -36,7 +36,7 @@ public class BookStatusController {
     @GetMapping("/cart")
     public String cartPage(@CookieValue(value = "CART", required = false) String contents,
                            Model model, Principal principal) {
-        model.addAttribute("booksStatusList", bookService.getBooksStatusList(BookStatus.CART, contents, principal));
+        model.addAttribute("booksStatusList", bookStatusService.getBooksStatusList(BookStatus.CART, contents, principal));
         return "cart";
     }
 
@@ -44,7 +44,7 @@ public class BookStatusController {
     @GetMapping("/postponed")
     public String postponedPage(@CookieValue(value = "KEPT", required = false) String contents,
                                 Model model, Principal principal) {
-        model.addAttribute("booksStatusList", bookService.getBooksStatusList(BookStatus.KEPT, contents, principal));
+        model.addAttribute("booksStatusList", bookStatusService.getBooksStatusList(BookStatus.KEPT, contents, principal));
         return "postponed";
     }
 
@@ -58,7 +58,7 @@ public class BookStatusController {
                                       Principal principal) {
         String status = interaction.getStatus();
         String slug = interaction.getBooksIds();
-        bookService.addBookStatus(BookStatus.valueOf(status), slug, principal, request, response);
+        bookStatusService.addBookStatus(BookStatus.valueOf(status), slug, principal, request, response);
         return new ResultDto(true);
     }
 
@@ -69,7 +69,7 @@ public class BookStatusController {
     public ResultDto removeFromCart(@RequestBody InteractionWithBookDto interaction,
                                     @CookieValue(name = "CART", required = false) String contents,
                                     HttpServletResponse response, Principal principal) {
-        bookService.removeBook(interaction.getBooksIds(), BookStatus.CART.name(), contents, response, principal);
+        bookStatusService.removeBook(interaction.getBooksIds(), BookStatus.CART.name(), contents, response, principal);
         return new ResultDto(true);
     }
 
@@ -80,7 +80,7 @@ public class BookStatusController {
     public ResultDto removeFromPostponed(@RequestBody InteractionWithBookDto interaction,
                                          @CookieValue(name = "KEPT", required = false) String contents,
                                          HttpServletResponse response, Principal principal) {
-        bookService.removeBook(interaction.getBooksIds(), BookStatus.KEPT.name(), contents, response, principal);
+        bookStatusService.removeBook(interaction.getBooksIds(), BookStatus.KEPT.name(), contents, response, principal);
         return new ResultDto(true);
     }
 }
