@@ -4,7 +4,6 @@ server:
     session:
       tracking-modes: cookie
 
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
@@ -29,9 +28,6 @@ spring:
     properties:
       hibernate:
         enable_lazy_load_no_trans: true
-  mvc:
-    path-match:
-      matching-strategy: ant_path_matcher
   messages:
     basename: lang.messages
   security:
@@ -39,8 +35,8 @@ spring:
       client:
         registration:
           facebook:
-            client-id: 549770893750716
-            client-secret: b92de292add0b00a5ad6cae15fb88d1d
+            client-id: ${facebook_id}
+            client-secret: ${facebook_secret}
             client-authentication-method: basic
             scope:
               - email
@@ -59,7 +55,28 @@ spring:
             required: true
           ssl:
             enable: true
-        debug: true
+        debug: false
+#  application:
+#    name: bookshop
+#  boot:
+#    admin:
+#      client:
+#        url: http://localhost:8080
+#        instance:
+#          service-url: http://localhost:8085
+#          health-url: http://localhost:8085/actuator/health
+#          management-url: http://localhost:8085/actuator
+#        enabled: true
+
+#management:
+#  endpoint:
+#    health:
+#      show-details: always
+#  endpoints:
+#    web:
+#      exposure:
+#        include: '*'
+
 
 path:
   upload: d:/files/book-covers
@@ -84,5 +101,5 @@ google:
 
 yookassa:
   shop:
-    ID: 243032
-    KEY: test_LoWe-HA_6cb-ltoRVKKrh585nZl15sW1hLRQKVW_WcQ
+    ID: ${yookassa_id}
+    KEY: ${yookassa_key}

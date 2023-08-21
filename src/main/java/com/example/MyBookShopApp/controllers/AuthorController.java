@@ -3,13 +3,10 @@ package com.example.MyBookShopApp.controllers;
 import com.example.MyBookShopApp.aspect.annotations.ControllerParamsCatch;
 import com.example.MyBookShopApp.aspect.annotations.ControllerResponseCatch;
 import com.example.MyBookShopApp.aspect.annotations.NoLogging;
-import com.example.MyBookShopApp.config.SpringfoxConfig;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
 import com.example.MyBookShopApp.services.AuthorService;
 import com.example.MyBookShopApp.services.BookService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +17,6 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@Api(tags = SpringfoxConfig.AUTHOR_TAG)
 public class AuthorController {
 
     private final AuthorService authorService;
@@ -38,7 +34,6 @@ public class AuthorController {
         return authorService.getAuthorsMap();
     }
 
-    @ApiOperation("method to get map of authors")
     @GetMapping("/authors")
     public String authorsPage() {
         return "/authors/index";

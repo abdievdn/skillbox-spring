@@ -2,7 +2,6 @@ package com.example.MyBookShopApp.data.entity.author;
 
 import com.example.MyBookShopApp.data.entity.book.links.Book2AuthorEntity;
 import lombok.*;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.ArrayList;
