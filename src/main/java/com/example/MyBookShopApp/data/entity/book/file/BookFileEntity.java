@@ -12,7 +12,7 @@ public class BookFileEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id", referencedColumnName = "id", columnDefinition = "INT NOT NULL")

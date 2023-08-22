@@ -185,7 +185,7 @@ class BookServiceTest {
         book2AuthorEntityList.add(new Book2AuthorEntity(1, book1, author, 0));
         Mockito.when(authorRepository.findBySlug("author"))
                 .thenReturn(Optional.of(author));
-        BooksPageDto booksPageDto = bookService.getBooksByAuthor("author", 0, 10);
+        BooksPageDto booksPageDto = bookService.getPageOfBooksByAuthor("author", 0, 10);
         assertNotNull(booksPageDto);
         assertEquals(booksPageDto.getBooks().get(0).getSlug(), "book1");
         assertEquals(booksPageDto.getCount(), 1);
@@ -202,7 +202,7 @@ class BookServiceTest {
         book2TagEntityList.add(new Book2TagEntity(1, book1, tag));
         Mockito.when(tagRepository.findById(1))
                 .thenReturn(Optional.of(tag));
-        BooksPageDto booksPageDto = bookService.getBooksByTag(1, 0, 10);
+        BooksPageDto booksPageDto = bookService.getPageOfBooksByTag(1, 0, 10);
         assertNotNull(booksPageDto);
         assertEquals(booksPageDto.getBooks().get(0).getTitle(), "Success");
     }
@@ -221,7 +221,7 @@ class BookServiceTest {
                 .thenReturn(Optional.of(genre));
         Mockito.when(bookRepository.findById(1))
                 .thenReturn(Optional.of(book1));
-        BooksPageDto booksPageDto = bookService.getBooksByGenreAndSubGenres("genre", 0, 10);
+        BooksPageDto booksPageDto = bookService.getPageOfBooksByGenreAndSubGenres("genre", 0, 10);
         assertNotNull(booksPageDto);
         assertEquals(booksPageDto.getBooks().get(0).getTitle(), "Success");
     }

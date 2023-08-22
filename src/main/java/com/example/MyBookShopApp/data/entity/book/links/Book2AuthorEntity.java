@@ -17,7 +17,7 @@ public class Book2AuthorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", columnDefinition = "INT NOT NULL")
@@ -28,6 +28,6 @@ public class Book2AuthorEntity {
     private AuthorEntity author;
 
     @Column(columnDefinition = "INT NOT NULL DEFAULT 0")
-    private Integer sortIndex;
+    private int sortIndex;
 
 }

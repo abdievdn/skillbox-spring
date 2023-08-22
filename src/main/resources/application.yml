@@ -101,5 +101,6 @@ google:
 
 yookassa:
   shop:
+    URL: https://api.yookassa.ru/v3/payments
     ID: ${yookassa_id}
     KEY: ${yookassa_key}

@@ -8,22 +8,22 @@ import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2TagEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2UserEntity;
+import com.example.MyBookShopApp.data.entity.enums.BookStatus;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -40,8 +40,12 @@ public class BookService {
         return bookRepository.findBySlug(slug).orElse(null);
     }
 
+    public List<BookEntity> getBooksBySlugs(String[] slugs) {
+        return bookRepository.findAllBySlugIn(List.of(slugs));
+    }
+
     public BookDto getBookDtoBySlug(String slug) {
-        return getBookDto(getBookBySlug(slug));
+        return buildBookDto(getBookBySlug(slug));
     }
 
     public List<BookDto> getBookDtoListFromBookEntityPage(Page<BookEntity> booksPage) {
@@ -49,19 +53,19 @@ public class BookService {
     }
 
     @ServiceProcessTrackable
-    public BooksPageDto getPageOfRecommendedBooks(Integer offset, Integer size) {
+    public BooksPageDto getPageOfRecommendedBooks(int offset, int size) {
         Page<BookEntity> books = bookRepository.findAllByIsBestsellerOrderByPriceAsc((short) 1, PageRequest.of(offset, size));
         return new BooksPageDto(getBookDtoListFromBookEntityPage(books));
     }
 
     @ServiceProcessTrackable
-    public BooksPageDto getPageOfRecentBooks(Integer offset, Integer size) {
+    public BooksPageDto getPageOfRecentBooks(int offset, int size) {
         Page<BookEntity> books = bookRepository.findAllByOrderByPubDateDesc(PageRequest.of(offset, size));
         return new BooksPageDto(getBookDtoListFromBookEntityPage(books));
     }
 
     @ServiceProcessTrackable
-    public BooksPageDto getPageOfRecentBooks(String fromDate, String toDate, Integer offset, Integer size) {
+    public BooksPageDto getPageOfRecentBooks(String fromDate, String toDate, int offset, int size) {
         Pageable page = PageRequest.of(offset, size);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         if (fromDate == null || toDate == null) {
@@ -73,7 +77,7 @@ public class BookService {
     }
 
     @ServiceProcessTrackable
-    public BooksPageDto getPageOfPopularBooks(Integer offset, Integer size) {
+    public BooksPageDto getPageOfPopularBooks(int offset, int size) {
         List<BookEntity> popularBooks = getPopularBooksMap()
                 .entrySet()
                 .stream()
@@ -115,17 +119,17 @@ public class BookService {
     }
 
     @ServiceProcessTrackable
-    public BooksPageDto getBooksByAuthor(String slug, Integer offset, Integer size) {
+    public BooksPageDto getPageOfBooksByAuthor(String slug, int offset, int size) {
         AuthorEntity author = authorService.getAuthorData(slug);
         List<BookEntity> authorBooks = new ArrayList<>();
         for (Book2AuthorEntity a : author.getBooksLink()) {
             authorBooks.add(a.getBook());
         }
-        return new BooksPageDto((long) authorBooks.size(), getPageOfBookDtoAsList(offset, size, authorBooks));
+        return new BooksPageDto(authorBooks.size(), getPageOfBookDtoAsList(offset, size, authorBooks));
     }
 
     @ServiceProcessTrackable
-    public BooksPageDto getBooksByTag(Integer id, Integer offset, Integer size) {
+    public BooksPageDto getPageOfBooksByTag(int id, int offset, int size) {
         List<BookEntity> books = new ArrayList<>();
         TagEntity tag = tagService.getTagById(id);
         for (Book2TagEntity b : tag.getBooksLink()) {
@@ -135,12 +139,24 @@ public class BookService {
     }
 
     @ServiceProcessTrackable
-    public BooksPageDto getBooksByGenreAndSubGenres(String slug, Integer offset, Integer size) {
+    public BooksPageDto getPageOfBooksByGenreAndSubGenres(String slug, int offset, int size) {
         List<BookEntity> booksByGenre = genreService.getBooksByGenre(slug);
         return new BooksPageDto(getPageOfBookDtoAsList(offset, size, booksByGenre));
     }
 
-    private List<BookDto> getPageOfBookDtoAsList(Integer offset, Integer size, List<BookEntity> books) {
+    public BooksPageDto getPageOfCurrentUserBooks(Principal principal, int offset, int size, Boolean isArchived) {
+        UserEntity user = userService.getCurrentUserByPrincipal(principal);
+        List<BookEntity> books = user.getBooksLink()
+                .stream()
+                .sorted(Comparator.comparing(
+                        Book2UserEntity::getType, (b1, b2) -> Integer.compare(b2.getId(), b1.getId())))
+                .filter(b -> isArchived == b.getType().getCode().equals(BookStatus.ARCHIVED))
+                .map(Book2UserEntity::getBook)
+                .collect(Collectors.toList());
+        return new BooksPageDto(getPageOfBookDtoAsList(offset, size, books));
+    }
+
+    private List<BookDto> getPageOfBookDtoAsList(int offset, int size, List<BookEntity> books) {
         PagedListHolder<BookEntity> page = new PagedListHolder<>(books);
         page.setPageSize(size);
         if (offset >= page.getPageCount()) {
@@ -150,7 +166,7 @@ public class BookService {
         return bookEntityListToBookDtoList(page.getPageList());
     }
 
-    private BookDto getBookDto(BookEntity bookEntity) {
+    private BookDto buildBookDto(BookEntity bookEntity) {
         if (bookEntity != null) {
             BookDto book = BookDto.builder()
                     .id(bookEntity.getId())
@@ -171,13 +187,13 @@ public class BookService {
                     .isBestseller(bookEntity.getIsBestseller() == 1)
                     .rating(ratingService.getBookRatingBySlug(bookEntity))
                     .price(bookEntity.getPrice())
-                    .discountPrice(bookEntity.discountPrice())
+                    .discountPrice(bookEntity.getDiscountPrice())
                     .files(bookEntity.getBookFileList())
                     .build();
             UserEntity user = userService.getCurrentUser();
             if (user != null) {
                 Optional<Book2UserEntity> book2User = book2UserRepository.findByBookAndUser(bookEntity, user);
-                book2User.ifPresent(book2UserEntity -> book.setStatus(book2UserEntity.getType().toString()));
+                book2User.ifPresent(book2UserEntity -> book.setStatus(book2UserEntity.getType().getCode().name()));
             }
             return book;
         }
@@ -187,7 +203,7 @@ public class BookService {
     public List<BookDto> bookEntityListToBookDtoList(List<BookEntity> books) {
         List<BookDto> booksDto = new ArrayList<>();
         for (BookEntity b : books) {
-            booksDto.add(getBookDto(b));
+            booksDto.add(buildBookDto(b));
         }
         return booksDto;
     }

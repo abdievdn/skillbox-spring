@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookFileRepository extends JpaRepository<BookFileEntity, Integer> {
 
-    public BookFileEntity findByHash(String hash);
+    BookFileEntity findByHash(String hash);
 }

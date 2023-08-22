@@ -37,8 +37,7 @@ public class RatingService {
                 .values2Count(bookRatings
                         .stream()
                         .collect(Collectors.groupingBy(
-                                BookRatingEntity::getValue,
-                                collectingAndThen(counting(), Long::intValue)))
+                                BookRatingEntity::getValue, collectingAndThen(counting(), Long::intValue)))
                         .entrySet()
                         .stream()
                         .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
@@ -51,7 +50,7 @@ public class RatingService {
     }
 
     @ServiceProcessTrackable
-    public void saveBookRating(String slug, Short value, Principal principal) {
+    public void saveBookRating(String slug, short value, Principal principal) {
         BookEntity book = bookRepository.findBySlug(slug).orElseThrow();
         UserEntity user = userService.getCurrentUserByPrincipal(principal);
         Optional<BookRatingEntity> bookRatingEntity = bookRatingRepository.findByUserAndBook(user, book);

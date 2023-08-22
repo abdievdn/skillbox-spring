@@ -67,15 +67,18 @@ public class AuthService {
     public ResultDto checkSigninContact(ContactConfirmationDto confirmationDto) {
         UserContactEntity userContact = getUserContact(confirmationDto.getContact());
         if (userContact == null) {
-            throw new UsernameNotFoundException("Такого контакта не существует!");
+            return new ResultDto("Такого контакта не существует! Пройдите регистрацию.");
         }
         saveNewCode(userContact);
         return new ResultDto(true);
     }
 
-    public ResultDto isSecretCodeValid(ContactConfirmationDto confirmationDto) {
-        UserContactEntity userContact = getUserContact(confirmationDto.getContact());
-        String code = confirmationDto.getCode();
+    public ResultDto isSecretCodeValid(String contact, String code) {
+        UserContactEntity userContact = getUserContact(contact);
+        return isSecretCodeValid(contact, code, userContact);
+    }
+
+    public ResultDto isSecretCodeValid(String contact, String code, UserContactEntity userContact) {
         if (userContact != null && verifyCode(userContact, code)) {
             return new ResultDto(true);
         }
@@ -107,7 +110,7 @@ public class AuthService {
     public void registerNewUser(UserDto userDto) {
         registerService.registerUser(
                 userDto.getName(),
-                userDto.getEmail(),
+                userDto.getMail(),
                 userDto.getPhone());
     }
 

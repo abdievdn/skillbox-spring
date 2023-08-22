@@ -15,10 +15,10 @@ public class BookReviewRatingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @Column(columnDefinition = "SMALLINT NOT NULL")
-    private Short value;
+    private short value;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id", columnDefinition = "INT NOT NULL")

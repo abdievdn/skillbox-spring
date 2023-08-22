@@ -27,7 +27,7 @@ public class GenreEntity {
     private String name;
 
     @Transient
-    private Integer booksCount = 0;
+    private int booksCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id", columnDefinition = "INT")

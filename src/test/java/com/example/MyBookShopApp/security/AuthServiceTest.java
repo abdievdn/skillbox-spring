@@ -93,7 +93,7 @@ class AuthServiceTest {
     void registerNewUser() {
         UserDto userDto = UserDto.builder()
                 .name("user")
-                .email("test@mail.org")
+                .mail("test@mail.org")
                 .phone("123123123")
                 .build();
         authService.registerNewUser(userDto);

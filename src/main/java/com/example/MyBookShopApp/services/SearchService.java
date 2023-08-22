@@ -31,7 +31,7 @@ public class SearchService {
     private String googleApiKey;
 
     @ServiceProcessTrackable
-    public BooksPageDto getPageOfSearchResultBooks(String searchWord, Integer offset, Integer size) throws CommonErrorException {
+    public BooksPageDto getPageOfSearchResultBooks(String searchWord, int offset, int size) throws CommonErrorException {
         if (searchWord == null || searchWord.length() < 1) {
             throw new CommonErrorException("Не введено значение поиска!");
         } else {
@@ -41,7 +41,7 @@ public class SearchService {
     }
 
     @ServiceProcessTrackable
-    public BooksPageDto getPageOfGoogleBooksApiSearchResult(String searchWord, Integer offset, Integer size) {
+    public BooksPageDto getPageOfGoogleBooksApiSearchResult(String searchWord, int offset, int size) {
         String REQUEST_URL = "https://www.googleapis.com/books/v1/volumes" +
                 "?q=" + searchWord +
                 "&key=" + googleApiKey +

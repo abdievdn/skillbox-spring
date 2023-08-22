@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface Book2GenreRepository extends JpaRepository<Book2GenreEntity, Integer> {
 
-    Integer countAllByGenreId(Integer genreId);
+    int countAllByGenreId(int genreId);
 
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GenreDto {
 
-    private Integer id;
+    private int id;
     private String name;
     private String slug;
     private GenreDto parent;

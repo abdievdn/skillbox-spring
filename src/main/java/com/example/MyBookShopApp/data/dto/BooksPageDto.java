@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BooksPageDto {
 
-    private Long count;
+    private long count;
     private List<BookDto> books;
 
     public BooksPageDto(List<BookDto> books) {

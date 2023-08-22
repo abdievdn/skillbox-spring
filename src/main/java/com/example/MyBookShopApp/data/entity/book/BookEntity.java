@@ -25,13 +25,13 @@ public class BookEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @Column(columnDefinition = "SMALLINT")
-    private Short discount;
+    private short discount;
 
     @Column(name = "is_bestseller", columnDefinition = "SMALLINT")
-    private Short isBestseller;
+    private short isBestseller;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -42,7 +42,7 @@ public class BookEntity {
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String title;
 
-    private Integer price;
+    private int price;
 
     private String image;
 
@@ -61,7 +61,7 @@ public class BookEntity {
     @OneToMany(mappedBy = "book")
     private List<Book2TagEntity> tagsLink = new ArrayList<>();
 
-    public Integer discountPrice() {
+    public int getDiscountPrice() {
         return price - (price * discount / 100);
     }
 

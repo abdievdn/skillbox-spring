@@ -15,7 +15,7 @@ public class BookRatingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @Column(columnDefinition = "SMALLINT NOT NULL")
     private Short value;
@@ -28,7 +28,7 @@ public class BookRatingEntity {
     @JoinColumn(name = "user_id" ,columnDefinition = "INT NOT NULL")
     private UserEntity user;
 
-    public BookRatingEntity(BookEntity book, UserEntity user, Short value) {
+    public BookRatingEntity(BookEntity book, UserEntity user, short value) {
         this.book = book;
         this.user = user;
         this.value = value;

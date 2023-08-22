@@ -1,3 +1,3 @@
-insert into user_contact (id, code, contact, type, user_id, approved, code_time, code_trails) values (1, '$2a$10$3vOmnW8PkG73Eom4asiZQelnpexGc./n8MDVdaN/y.Bku6v1c./sK', 'user@mail.ru', 1, 1, 1, null, 0);
+insert into user_contact (id, code, contact, type, user_id, approved, code_time, code_trails) values (1, '$2a$10$3vOmnW8PkG73Eom4asiZQelnpexGc./n8MDVdaN/y.Bku6v1c./sK', 'user@mail.test', 1, 1, 1, null, 0);
 insert into user_contact (id, code, contact, type, user_id, approved, code_time, code_trails) values (2, '$2a$10$3vOmnW8PkG73Eom4asiZQelnpexGc./n8MDVdaN/y.Bku6v1c./sK', '+7 (375) 297-08-98', 0, 1, 1, null, 0);
 ALTER SEQUENCE user_contact_id_seq RESTART WITH 3;

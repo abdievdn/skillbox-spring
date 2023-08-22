@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})">
-    <script src="/assets/js/imageUploadScript.js"></script>
-    <script src="/assets/js/bookDownloadScript.js"></script>
+<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
+<script src="/assets/js/imageUploadScript.js"></script>
+<script src="/assets/js/bookDownloadScript.js"></script>
 </head>
 <body class="Site">
 <header th:replace="fragments/header_fragment"></header>
@@ -14,28 +14,28 @@
                     <a th:href="@{'/'}">Главная</a>
                 </li>
                 <li class="breadcrumbs-item">
-                    <a th:href="${'/genres/' + bookSlug.genre.slug}">Книги</a>
+                    <a th:href="${'/genres/' + book.genre.slug}">Книги</a>
                 </li>
                 <li class="breadcrumbs-item breadcrumbs-item_current">
-                    <span th:text="${bookSlug.title}"></span>
+                    <span th:text="${book.title}"></span>
                 </li>
             </ul>
             <div class="Product">
                 <div class="ProductCard">
                     <div class="ProductCard-look">
                         <form id="imgForm" method="POST" enctype="multipart/form-data"
-                              th:action="${'/books/' + bookSlug.slug + '/img/save'}">
+                              th:action="${'/books/' + book.slug + '/img/save'}">
                             <div class="ProductCard-photo" id="uploadButton">
-                                <img th:src="${bookSlug.image}" alt="card.jpg"/>
+                                <img th:src="${book.image}" alt="card.jpg"/>
                             </div>
-                            <input type="file" name="file" id="dialog" style="display: none" accept="image/*" />
+                            <input type="file" name="file" id="dialog" style="display: none" accept="image/*"/>
                         </form>
                     </div>
                     <div class="ProductCard-desc">
                         <div class="ProductCard-header">
-                            <h1 class="ProductCard-title" th:text="${bookSlug.title}"></h1>
+                            <h1 class="ProductCard-title" th:text="${book.title}"></h1>
                             <div class="ProductCard-author"><span class="ProductCard-titleProp">Автор:</span>&#32;
-                                <th:block th:each="author : ${bookSlug.authors}">
+                                <th:block th:each="author : ${book.authors}">
                                     <a th:href="@{'/authors/' + ${author.slug}}"
                                        th:text="${author.toString()}">&nbsp;</a>
                                 </th:block>
@@ -45,14 +45,14 @@
                                 <button class="trigger trigger_dropdown" type="button">
                                     <div class="Rating Rating_noStyleLink">
                                         <th:block
-                                                th:replace="fragments/rating_fragment::ratingStarsFragment(${bookSlug.rating.value}, ${bookSlug.rating.count})">
+                                                th:replace="fragments/rating_fragment::ratingStarsFragment(${book.rating.value}, ${book.rating.count})">
                                         </th:block>
                                     </div>
                                     <div class="modal modal_compression modal_dropdown">
                                         <div class="modal-window">
                                             <a class="modal-close" href="#"><span></span><span></span></a>
                                             <strong class="modal-title">Распределение оценок</strong>
-                                            <div class="RatingGroup" th:each="rate : ${bookSlug.rating.values2Count}">
+                                            <div class="RatingGroup" th:each="rate : ${book.rating.values2Count}">
                                                 <span class="Rating">
                                                     <th:block
                                                             th:replace="fragments/rating_fragment::ratingStarsFragment(${rate.key}, ${rate.value})"></th:block>
@@ -66,7 +66,7 @@
                             <th:block th:if="${currentUser != null}">
                                 <div class="ProductCard-assessment"><span
                                         class="ProductCard-titleProp">Оцените книгу:</span>
-                                    <span class="Rating Rating_input" th:data-bookid="${bookSlug.slug}">
+                                    <span class="Rating Rating_input" th:data-bookid="${book.slug}">
                                     <th:block th:replace="fragments/rating_fragment::ratingStarsVote"></th:block>
                                 </span>
                                 </div>
@@ -74,65 +74,92 @@
 
                             <div class="ProductCard-tags">
                                 <span class="ProductCard-titleProp">Тэги:</span>
-                                <th:block th:each="tag : ${bookSlug.tags}">
+                                <th:block th:each="tag : ${book.tags}">
                                     <a th:href="@{'/tags/' + ${tag.slug}}" th:text="${tag.name}">&nbsp;</a>
                                 </th:block>
                             </div>
                             <div class="ProductCard-cost"><span class="ProductCard-titleProp">Цена:</span>
-                                <span class="ProductCard-priceOld" th:if="${bookSlug.discount != 0}"
-                                      th:text="${bookSlug.price}"></span>
-                                <span class="ProductCard-price" th:text="${bookSlug.discountPrice}"></span>
+                                <span class="ProductCard-priceOld" th:if="${book.discount != 0}"
+                                      th:text="${'₽' + book.price}"></span>
+                                <span class="ProductCard-price" th:text="${'₽' + book.discountPrice}"></span>
                             </div>
                         </div>
                         <div class="ProductCard-text">
-                            <p th:text="${bookSlug.description}"></p>
+                            <p th:text="${book.description}"></p>
                         </div>
-                        <div class="ProductCard-cart">
+                        <div class="ProductCard-cart"
+                             th:if="${book.status == null ||
+                             (!book.status.equals('PAID') && !book.status.equals('ARCHIVED'))}">
                             <div class="ProductCard-cartElement">
                                 <button class="btn btn_primary btn_outline" data-sendstatus="KEPT"
                                         data-delete=""
-                                        th:attr="data-bookid=${bookSlug.slug}"
+                                        th:attr="data-bookid=${book.slug}"
                                         data-btntype="check" data-btnradio="buyblock" data-check="false"
-                                        data-alttext="Отложена"><span class="btn-icon"><img
-                                        src="/assets/img/icons/heart.svg" alt="heart.svg"/></span><span
-                                        class="btn-content">Отложить</span>
+                                        data-alttext="Отложена">
+                                    <span class="btn-icon">
+                                    <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
+                                    </span>
+                                    <span class="btn-content">Отложить</span>
                                 </button>
                             </div>
                             <div class="ProductCard-cartElement">
                                 <button class="btn btn_primary btn_outline" data-sendstatus="CART"
                                         data-delete=""
-                                        th:attr="data-bookid=${bookSlug.slug}"
+                                        th:attr="data-bookid=${book.slug}"
                                         data-btntype="check" data-btnradio="buyblock" data-check="false"
                                         data-alttext="В корзине"><span class="btn-icon"><img
                                         src="/assets/img/icons/shopping-basket.svg"
-                                        alt="shopping-basket.svg"/></span><span class="btn-content">Купить</span>
+                                        alt="shopping-basket.svg"/></span>
+                                    <span class="btn-content">В корзину</span>
                                 </button>
+
                             </div>
                         </div>
-
                         <th:block th:if="${currentUser != null}">
                             <div class="ProductCard-cart">
-                                <div class="ProductCard-cartElement">
+                                <div class="ProductCard-cartElement"
+                                     th:if="${book.status != null && book.status.equals('PAID')}">
                                     <a class="btn btn_primary btn_outline" href="#">
-                                <span class="btn-icon"><img src="/assets/img/icons/download.svg"
-                                                            alt="download.svg"/></span><span
-                                            class="btn-content">Скачать
-                            </span>
+                                        <span class="btn-icon">
+                                            <img src="/assets/img/icons/download.svg" alt="download.svg"/>
+                                        </span>
+                                        <span class="btn-content">Скачать</span>
                                     </a>
                                 </div>
                                 <div class="ProductCard-cartElement">
-                                    <button class="btn btn_primary btn_outline" data-sendstatus="ARCHIVED"
-                                            data-bookid="[1111]" data-btntype="check" data-btnradio="buyblock"
-                                            data-check="false" data-alttext="Вернуть из архива"><span
-                                            class="btn-icon"><img
-                                            src="/assets/img/icons/archive.svg" alt="archive.svg"/></span><span
-                                            class="btn-content">В архив</span>
+                                    <button class="btn btn_primary btn_outline"
+                                            data-sendstatus="ARCHIVED"
+                                            data-delete=""
+                                            th:attr="data-bookid=${book.slug}"
+                                            data-btntype="check"
+                                            data-btnradio="buyblock"
+                                            data-check="false"
+                                            data-alttext="Вернуть из архива"
+                                            th:if="${book.status != null && book.status.equals('PAID')}">
+                                        <span class="btn-icon">
+                                            <img src="/assets/img/icons/archive.svg" alt="archive.svg"/>
+                                        </span>
+                                        <span class="btn-content">В архив</span>
+                                    </button>
+                                    <button class="btn btn_primary btn_outline"
+                                            data-sendstatus="PAID"
+                                            data-delete=""
+                                            th:attr="data-bookid=${book.slug}"
+                                            data-btntype="check"
+                                            data-btnradio="buyblock"
+                                            data-check="false"
+                                            data-alttext="В архив"
+                                            th:if="${book.status != null && book.status.equals('ARCHIVED')}">
+                                        <span class="btn-icon">
+                                            <img src="/assets/img/icons/archive.svg" alt="archive.svg"/>
+                                        </span>
+                                        <span class="btn-content">Вернуть из архива</span>
                                     </button>
                                 </div>
                             </div>
                             <div id="popupDownloadWindow">
                                 <p>Ссылки для скачивания:</p>
-                                <div th:each="bookFile : ${bookSlug.files}">
+                                <div th:each="bookFile : ${book.files}">
                                     <a th:href="${'/books/download/' + bookFile.hash}" th:text="${bookFile}"></a>
                                 </div>
 
@@ -156,7 +183,7 @@
                     <th:block th:if="${currentUser != null}">
                         <strong class="Comments-title">Написать отзыв</strong>
                         <div class="Comments-addComment">
-                            <form class="form" action="#" method="post" th:data-bookid="${bookSlug.slug}">
+                            <form class="form" action="#" method="post" th:data-bookid="${book.slug}">
                                 <div class="form-group">
                                 <textarea class="form-textarea Comments-review" name="review" id="review"
                                           placeholder="Текст отзыва" data-validate="require"></textarea>

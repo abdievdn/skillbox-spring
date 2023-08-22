@@ -23,7 +23,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String hash;
@@ -32,7 +32,7 @@ public class UserEntity {
     private LocalDateTime regTime;
 
     @Column(columnDefinition = "INT NOT NULL")
-    private Integer balance;
+    private int balance;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String name;

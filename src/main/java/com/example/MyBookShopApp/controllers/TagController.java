@@ -19,8 +19,8 @@ public class TagController {
 
     @ControllerParamsCatch
     @GetMapping("/tags/slug/{id}")
-    public String booksByTag(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("booksByTagList", bookService.getBooksByTag(id, 0, 20));
+    public String booksByTag(@PathVariable("id") int id, Model model) {
+        model.addAttribute("booksByTagList", bookService.getPageOfBooksByTag(id, 0, 20));
         model.addAttribute("tagId", id);
         model.addAttribute("tagName", tagService.getTagById(id).getName());
         return "/tags/slug";
@@ -30,10 +30,10 @@ public class TagController {
     @ControllerResponseCatch
     @GetMapping("/tags/page/{id}")
     @ResponseBody
-    public BooksPageDto tagsSlugPage(@PathVariable(value = "id", required = false) Integer id,
-                                     @RequestParam("offset") Integer offset,
-                                     @RequestParam("limit") Integer size) {
-        return bookService.getBooksByTag(id, offset, size);
+    public BooksPageDto tagsSlugPage(@PathVariable(value = "id", required = false) int id,
+                                     @RequestParam("offset") int offset,
+                                     @RequestParam("limit") int size) {
+        return bookService.getPageOfBooksByTag(id, offset, size);
     }
 
     @GetMapping("tags/index")

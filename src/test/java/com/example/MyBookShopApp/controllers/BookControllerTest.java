@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
+import com.example.MyBookShopApp.data.dto.InteractionWithBooksDto;
 import com.example.MyBookShopApp.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -114,13 +114,13 @@ class BookControllerTest {
     @Test
     @WithUserDetails("user@mail.ru")
     void rateBook() throws Exception {
-        InteractionWithBookDto interactionWithBookDto = InteractionWithBookDto.builder()
+        InteractionWithBooksDto interactionWithBooksDto = InteractionWithBooksDto.builder()
                 .bookId("book-kim-856")
                 .value((short) 5)
                 .build();
         mockMvc.perform(post("/books/rateBook")
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(interactionWithBookDto))
+                        .content(new ObjectMapper().writeValueAsString(interactionWithBooksDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -129,13 +129,13 @@ class BookControllerTest {
 
     @Test
     void rateBookDenied() throws Exception {
-        InteractionWithBookDto interactionWithBookDto = InteractionWithBookDto.builder()
+        InteractionWithBooksDto interactionWithBooksDto = InteractionWithBooksDto.builder()
                 .bookId("book-kim-856")
                 .value((short) 5)
                 .build();
         mockMvc.perform(post("/books/rateBook")
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(interactionWithBookDto))
+                        .content(new ObjectMapper().writeValueAsString(interactionWithBooksDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection());
@@ -144,13 +144,13 @@ class BookControllerTest {
     @Test
     @WithUserDetails("user@mail.ru")
     void bookReview() throws Exception {
-        InteractionWithBookDto interactionWithBookDto = InteractionWithBookDto.builder()
+        InteractionWithBooksDto interactionWithBooksDto = InteractionWithBooksDto.builder()
                 .bookId("book-kim-856")
                 .text("fine")
                 .build();
         mockMvc.perform(post("/books/bookReview")
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(interactionWithBookDto))
+                        .content(new ObjectMapper().writeValueAsString(interactionWithBooksDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())

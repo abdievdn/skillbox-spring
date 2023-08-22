@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookDto {
-    private Integer id;
+    private int id;
     private String slug;
     private String image;
     private List<AuthorDto> authors;
@@ -18,11 +18,11 @@ public class BookDto {
     private String title;
     private String description;
     private GenreDto genre;
-    private Short discount;
+    private short discount;
     private Boolean isBestseller;
     private RatingDto rating;
     private String status;
-    private Integer price;
-    private Integer discountPrice;
+    private int price;
+    private int discountPrice;
     private List<BookFileEntity> files;
 }

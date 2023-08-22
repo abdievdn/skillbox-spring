@@ -73,7 +73,7 @@ public class GenreService {
     }
 
     private void setBooksCountToGenre(List<GenreEntity> genres) {
-        Integer count;
+        int count;
         for (GenreEntity g : genres) {
             count = book2GenreRepository.countAllByGenreId(g.getId());
             g.setBooksCount(count);

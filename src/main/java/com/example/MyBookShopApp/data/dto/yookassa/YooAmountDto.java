@@ -1,4 +1,4 @@
-package com.example.MyBookShopApp.data.dto.payment;
+package com.example.MyBookShopApp.data.dto.yookassa;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentMethodDataDto {
-    private String type;
+public class YooAmountDto {
+    private String value;
+    private String currency;
 }

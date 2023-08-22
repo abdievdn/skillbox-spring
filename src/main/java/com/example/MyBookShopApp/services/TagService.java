@@ -32,7 +32,7 @@ public class TagService {
         return tags;
     }
 
-    public TagEntity getTagById(Integer id) {
+    public TagEntity getTagById(int id) {
         return tagRepository.findById(id).orElseThrow();
     }
 

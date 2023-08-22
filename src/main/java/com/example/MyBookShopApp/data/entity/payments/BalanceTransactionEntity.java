@@ -1,11 +1,17 @@
 package com.example.MyBookShopApp.data.entity.payments;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "balance_transaction")
 public class BalanceTransactionEntity {

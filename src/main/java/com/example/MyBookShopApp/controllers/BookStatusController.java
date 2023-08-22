@@ -4,9 +4,10 @@ import com.example.MyBookShopApp.aspect.annotations.ControllerParamsCatch;
 import com.example.MyBookShopApp.aspect.annotations.ControllerResponseCatch;
 import com.example.MyBookShopApp.aspect.annotations.NoLogging;
 import com.example.MyBookShopApp.data.dto.BookDto;
-import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
+import com.example.MyBookShopApp.data.dto.InteractionWithBooksDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
+import com.example.MyBookShopApp.errors.CommonErrorException;
 import com.example.MyBookShopApp.services.BookStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -21,14 +22,19 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/books")
 public class BookStatusController {
 
     private final BookStatusService bookStatusService;
 
     @NoLogging
     @ModelAttribute(name = "booksStatusList")
-    private List<BookDto> booksCart() {
+    private List<BookDto> getBooksStatusList() {
+        return new ArrayList<>();
+    }
+
+    @NoLogging
+    @ModelAttribute(name = "booksIds")
+    private List<String> getBooksIds() {
         return new ArrayList<>();
     }
 
@@ -36,7 +42,10 @@ public class BookStatusController {
     @GetMapping("/cart")
     public String cartPage(@CookieValue(value = "CART", required = false) String contents,
                            Model model, Principal principal) {
-        model.addAttribute("booksStatusList", bookStatusService.getBooksStatusList(BookStatus.CART, contents, principal));
+        List<BookDto> books = bookStatusService.getBooksStatusList(BookStatus.CART, contents, principal);
+        model.addAttribute("booksStatusList", books);
+        model.addAttribute("booksIds", bookStatusService.getSlugsString(books));
+
         return "cart";
     }
 
@@ -44,7 +53,9 @@ public class BookStatusController {
     @GetMapping("/postponed")
     public String postponedPage(@CookieValue(value = "KEPT", required = false) String contents,
                                 Model model, Principal principal) {
-        model.addAttribute("booksStatusList", bookStatusService.getBooksStatusList(BookStatus.KEPT, contents, principal));
+        List<BookDto> books = bookStatusService.getBooksStatusList(BookStatus.KEPT, contents, principal);
+        model.addAttribute("booksStatusList", books);
+        model.addAttribute("booksIds", bookStatusService.getSlugsString(books));
         return "postponed";
     }
 
@@ -52,35 +63,31 @@ public class BookStatusController {
     @ControllerResponseCatch
     @PostMapping("/changeBookStatus")
     @ResponseBody
-    public ResultDto changeBookStatus(@RequestBody InteractionWithBookDto interaction,
+    public ResultDto changeBookStatus(@RequestBody InteractionWithBooksDto interaction,
                                       HttpServletRequest request,
                                       HttpServletResponse response,
-                                      Principal principal) {
-        String status = interaction.getStatus();
-        String slug = interaction.getBooksIds();
-        bookStatusService.addBookStatus(BookStatus.valueOf(status), slug, principal, request, response);
-        return new ResultDto(true);
+                                      Principal principal) throws CommonErrorException {
+        return bookStatusService.setBooksStatus(
+                BookStatus.valueOf(interaction.getStatus()),
+                interaction.getBookId(),
+                principal, request, response);
     }
 
     @ControllerParamsCatch
     @ControllerResponseCatch
     @PostMapping("/changeBookStatus/remove/cart")
     @ResponseBody
-    public ResultDto removeFromCart(@RequestBody InteractionWithBookDto interaction,
-                                    @CookieValue(name = "CART", required = false) String contents,
-                                    HttpServletResponse response, Principal principal) {
-        bookStatusService.removeBook(interaction.getBooksIds(), BookStatus.CART.name(), contents, response, principal);
-        return new ResultDto(true);
+    public ResultDto removeFromCart(@RequestBody InteractionWithBooksDto interaction,
+                                    HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        return bookStatusService.removeBooks(interaction.getBookId(), BookStatus.CART.name(), request, response, principal);
     }
 
     @ControllerParamsCatch
     @ControllerResponseCatch
     @PostMapping("/changeBookStatus/remove/postponed")
     @ResponseBody
-    public ResultDto removeFromPostponed(@RequestBody InteractionWithBookDto interaction,
-                                         @CookieValue(name = "KEPT", required = false) String contents,
-                                         HttpServletResponse response, Principal principal) {
-        bookStatusService.removeBook(interaction.getBooksIds(), BookStatus.KEPT.name(), contents, response, principal);
-        return new ResultDto(true);
+    public ResultDto removeFromPostponed(@RequestBody InteractionWithBooksDto interaction,
+                                         HttpServletRequest request, HttpServletResponse response, Principal principal) {
+        return bookStatusService.removeBooks(interaction.getBookId(), BookStatus.KEPT.name(), request, response, principal);
     }
 }

@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.controllers;
 
-import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
+import com.example.MyBookShopApp.data.dto.InteractionWithBooksDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,13 +70,13 @@ class BookStatusControllerTest {
 
     @Test
     void changeBookStatus() throws Exception {
-        InteractionWithBookDto interactionWithBookDto = InteractionWithBookDto.builder()
-                .booksIds("book-kim-856")
+        InteractionWithBooksDto interactionWithBooksDto = InteractionWithBooksDto.builder()
+                .bookId("book-kim-856")
                 .status("KEPT")
                 .build();
         mockMvc.perform(post("/books/changeBookStatus")
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(interactionWithBookDto))
+                        .content(new ObjectMapper().writeValueAsString(interactionWithBooksDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -86,13 +86,13 @@ class BookStatusControllerTest {
     @Test
     @WithUserDetails("user@mail.ru")
     void changeBookStatusWithUser() throws Exception {
-        InteractionWithBookDto interactionWithBookDto = InteractionWithBookDto.builder()
-                .booksIds("book-kim-856")
+        InteractionWithBooksDto interactionWithBooksDto = InteractionWithBooksDto.builder()
+                .bookId("book-kim-856")
                 .status("KEPT")
                 .build();
         mockMvc.perform(post("/books/changeBookStatus")
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(interactionWithBookDto))
+                        .content(new ObjectMapper().writeValueAsString(interactionWithBooksDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -101,13 +101,13 @@ class BookStatusControllerTest {
 
     @Test
     void removeFromCart() throws Exception {
-        InteractionWithBookDto interactionWithBookDto = InteractionWithBookDto.builder()
-                .booksIds("book-kim-856")
+        InteractionWithBooksDto interactionWithBooksDto = InteractionWithBooksDto.builder()
+                .bookId("book-kim-856")
                 .status("UNLINK")
                 .build();
         mockMvc.perform(post("/books/changeBookStatus/remove/cart")
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(interactionWithBookDto))
+                        .content(new ObjectMapper().writeValueAsString(interactionWithBooksDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .cookie(new Cookie("CART", "book-kim-856")))
                 .andDo(print())
@@ -118,13 +118,13 @@ class BookStatusControllerTest {
     @Test
     @WithUserDetails("user@mail.ru")
     void removeFromCartWithUser() throws Exception {
-        InteractionWithBookDto interactionWithBookDto = InteractionWithBookDto.builder()
-                .booksIds("book-kim-856")
+        InteractionWithBooksDto interactionWithBooksDto = InteractionWithBooksDto.builder()
+                .bookId("book-kim-856")
                 .status("UNLINK")
                 .build();
         mockMvc.perform(post("/books/changeBookStatus/remove/cart")
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(interactionWithBookDto))
+                        .content(new ObjectMapper().writeValueAsString(interactionWithBooksDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .cookie(new Cookie("CART", "book-kim-856")))
                 .andDo(print())
@@ -134,13 +134,13 @@ class BookStatusControllerTest {
 
     @Test
     void removeFromPostponed() throws Exception{
-        InteractionWithBookDto interactionWithBookDto = InteractionWithBookDto.builder()
-                .booksIds("book-kim-856")
+        InteractionWithBooksDto interactionWithBooksDto = InteractionWithBooksDto.builder()
+                .bookId("book-kim-856")
                 .status("UNLINK")
                 .build();
         mockMvc.perform(post("/books/changeBookStatus/remove/postponed")
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(interactionWithBookDto))
+                        .content(new ObjectMapper().writeValueAsString(interactionWithBooksDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .cookie(new Cookie("KEPT", "book-kim-8561")))
                 .andDo(print())

@@ -24,13 +24,13 @@ public class AuthorController {
 
     private void setModelAttributes(Model model, String slug, int size) {
         model.addAttribute("authorData", authorService.getAuthorData(slug));
-        model.addAttribute("authorBooks", bookService.getBooksByAuthor(slug, 0, size));
+        model.addAttribute("authorBooks", bookService.getPageOfBooksByAuthor(slug, 0, size));
         model.addAttribute("authorId", slug);
     }
 
     @NoLogging
     @ModelAttribute("authorsMap")
-    private Map<String, List<AuthorEntity>> authorsMap() {
+    public Map<String, List<AuthorEntity>> authorsMap() {
         return authorService.getAuthorsMap();
     }
 
@@ -58,8 +58,8 @@ public class AuthorController {
     @GetMapping("/books/author/page/{slug}")
     @ResponseBody
     public BooksPageDto bookByAuthorPage(@PathVariable(value = "slug", required = false) String slug,
-                                         @RequestParam("offset") Integer offset,
-                                         @RequestParam("limit") Integer size) {
-        return bookService.getBooksByAuthor(slug, offset, size);
+                                         @RequestParam("offset") int offset,
+                                         @RequestParam("limit") int size) {
+        return bookService.getPageOfBooksByAuthor(slug, offset, size);
     }
 }

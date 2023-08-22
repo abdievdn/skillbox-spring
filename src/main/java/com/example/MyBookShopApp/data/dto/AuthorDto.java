@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthorDto {
 
-    private Integer id;
+    private int id;
 
     private String description;
 

@@ -49,7 +49,7 @@ public class BookReviewEntity {
     @OneToMany(mappedBy = "review")
     private List<BookReviewLikeEntity> reviewLikesLink = new ArrayList<>();
 
-    public Integer getCommonRatingValue() {
+    public int getCommonRatingValue() {
         return (int) Math.round(reviewRatingsLink
                 .stream()
                 .mapToInt(BookReviewRatingEntity::getValue)
@@ -57,7 +57,7 @@ public class BookReviewEntity {
                 .orElse(0));
     }
 
-    public Integer getLikesCountByValue(Short value) {
+    public int getLikesCountByValue(short value) {
         return  (int) reviewLikesLink
                 .stream()
                 .filter(l -> l.getValue() == value)

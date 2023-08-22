@@ -2867,6 +2867,7 @@ button.trigger {
   padding: 10px;
   text-align: left;
   transition: all 200ms;
+  font-size: 16px;
 }
 .table th:first-child,
 .table td:first-child {

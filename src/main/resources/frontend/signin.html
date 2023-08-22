@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})">
+<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
 <body class="Site">
 <header th:replace="~{fragments/header_fragment}"></header>
 <div class="Middle Middle_form">
@@ -11,7 +11,7 @@
     </div>
     <div class="wrap">
         <main class="Middle-main">
-            <form class="form Login" action="#" method="post">
+            <form class="form Login Login-box" action="#" method="post">
                 <div class="Login-ins">
                     <div class="Login-step">
                         <div class="form-group">
@@ -52,7 +52,6 @@
                     <div class="Login-step Login-step_hide" data-type="phone">
                         <div class="form-group">
                             <label class="form-label Login-title">
-                                Ведите пароль учетной записи или перейдите по ссылке ниже для регистрации
                                 На&nbsp;Ваш телефон отправлено сообщение с&nbsp;кодом
                                 для входа. Введите его:
                             </label>
@@ -70,9 +69,8 @@
                     <div class="Login-step Login-step_hide" data-type="mail">
                         <div class="form-group">
                             <label class="form-label Login-title">
-                                Ведите пароль учетной записи или перейдите по ссылке ниже для регистрации
-                                На&nbsp;Ваш e-mail отправлена ссылка для входа и&nbsp;код.
-                                Перейдите по&nbsp;ссылке или введите код ниже:
+                                На&nbsp;Ваш e-mail отправлено сообщение с&nbsp;кодом
+                                для входа. Введите его:
                             </label>
                         </div>
                         <div class="form-group form-group_key">

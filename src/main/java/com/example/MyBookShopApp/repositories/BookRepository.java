@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,13 +17,13 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
 
     Page<BookEntity> findAllByTitleContainingIgnoreCase(String bookTitle, Pageable page);
 
-    Page<BookEntity> findAllByIsBestsellerOrderByPriceAsc(Short isBestseller, Pageable page);
+    Page<BookEntity> findAllByIsBestsellerOrderByPriceAsc(short isBestseller, Pageable page);
 
     Page<BookEntity> findAllByPubDateBetweenOrderByPubDateDesc(LocalDate fromDate, LocalDate toDate, Pageable page);
 
     Page<BookEntity> findAllByOrderByPubDateDesc(Pageable page);
 
-    List<BookEntity> findAllBySlugIn(String[] slugs);
+    List<BookEntity> findAllBySlugIn(Collection<String> slug);
 
     Optional<BookEntity> findBySlug(String slug);
 }

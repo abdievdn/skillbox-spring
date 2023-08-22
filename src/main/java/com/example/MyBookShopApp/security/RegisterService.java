@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.security;
 
+import com.example.MyBookShopApp.data.entity.enums.ContactType;
 import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
@@ -27,20 +28,21 @@ public class RegisterService {
             userEntity.setHash(String.valueOf(System.identityHashCode(userEntity)));
             userRepository.save(userEntity);
             if (!email.isBlank()) {
-                saveUserContact(email, userEntity);
+                saveUserContact(email, userEntity, ContactType.EMAIL);
             }
             if (!phone.isBlank()) {
-                saveUserContact(phone, userEntity);
+                saveUserContact(phone, userEntity, ContactType.PHONE);
             }
         }
         return userEntity;
     }
 
-    private void saveUserContact(String contact, UserEntity userEntity) {
+    private void saveUserContact(String contact, UserEntity userEntity, ContactType contactType) {
         UserContactEntity userContact = userContactRepository.findByContact(contact).orElse(new UserContactEntity());
         userContact.setContact(contact);
         userContact.setApproved((short) 1);
         userContact.setUser(userEntity);
+        userContact.setType(contactType);
         userContactRepository.save(userContact);
     }
 }

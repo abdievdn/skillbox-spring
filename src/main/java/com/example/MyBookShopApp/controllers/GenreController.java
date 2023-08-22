@@ -51,7 +51,7 @@ public class GenreController {
     @ControllerParamsCatch
     @GetMapping("/genres/{slug}")
     public String genresIdPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
-        model.addAttribute("booksByGenreList", bookService.getBooksByGenreAndSubGenres(slug, 0, 20));
+        model.addAttribute("booksByGenreList", bookService.getPageOfBooksByGenreAndSubGenres(slug, 0, 10));
         model.addAttribute("genreId", slug);
         model.addAttribute("genreBreadcrumbs", genreService.getGenreBreadcrumbs(slug));
         return "/genres/slug";
@@ -62,8 +62,8 @@ public class GenreController {
     @ResponseBody
     @GetMapping("/genres/page/{slug}")
     public BooksPageDto genresIdPage(@PathVariable(value = "slug", required = false) String slug,
-                                     @RequestParam("offset") Integer offset,
-                                     @RequestParam("limit") Integer size) {
-        return bookService.getBooksByGenreAndSubGenres(slug, offset, size);
+                                     @RequestParam("offset") int offset,
+                                     @RequestParam("limit") int size) {
+        return bookService.getPageOfBooksByGenreAndSubGenres(slug, offset, size);
     }
 }

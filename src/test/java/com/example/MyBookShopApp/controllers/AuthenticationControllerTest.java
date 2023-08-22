@@ -22,12 +22,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class AuthUserControllerTest {
+class AuthenticationControllerTest {
 
     private final MockMvc mockMvc;
 
     @Autowired
-    AuthUserControllerTest(MockMvc mockMvc) {
+    AuthenticationControllerTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
 

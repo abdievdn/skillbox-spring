@@ -8,6 +8,5 @@ import java.util.Optional;
 @Repository
 public interface JWTBlacklistRepository extends JpaRepository<JWTBlacklistEntity, Integer> {
 
-    Optional<JWTBlacklistEntity> findByJwtValue(String jwtValue);
     Boolean existsByJwtValue(String jwtValue);
 }

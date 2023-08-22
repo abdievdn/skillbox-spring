@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})">
+<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
 <body class="Site">
   <header th:replace="~{fragments/header_fragment}"></header>
   <div class="Middle">
@@ -9,7 +9,7 @@
         <h1 class="Middle-title">Корзина</h1>
         <form class="form Cart" action="#" method="post">
           <div class="Cart-messageInfo" th:if="${booksStatusList.isEmpty()}">Корзина пуста</div>
-        <th:block th:replace="~{fragments/books_status_list_fragment :: statusFragment(${booksStatusList}, 'cart')}"></th:block>
+        <th:block th:replace="~{fragments/books_status_list_fragment :: statusFragment(${booksStatusList}, ${booksIds}, 'cart')}"></th:block>
         </form>
       </main>
     </div>

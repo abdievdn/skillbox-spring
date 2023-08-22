@@ -1,4 +1,4 @@
-package com.example.MyBookShopApp.data.dto.payment;
+package com.example.MyBookShopApp.data.dto.yookassa;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConfirmationDto {
+public class YooConfirmationDto {
     private String type;
     @JsonProperty("return_url")
     private String returnUrl;

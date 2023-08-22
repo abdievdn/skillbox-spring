@@ -2,7 +2,8 @@ package com.example.MyBookShopApp.controllers;
 
 import com.example.MyBookShopApp.aspect.annotations.ControllerParamsCatch;
 import com.example.MyBookShopApp.aspect.annotations.ControllerResponseCatch;
-import com.example.MyBookShopApp.data.dto.InteractionWithBookDto;
+import com.example.MyBookShopApp.data.dto.BookDto;
+import com.example.MyBookShopApp.data.dto.InteractionWithBooksDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.services.BookReviewService;
 import com.example.MyBookShopApp.services.RatingService;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,12 +36,26 @@ public class BookController {
     private final BookReviewService bookReviewService;
     private final BookFileService storage;
 
+    @ModelAttribute("recentBooks")
+    public List<BookDto> recentBooksModel() {
+        return bookService.getPageOfRecentBooks(
+                DefaultController.DEFAULT_OFFSET,
+                DefaultController.DEFAULT_SIZE).getBooks();
+    }
+
+    @ModelAttribute("popularBooks")
+    public List<BookDto> popularBooksModel() {
+        return bookService.getPageOfPopularBooks(
+                DefaultController.DEFAULT_OFFSET,
+                DefaultController.DEFAULT_SIZE).getBooks();
+    }
+
     @ControllerParamsCatch
     @ControllerResponseCatch
     @GetMapping({"/recommended/page", "/recommended/slider"})
     @ResponseBody
-    public BooksPageDto recommendedBooksPage(@RequestParam("offset") Integer offset,
-                                         @RequestParam("limit") Integer size) {
+    public BooksPageDto recommendedBooksPage(@RequestParam("offset") int offset,
+                                             @RequestParam("limit") int size) {
         return bookService.getPageOfRecommendedBooks(offset, size);
     }
 
@@ -47,8 +63,8 @@ public class BookController {
     @ControllerResponseCatch
     @GetMapping("/recent/slider")
     @ResponseBody
-    public BooksPageDto recentBooksSlider(@RequestParam("offset") Integer offset,
-                                    @RequestParam("limit") Integer size) {
+    public BooksPageDto recentBooksSlider(@RequestParam("offset") int offset,
+                                          @RequestParam("limit") int size) {
         return bookService.getPageOfRecentBooks(offset, size);
     }
 
@@ -57,9 +73,9 @@ public class BookController {
     @GetMapping("/recent/page")
     @ResponseBody
     public BooksPageDto recentBooksFromToPage(@RequestParam("from") String from,
-                                    @RequestParam("to") String to,
-                                    @RequestParam("offset") Integer offset,
-                                    @RequestParam("limit") Integer size) {
+                                              @RequestParam("to") String to,
+                                              @RequestParam("offset") int offset,
+                                              @RequestParam("limit") int size) {
         return bookService.getPageOfRecentBooks(from, to, offset, size);
     }
 
@@ -72,8 +88,8 @@ public class BookController {
     @ControllerResponseCatch
     @GetMapping({"/popular/page", "/popular/slider"})
     @ResponseBody
-    public BooksPageDto popularBooksPage(@RequestParam("offset") Integer offset,
-                                     @RequestParam("limit") Integer size) {
+    public BooksPageDto popularBooksPage(@RequestParam("offset") int offset,
+                                         @RequestParam("limit") int size) {
         return bookService.getPageOfPopularBooks(offset, size);
     }
 
@@ -83,9 +99,10 @@ public class BookController {
     }
 
     @ControllerParamsCatch
+    @ControllerResponseCatch
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
-        model.addAttribute("bookSlug", bookService.getBookDtoBySlug(slug));
+        model.addAttribute("book", bookService.getBookDtoBySlug(slug));
         model.addAttribute("bookReviewList", bookReviewService.getBookReviewList(slug));
         return "/books/slug";
     }
@@ -118,7 +135,7 @@ public class BookController {
     @PostMapping("/rateBook")
     @PreAuthorize("hasRole('USER')")
     @ResponseBody
-    public ResultDto rateBook(@RequestBody InteractionWithBookDto interaction, Principal principal) {
+    public ResultDto rateBook(@RequestBody InteractionWithBooksDto interaction, Principal principal) {
         ratingService.saveBookRating(interaction.getBookId(), interaction.getValue(), principal);
         return new ResultDto();
     }
@@ -128,7 +145,7 @@ public class BookController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/bookReview")
     @ResponseBody
-    public ResultDto bookReview(@RequestBody InteractionWithBookDto interaction, Principal principal) {
+    public ResultDto bookReview(@RequestBody InteractionWithBooksDto interaction, Principal principal) {
         bookReviewService.saveBookReview(interaction.getBookId(), interaction.getText(), principal);
         return new ResultDto();
     }

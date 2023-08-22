@@ -43,14 +43,14 @@ public class SearchController {
     @ControllerResponseCatch
     @GetMapping("/search/page/{searchSource}/{searchWord}")
     @ResponseBody
-    public BooksPageDto getSearchPage(@RequestParam("offset") Integer offset,
-                                      @RequestParam("limit") Integer size,
+    public BooksPageDto getSearchPage(@RequestParam("offset") int offset,
+                                      @RequestParam("limit") int size,
                                       @PathVariable(value = "searchWord", required = false) String searchWord,
                                       @PathVariable(value = "searchSource", required = false) String searchSource) throws CommonErrorException {
         return getBooksPageDto(offset, size, searchWord, searchSource);
     }
 
-    private BooksPageDto getBooksPageDto(Integer offset, Integer size, String searchWord, String searchSource) throws CommonErrorException {
+    private BooksPageDto getBooksPageDto(int offset, int size, String searchWord, String searchSource) throws CommonErrorException {
         BooksPageDto searchResultBooks = new BooksPageDto();
         switch (SearchSource.valueOf(searchSource)) {
             case BOOKSHOP:

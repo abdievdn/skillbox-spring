@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})">
+<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
 <body class="Site">
 <header th:replace="~{fragments/header_fragment}"></header>
 <div class="Middle">
@@ -22,7 +22,7 @@
                     <a class="btn btn_primary" href="#"
                        data-refreshshow="author"
                        data-refreshoffset="1"
-                       data-refreshlimit="20"
+                       data-refreshlimit="10"
                        th:attr="data-refreshid=${authorId}">Показать еще</a>
                 </div>
             </div>

@@ -1,16 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})">
+<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
 <body class="Site">
-<!--if lt IE 8
-p.error-browser
-    | Ваш браузер&nbsp;
-    em устарел!&nbsp;
-    a(href="http://browsehappy.com/") Выберите новую версию
-        +s
-        | браузера здесь&nbsp;
-    | для правильного отображения сайта.
--->
 <th:block th:replace="~{fragments/header_fragment}"></th:block>
 <div class="Middle">
     <div class="wrap">
@@ -25,16 +16,14 @@ p.error-browser
                     <th:block th:text="${tagName}"></th:block>
                 </li>
             </ul>
-<!--            <header class="Middle-header">-->
-<!--                <h1 class="Middle-title" th:text="${tagName}"></h1>-->
-<!--            </header>-->
             <div class="Section">
                 <div class="Section-header">
                     <h1 class="Section-title" th:text="${tagName}"></h1>
-                    <div class="Section-header-links"><a class="Section-header-link" th:href="@{'/tags/index'}">Все тэги</a>
+                    <div class="Section-header-links">
+                        <a class="Section-header-link" th:href="@{'/tags/index'}">Все тэги</a>
                     </div>
                 </div>
-                <div th:replace="~{fragments/books_pool_fragment :: cards(${booksByTagList})}"></div>
+                <div th:replace="~{fragments/books_pool_fragment :: cards(${booksByTagList.books})}"></div>
                 <div class="Cards-footer Cards-footer_center">
                     <a class="btn btn_primary" href="#"
                        data-refreshshow="tag"

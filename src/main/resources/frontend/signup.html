@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})">
+<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
 <body class="Site">
   <header th:replace="~{fragments/header_fragment}"></header>
   <div class="Middle Middle_form">
@@ -11,7 +11,7 @@
     </div>
     <div class="wrap">
       <main class="Middle-main">
-        <form class="form Login Login_registration" th:object="${regForm}" th:action="@{/registration}" method="post">
+        <form class="form Login Login-box Login_registration" th:object="${regForm}" th:action="@{/registration}" method="post">
           <div class="Login-ins">
             <div class="Login-step">
               <div class="form-group">
@@ -34,7 +34,7 @@
               </div>
               <div class="form-group form-group_row">
                 <div class="form-group">
-                  <input class="form-input form-input_mail" id="mail" name="mail" type="text" th:field="*{email}"
+                  <input class="form-input form-input_mail" id="mail" name="mail" type="text" th:field="*{getMail}"
                          placeholder="Введите e-mail" data-validate="mail require"/>
                 </div>
                 <div class="form-group form-group_key">

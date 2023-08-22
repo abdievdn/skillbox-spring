@@ -2051,7 +2051,7 @@
   transition: transform 200ms, -webkit-transform 200ms;
 }
 
-.Login {
+.Login-box {
   max-width: 840px;
   padding: 70px 50px;
   border-radius: 10px;
@@ -2830,6 +2830,12 @@
 }
 .Profile-success {
   color: #2aa73a;
+  display: block;
+  margin-top: 20px;
+  text-align: right;
+}
+.Profile-success {
+  color: #ba6347;
   display: block;
   margin-top: 20px;
   text-align: right;

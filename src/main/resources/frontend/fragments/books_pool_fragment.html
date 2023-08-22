@@ -43,6 +43,12 @@
         <div th:if="${book.isBestseller}">
             <div th:replace="~{this :: cardBestseller}"></div>
         </div>
+        <a th:if="${book.status != null && book.status.equals('KEPT')}"
+           class="Card-status" title="Отложена"><img src="/assets/img/icons/heart.svg" alt="heart.svg"/></a>
+        <a th:if="${book.status != null && book.status.equals('CART')}"
+           class="Card-status" title="В корзине"><img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/></a>
+        <a th:if="${currentUser != null && book.status != null &&  book.status.equals('PAID')}"
+           class="Card-status" title="Куплена"><img src="/assets/img/icons/check.svg" alt="check.svg"/></a>
     </div>
     <div class="Card-content">
         <strong class="Card-title">
@@ -63,12 +69,5 @@
 
 <div class="Card-ribbon" th:fragment="cardBestseller"><span class="Card-ribbonText">Бестселлер</span>
 </div>
-
-<a class="Card-status" title="Отложена"><img src="/assets/img/icons/heart.svg" alt="heart.svg"/></a>
-
-<a class="Card-status" title="Куплена"><img src="/assets/img/icons/check.svg" alt="check.svg"/></a>
-
-<a class="Card-status" title="В корзине"><img src="/assets/img/icons/shopping-basket.svg"
-                                              alt="shopping-basket.svg"/></a>
 </body>
 </html>

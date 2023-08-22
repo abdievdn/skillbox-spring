@@ -17,14 +17,14 @@ public class ServicesTrackerAspect {
 
     @Around(value = "serviceProceedPointcut()")
     public Object serviceProceedAdvice(ProceedingJoinPoint proceedingJoinPoint) {
-        Long startPoint = System.currentTimeMillis();
+        long startPoint = System.currentTimeMillis();
         Object result;
         try {
             result = proceedingJoinPoint.proceed();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-        Long endPoint = System.currentTimeMillis();
+        long endPoint = System.currentTimeMillis();
         log.info(proceedingJoinPoint.toShortString() +
                 " successfully finished in " +
                 (endPoint - startPoint) + " ms.");

@@ -5,15 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
-    private String name;
-    private String mail;
-    private String phone;
-    private String mailCode;
-    private String phoneCode;
-    private int balance;
+public class TransactionDto {
+    private Timestamp time;
+    private int value;
+    private String description;
+
 }
