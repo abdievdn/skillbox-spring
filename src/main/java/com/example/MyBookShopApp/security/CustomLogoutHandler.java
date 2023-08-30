@@ -1,7 +1,7 @@
 package com.example.MyBookShopApp.security;
 
-import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
-import com.example.MyBookShopApp.repositories.UserContactRepository;
+import com.example.MyBookShopApp.data.entity.user.UserEntity;
+import com.example.MyBookShopApp.repositories.UserRepository;
 import com.example.MyBookShopApp.security.jwt.JWTBlacklistEntity;
 import com.example.MyBookShopApp.security.jwt.JWTBlacklistRepository;
 import com.example.MyBookShopApp.security.jwt.JWTUtil;
@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 public class CustomLogoutHandler implements LogoutHandler {
 
     private final JWTBlacklistRepository blacklistRepository;
-    private final UserContactRepository contactRepository;
+    private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
 
     @Override
@@ -30,13 +30,13 @@ public class CustomLogoutHandler implements LogoutHandler {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("token")) {
-                UserContactEntity contact = contactRepository
-                        .findByContact(jwtUtil.extractUsername(cookie.getValue())).orElseThrow();
+                UserEntity userEntity = userRepository
+                        .findById(Integer.valueOf(jwtUtil.extractUsername(cookie.getValue()))).orElseThrow();
                 JWTBlacklistEntity blacklistEntity = new JWTBlacklistEntity();
                 blacklistEntity.setJwtValue(cookie.getValue());
-                blacklistEntity.setUserContact(contact);
+                blacklistEntity.setUser(userEntity);
                 blacklistRepository.save(blacklistEntity);
-                for (JWTBlacklistEntity jwt : contact.getJwtList()) {
+                for (JWTBlacklistEntity jwt : userEntity.getJwtList()) {
                     deleteExpiredToken(jwt);
                 }
             }

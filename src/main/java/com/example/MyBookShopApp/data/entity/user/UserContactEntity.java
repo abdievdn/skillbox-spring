@@ -1,12 +1,10 @@
 package com.example.MyBookShopApp.data.entity.user;
 
 import com.example.MyBookShopApp.data.entity.enums.ContactType;
-import com.example.MyBookShopApp.security.jwt.JWTBlacklistEntity;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -41,9 +39,6 @@ public class UserContactEntity {
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String contact;
-
-    @OneToMany(mappedBy = "userContact", fetch = FetchType.EAGER)
-    private List<JWTBlacklistEntity> jwtList;
 
     public Boolean isCodeExpired() {
         return LocalDateTime.now().isAfter(codeTime);

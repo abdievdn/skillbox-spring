@@ -94,7 +94,7 @@ public class UserController {
     @ControllerParamsCatch
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/profile/change")
-    public String profileChange(UserDto userDto, Principal principal, Model model) {
+    public String profileChange(UserDto userDto, Model model, Principal principal) {
         model.addAttribute("result", userService.changeProfileData(userDto, principal));
         return "/profile";
     }

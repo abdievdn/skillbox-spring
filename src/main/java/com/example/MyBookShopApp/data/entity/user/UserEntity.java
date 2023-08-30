@@ -5,6 +5,7 @@ import com.example.MyBookShopApp.data.entity.book.rating.BookRatingEntity;
 import com.example.MyBookShopApp.data.entity.book.rating.BookReviewRatingEntity;
 import com.example.MyBookShopApp.data.entity.book.review.BookReviewEntity;
 import com.example.MyBookShopApp.data.entity.book.review.BookReviewLikeEntity;
+import com.example.MyBookShopApp.security.jwt.JWTBlacklistEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -52,6 +53,9 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<BookReviewEntity> bookReviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    List<UserContactEntity> contacts = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserContactEntity> contacts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<JWTBlacklistEntity> jwtList = new ArrayList<>();
 }

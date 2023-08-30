@@ -53,7 +53,7 @@ class RegisterServiceTest {
                 .id(1)
                 .user(user)
                 .contact(email)
-                .type(ContactType.EMAIL)
+                .type(ContactType.MAIL)
                 .build();
         userContactPhone = UserContactEntity.builder()
                 .id(2)

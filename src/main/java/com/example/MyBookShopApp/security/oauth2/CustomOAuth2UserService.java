@@ -1,10 +1,11 @@
 package com.example.MyBookShopApp.security.oauth2;
 
+import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
+import com.example.MyBookShopApp.repositories.UserContactRepository;
 import com.example.MyBookShopApp.security.RegisterService;
 import com.example.MyBookShopApp.security.jwt.JWTUtil;
 import com.example.MyBookShopApp.services.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -14,12 +15,12 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final RegisterService registerService;
+    private final UserContactRepository contactRepository;
     private final JWTUtil jwtUtil;
 
     @Override
@@ -30,7 +31,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     public void processOAuth2PostLogin(HttpServletRequest request, HttpServletResponse response, CustomOAuth2User oAuth2User) {
         registerService.registerUser(oAuth2User.getUsername(), oAuth2User.getName(), "");
+        UserContactEntity contactEntity = contactRepository.findByContact(oAuth2User.getName()).orElseThrow();
         CookieUtil.deleteCookieByName(request, response,"JSESSIONID");
-        CookieUtil.addCookieByName(response, "token", jwtUtil.generateToken(oAuth2User.getName()));
+        CookieUtil.addCookieByName(response, "token",
+                jwtUtil.generateToken(String.valueOf(contactEntity.getUser().getId())));
     }
 }

@@ -28,7 +28,7 @@ public class RegisterService {
             userEntity.setHash(String.valueOf(System.identityHashCode(userEntity)));
             userRepository.save(userEntity);
             if (!email.isBlank()) {
-                saveUserContact(email, userEntity, ContactType.EMAIL);
+                saveUserContact(email, userEntity, ContactType.MAIL);
             }
             if (!phone.isBlank()) {
                 saveUserContact(phone, userEntity, ContactType.PHONE);

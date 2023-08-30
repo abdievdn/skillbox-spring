@@ -6,7 +6,6 @@ import com.example.MyBookShopApp.data.dto.ContactConfirmationDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.security.AuthService;
 import com.example.MyBookShopApp.data.dto.UserDto;
-import com.example.MyBookShopApp.services.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -68,7 +67,9 @@ public class AuthenticationController {
     @ResponseBody
     public ResultDto login(@RequestBody ContactConfirmationDto payload,
                            HttpServletResponse response) {
-        ResultDto resultDto = authService.isSecretCodeValid(payload.getContact(), payload.getCode());
+        String contact = payload.getContact();
+        String code = payload.getCode();
+        ResultDto resultDto = authService.isSecretCodeValid(contact, code);
         if (!resultDto.getResult()) {
             return resultDto;
         }

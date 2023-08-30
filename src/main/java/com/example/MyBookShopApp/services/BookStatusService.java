@@ -42,14 +42,14 @@ public class BookStatusService {
             if (status.equals(BookStatus.PAID)) {
                 return paymentService.postBooksPaymentTransaction(slugs, user);
             }
-                for (String s : slugs) {
-                    BookEntity book = bookService.getBookBySlug(s);
-                    if (isBookBelongsToUser(book, user) &&
-                            (status.equals(BookStatus.CART) || status.equals(BookStatus.KEPT))) {
-                        return new ResultDto("Вы уже приобрели эту книгу");
-                    }
-                    setBookToUser(status, book, user);
+            for (String s : slugs) {
+                BookEntity book = bookService.getBookBySlug(s);
+                if (isBookBelongsToUser(book, user) &&
+                        (status.equals(BookStatus.CART) || status.equals(BookStatus.KEPT))) {
+                    return new ResultDto("Вы уже приобрели эту книгу");
                 }
+                setBookToUser(status, book, user);
+            }
         } else {
             setBookToCookie(status.name(), slugs, request, response);
         }
@@ -59,7 +59,7 @@ public class BookStatusService {
     public Boolean isBookBelongsToUser(BookEntity book, UserEntity user) {
         return book2UserRepository.findByBookAndUser(book, user).filter(book2User ->
                 book2User.getType().getCode().equals(BookStatus.PAID) ||
-                book2User.getType().getCode().equals(BookStatus.ARCHIVED)).isPresent();
+                        book2User.getType().getCode().equals(BookStatus.ARCHIVED)).isPresent();
     }
 
     private List<String> getSlugsList(String slug) {
@@ -177,20 +177,27 @@ public class BookStatusService {
     public int getCountOfAllUserBooks(Principal principal) {
         if (principal != null) {
             UserEntity user = userService.getCurrentUserByPrincipal(principal);
-            return user.getBooksLink().size();
-        } else {
-            return 0;
+            if (isUserHasBooks(user)) {
+                return user.getBooksLink().size();
+            }
         }
+        return 0;
+    }
+
+    private boolean isUserHasBooks(UserEntity user) {
+        return user.getBooksLink() != null;
     }
 
     private List<BookEntity> getBooksFromUser(BookStatus status, Principal principal) {
         UserEntity user = userService.getCurrentUserByPrincipal(principal);
         List<BookEntity> books = new ArrayList<>();
-        user.getBooksLink().forEach(b -> {
-            if (b.getType().getCode().equals(status)) {
-                books.add(b.getBook());
-            }
-        });
+        if (isUserHasBooks(user)) {
+            user.getBooksLink().forEach(b -> {
+                if (b.getType().getCode().equals(status)) {
+                    books.add(b.getBook());
+                }
+            });
+        }
         return books;
     }
 

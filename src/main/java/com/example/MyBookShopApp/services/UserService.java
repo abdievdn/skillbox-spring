@@ -8,6 +8,7 @@ import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
 import com.example.MyBookShopApp.repositories.UserRepository;
+import com.example.MyBookShopApp.security.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserContactRepository contactRepository;
+    private final AuthService authService;
 
     private UserEntity getUserByContact(UserContactEntity contact) {
         if (contact != null) {
@@ -31,12 +33,8 @@ public class UserService {
         }
     }
 
-    private UserContactEntity getUserContactByPrincipal(Principal principal) {
-        return contactRepository.findByContact(principal.getName()).orElse(null);
-    }
-
     public UserEntity getCurrentUserByPrincipal(Principal principal) {
-        return getUserByContact(getUserContactByPrincipal(principal));
+        return userRepository.findById(Integer.valueOf(principal.getName())).orElse(null);
     }
 
     @ServiceProcessTrackable
@@ -51,12 +49,11 @@ public class UserService {
 
     public UserDto getCurrentUserDto(Principal principal) {
         if (principal != null) {
-            UserContactEntity userContactEntity = contactRepository.findByContact(principal.getName()).orElseThrow();
-            UserEntity user = userContactEntity.getUser();
+            UserEntity user = getCurrentUserByPrincipal(principal);
             String email = "";
             String phone = "";
             for (UserContactEntity contact : user.getContacts()) {
-                if (contact.getType().equals(ContactType.EMAIL)) {
+                if (contact.getType().equals(ContactType.MAIL)) {
                     email = contact.getContact();
                 } else {
                     phone = contact.getContact();
@@ -76,41 +73,52 @@ public class UserService {
     public ResultDto changeProfileData(UserDto userDto, Principal principal) {
         ResultDto resultDto = new ResultDto("");
         UserEntity user = getCurrentUserByPrincipal(principal);
-        if (userDto.getName() != null) {
-            user.setName(userDto.getName());
-            userRepository.save(user);
+        if (userDto.getName() != null && !userDto.getName().isEmpty()) {
+            if (!userDto.getName().equals(user.getName())) {
+                user.setName(userDto.getName());
+                userRepository.save(user);
+            }
         } else {
             resultDto.setError("Неверное имя пользователя");
             return resultDto;
         }
-        if (userDto.getMail() != null && !userDto.getMail().isEmpty()) {
-            UserContactEntity mail = contactRepository.findByContact(userDto.getMail()).orElse(null);
-            if (mail != null) {
-                deleteOldContact(user);
+        if (isUserChangeContact(userDto.getMail())) {
+            UserContactEntity mail = authService.getUserContact(userDto.getMail());
+            if (isNewContact(mail)) {
+                deleteOldContact(user, ContactType.MAIL);
                 saveNewContact(user, mail);
             }
         }
-        if (userDto.getPhone() != null && !userDto.getPhone().isEmpty()) {
-            UserContactEntity phone = contactRepository.findByContact(userDto.getMail()).orElse(null);
-            if (phone != null) {
-                deleteOldContact(user);
+        if (isUserChangeContact(userDto.getPhone())) {
+            UserContactEntity phone = authService.getUserContact(userDto.getPhone());
+            if (isNewContact(phone)) {
+                deleteOldContact(user, ContactType.PHONE);
                 saveNewContact(user, phone);
             }
         }
-        resultDto.setValue("Данные успешно изменены.");
         resultDto.setResult(true);
         return resultDto;
+    }
+
+    private boolean isNewContact(UserContactEntity contact) {
+        return contact != null && contact.getApproved() == 0;
+    }
+
+    private boolean isUserChangeContact(String contact) {
+        return contact != null && !contact.isEmpty();
     }
 
     private void saveNewContact(UserEntity user, UserContactEntity userContact) {
             userContact.setUser(user);
             userContact.setApproved((short) 1);
-            log.info("try to save new contact " + userContact.getUser().getName());
             contactRepository.save(userContact);
         }
 
-    private void deleteOldContact(UserEntity user) {
-        log.info("try to delete old contact " + user.getName());
-        contactRepository.findByUser(user).ifPresent(contactRepository::delete);
+    private void deleteOldContact(UserEntity user, ContactType type) {
+        UserContactEntity userContact = contactRepository.findByUserAndType(user, type).orElse(null);
+        if (userContact != null) {
+            user.getContacts().remove(userContact);
+            contactRepository.delete(userContact);
+        }
     }
 }

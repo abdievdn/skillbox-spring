@@ -29,7 +29,7 @@ public class BookShopUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userContactEntity.getContact();
+        return String.valueOf(userContactEntity.getUser().getId());
     }
 
     @Override

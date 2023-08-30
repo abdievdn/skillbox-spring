@@ -19,6 +19,6 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  name: user_contact_id
+                  name: user_id
                   type: INTEGER
             tableName: jwt_blacklist

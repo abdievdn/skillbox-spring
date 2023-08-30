@@ -37,14 +37,14 @@ public class AuthService {
     private final MailService mailService;
     private final JWTUtil jwtUtil;
 
-    private UserContactEntity getUserContact(String contact) {
+    public UserContactEntity getUserContact(String contact) {
         return userContactRepository.findByContact(contact).orElse(null);
     }
 
     @ServiceProcessTrackable
     public ResultDto checkSignupContact(ContactConfirmationDto confirmationDto) {
         UserContactEntity userContact = getUserContact(confirmationDto.getContact());
-        if (userContact != null && userContact.getApproved() == 1) {
+        if (isContactApproved(userContact)) {
             return new ResultDto("Такой контакт уже зарегистрирован!");
         } else {
             if (userContact == null) {
@@ -53,7 +53,7 @@ public class AuthService {
                         .type(confirmationDto.getContactType().equals("phone") ?
                                 ContactType.PHONE :
                                 confirmationDto.getContactType().equals("mail")
-                                        ? ContactType.EMAIL : null)
+                                        ? ContactType.MAIL : null)
                         .approved((short) 0)
                         .build();
                 userContactRepository.save(userContact);
@@ -63,10 +63,14 @@ public class AuthService {
         }
     }
 
+    private boolean isContactApproved(UserContactEntity userContact) {
+        return userContact != null && userContact.getApproved() == 1;
+    }
+
     @ServiceProcessTrackable
     public ResultDto checkSigninContact(ContactConfirmationDto confirmationDto) {
         UserContactEntity userContact = getUserContact(confirmationDto.getContact());
-        if (userContact == null) {
+        if (!isContactApproved(userContact)) {
             return new ResultDto("Такого контакта не существует! Пройдите регистрацию.");
         }
         saveNewCode(userContact);
@@ -75,10 +79,6 @@ public class AuthService {
 
     public ResultDto isSecretCodeValid(String contact, String code) {
         UserContactEntity userContact = getUserContact(contact);
-        return isSecretCodeValid(contact, code, userContact);
-    }
-
-    public ResultDto isSecretCodeValid(String contact, String code, UserContactEntity userContact) {
         if (userContact != null && verifyCode(userContact, code)) {
             return new ResultDto(true);
         }
@@ -89,7 +89,7 @@ public class AuthService {
         String code;
         if (contact.getType().equals(ContactType.PHONE)) {
             code = smsService.sendSmsSecretCode(contact.getContact());
-        } else if (contact.getType().equals(ContactType.EMAIL)) {
+        } else if (contact.getType().equals(ContactType.MAIL)) {
             code = mailService.sendMailSecretCode(contact.getContact());
         } else {
             throw new UsernameNotFoundException("Не найден код!");
@@ -115,13 +115,12 @@ public class AuthService {
     }
 
     private ResultDto jwtLogin(ContactConfirmationDto payload) {
-        if (payload.getContact().isEmpty() || payload.getCode().isEmpty()) {
-            return new ResultDto("Неверный ввод!");
-        }
+        String userId = String.valueOf(getUserContact(payload.getContact()).getUser().getId());
+        BookShopUserService.contactType = ContactType.valueOf(payload.getContactType().toUpperCase());
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode()));
-        BookShopUser user =
-                (BookShopUser) bookShopUserService.loadUserByUsername(payload.getContact());
+                new UsernamePasswordAuthenticationToken(userId, payload.getCode()));
+        BookShopUser user = (BookShopUser) bookShopUserService
+                .loadUserByUsername(userId);
         return ResultDto.builder()
                 .result(true)
                 .value(jwtUtil.generateToken(user.getUsername()))
@@ -130,9 +129,16 @@ public class AuthService {
 
     @ServiceProcessTrackable
     public ResultDto login(ContactConfirmationDto payload, HttpServletResponse response) {
+        if (!isPayloadCorrect(payload.getContact(), payload.getCode())) {
+            return new ResultDto("Неверный ввод!");
+        }
         ResultDto resultDto = jwtLogin(payload);
         Cookie cookie = new Cookie("token", resultDto.getValue());
         response.addCookie(cookie);
         return resultDto;
+    }
+
+    private boolean isPayloadCorrect(String contact, String code) {
+        return !contact.isEmpty() && !code.isEmpty();
     }
 }

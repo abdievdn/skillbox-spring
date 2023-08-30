@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.security.jwt;
 
-import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
+import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +20,6 @@ public class JWTBlacklistEntity {
     private String jwtValue;
 
     @ManyToOne
-    @JoinColumn(name = "user_contact_id", columnDefinition = "INT NOT NULL")
-    private UserContactEntity userContact;
+    @JoinColumn(name = "user_id", columnDefinition = "INT NOT NULL")
+    private UserEntity user;
 }
