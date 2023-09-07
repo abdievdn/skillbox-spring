@@ -10,6 +10,9 @@ import com.example.MyBookShopApp.services.RatingService;
 import com.example.MyBookShopApp.services.BookFileService;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.services.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +29,7 @@ import java.nio.file.Path;
 import java.security.Principal;
 import java.util.List;
 
+@Tag(description = "Book Shop details", name = "BookShop")
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -50,15 +54,23 @@ public class BookController {
                 DefaultController.DEFAULT_SIZE).getBooks();
     }
 
+    @Operation(summary = "Get page of recommended books for slider",
+            parameters = {
+                    @Parameter(name = "offset", description = "Get number of books page"),
+                    @Parameter(name = "limit", description = "Get size of books page")})
     @ControllerParamsCatch
     @ControllerResponseCatch
-    @GetMapping({"/recommended/page", "/recommended/slider"})
+    @GetMapping({"/recommended/slider"})
     @ResponseBody
     public BooksPageDto recommendedBooksPage(@RequestParam("offset") int offset,
                                              @RequestParam("limit") int size) {
         return bookService.getPageOfRecommendedBooks(offset, size);
     }
 
+    @Operation(summary = "Get list of recent books for slider",
+            parameters = {
+                    @Parameter(name = "offset", description = "Get number of books page"),
+                    @Parameter(name = "limit", description = "Get size of books page")})
     @ControllerParamsCatch
     @ControllerResponseCatch
     @GetMapping("/recent/slider")
@@ -68,6 +80,12 @@ public class BookController {
         return bookService.getPageOfRecentBooks(offset, size);
     }
 
+    @Operation(summary = "Get list of recommended books with additional date parameters",
+            parameters = {
+                    @Parameter(name = "from", description = "Get start Date for list of recent books"),
+                    @Parameter(name = "to", description = "Get end Date for list of recent books"),
+                    @Parameter(name = "offset", description = "Get number of books page"),
+                    @Parameter(name = "limit", description = "Get size of books page")})
     @ControllerParamsCatch
     @ControllerResponseCatch
     @GetMapping("/recent/page")
@@ -79,11 +97,16 @@ public class BookController {
         return bookService.getPageOfRecentBooks(from, to, offset, size);
     }
 
+    @Operation(summary = "Get index page of recent books")
     @GetMapping("/recent")
     public String recentBooks() {
         return "/books/recent";
     }
 
+    @Operation(summary = "Get list of recent books for slider and page",
+            parameters = {
+                    @Parameter(name = "offset", description = "Get number of books page"),
+                    @Parameter(name = "limit", description = "Get size of books page")})
     @ControllerParamsCatch
     @ControllerResponseCatch
     @GetMapping({"/popular/page", "/popular/slider"})
@@ -93,15 +116,19 @@ public class BookController {
         return bookService.getPageOfPopularBooks(offset, size);
     }
 
+    @Operation(summary = "Get index page of popular books")
     @GetMapping("/popular")
     public String popularBooks() {
         return "/books/popular";
     }
 
+    @Operation(summary = "Get page of single book")
     @ControllerParamsCatch
     @ControllerResponseCatch
     @GetMapping("/{slug}")
-    public String bookPage(@PathVariable(value = "slug", required = false) String slug, Model model) {
+    public String bookPage(
+            @Parameter(name = "slug", description = "Identify book by slug value")
+            @PathVariable(value = "slug", required = false) String slug, Model model) {
         model.addAttribute("book", bookService.getBookDtoBySlug(slug));
         model.addAttribute("bookReviewList", bookReviewService.getBookReviewList(slug));
         return "/books/slug";
@@ -130,6 +157,7 @@ public class BookController {
                 .body(new ByteArrayResource(data));
     }
 
+    @Operation(summary = "Set rating for book by registered user")
     @ControllerParamsCatch
     @ControllerResponseCatch
     @PostMapping("/rateBook")
@@ -140,6 +168,7 @@ public class BookController {
         return new ResultDto();
     }
 
+    @Operation(summary = "Send review for book by registered user")
     @ControllerParamsCatch
     @ControllerResponseCatch
     @PreAuthorize("hasRole('USER')")
@@ -150,6 +179,7 @@ public class BookController {
         return new ResultDto();
     }
 
+    @Operation(summary = "Set rating for book's review by registered user")
     @ControllerParamsCatch
     @ControllerResponseCatch
     @PreAuthorize("hasRole('USER')")

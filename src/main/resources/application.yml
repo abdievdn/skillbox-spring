@@ -68,14 +68,14 @@ spring:
 #          management-url: http://localhost:8085/actuator
 #        enabled: true
 
-#management:
-#  endpoint:
-#    health:
-#      show-details: always
-#  endpoints:
-#    web:
-#      exposure:
-#        include: '*'
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 
 path:
