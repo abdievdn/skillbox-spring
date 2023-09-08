@@ -54,8 +54,8 @@ public class BookService {
 
     @ServiceProcessTrackable
     public BooksPageDto getPageOfRecommendedBooks(int offset, int size) {
-        Page<BookEntity> books = bookRepository.findAllByIsBestsellerOrderByPriceAsc((short) 1, PageRequest.of(offset, size));
-        return new BooksPageDto(getBookDtoListFromBookEntityPage(books));
+        List<BookEntity> books = ratingService.getBooksByRating();
+        return new BooksPageDto(getPageOfBookDtoAsList(books, offset, size));
     }
 
     @ServiceProcessTrackable
@@ -87,7 +87,7 @@ public class BookService {
                 .stream()
                 .map(k -> bookRepository.findById(k).orElseGet(BookEntity::new))
                 .collect(Collectors.toList());
-        return new BooksPageDto(getPageOfBookDtoAsList(offset, size, popularBooks));
+        return new BooksPageDto(getPageOfBookDtoAsList(popularBooks, offset, size));
     }
 
     @ServiceProcessTrackable
@@ -125,7 +125,7 @@ public class BookService {
         for (Book2AuthorEntity a : author.getBooksLink()) {
             authorBooks.add(a.getBook());
         }
-        return new BooksPageDto(authorBooks.size(), getPageOfBookDtoAsList(offset, size, authorBooks));
+        return new BooksPageDto(authorBooks.size(), getPageOfBookDtoAsList(authorBooks, offset, size));
     }
 
     @ServiceProcessTrackable
@@ -135,13 +135,13 @@ public class BookService {
         for (Book2TagEntity b : tag.getBooksLink()) {
             books.add(b.getBook());
         }
-        return new BooksPageDto(getPageOfBookDtoAsList(offset, size, books));
+        return new BooksPageDto(getPageOfBookDtoAsList(books, offset, size));
     }
 
     @ServiceProcessTrackable
     public BooksPageDto getPageOfBooksByGenreAndSubGenres(String slug, int offset, int size) {
         List<BookEntity> booksByGenre = genreService.getBooksByGenre(slug);
-        return new BooksPageDto(getPageOfBookDtoAsList(offset, size, booksByGenre));
+        return new BooksPageDto(getPageOfBookDtoAsList(booksByGenre, offset, size));
     }
 
     public BooksPageDto getPageOfCurrentUserBooks(Principal principal, int offset, int size, Boolean isArchived) {
@@ -153,10 +153,10 @@ public class BookService {
                 .filter(b -> isArchived == b.getType().getCode().equals(BookStatus.ARCHIVED))
                 .map(Book2UserEntity::getBook)
                 .collect(Collectors.toList());
-        return new BooksPageDto(getPageOfBookDtoAsList(offset, size, books));
+        return new BooksPageDto(getPageOfBookDtoAsList(books, offset, size));
     }
 
-    private List<BookDto> getPageOfBookDtoAsList(int offset, int size, List<BookEntity> books) {
+    private List<BookDto> getPageOfBookDtoAsList(List<BookEntity> books, int offset, int size) {
         PagedListHolder<BookEntity> page = new PagedListHolder<>(books);
         page.setPageSize(size);
         if (offset >= page.getPageCount()) {

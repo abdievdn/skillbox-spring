@@ -6,15 +6,16 @@ import lombok.*;
 
 import java.util.List;
 
-@Schema(name = "Book DTO", description = "Book's properties")
+@Schema(name = "Book DTO", description = "Book's characteristics")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookDto {
 
+    @Schema(description = "Book's unique id number")
     private int id;
-    @Schema(description = "Book's identify code")
+    @Schema(description = "Book's unique identify code")
     private String slug;
     @Schema(description = "Book's cover picture")
     private String image;

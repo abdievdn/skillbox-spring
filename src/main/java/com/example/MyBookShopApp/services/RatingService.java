@@ -28,25 +28,33 @@ public class RatingService {
     public RatingDto getBookRatingBySlug(BookEntity book) {
         List<BookRatingEntity> bookRatings = book.getRatings();
         return RatingDto.builder()
-                .value((short) Math.round(bookRatings
-                        .stream()
-                        .mapToInt(BookRatingEntity::getValue)
-                        .average()
-                        .orElse(0)))
+                .value((short) getBookRating(bookRatings))
                 .count(bookRatings.size())
-                .values2Count(bookRatings
-                        .stream()
-                        .collect(Collectors.groupingBy(
-                                BookRatingEntity::getValue, collectingAndThen(counting(), Long::intValue)))
-                        .entrySet()
-                        .stream()
-                        .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue,
-                                (k, v) -> v,
-                                LinkedHashMap::new)))
+                .values2Count(getCountOfRatingValues(bookRatings))
                 .build();
+    }
+
+    private double getBookRating(List<BookRatingEntity> bookRatings) {
+        return Math.round(bookRatings
+                .stream()
+                .mapToDouble(BookRatingEntity::getValue)
+                .average()
+                .orElse(0));
+    }
+
+    private HashMap<Short, Integer> getCountOfRatingValues(List<BookRatingEntity> bookRatings) {
+        return bookRatings
+                .stream()
+                .collect(Collectors.groupingBy(
+                        BookRatingEntity::getValue, collectingAndThen(counting(), Long::intValue)))
+                .entrySet()
+                .stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (k, v) -> v,
+                        HashMap::new));
     }
 
     @ServiceProcessTrackable
@@ -60,5 +68,20 @@ public class RatingService {
         } else {
             bookRatingRepository.save(new BookRatingEntity(book, user, value));
         }
+    }
+
+    public List<BookEntity> getBooksByRating() {
+        Map<BookEntity, Double> booksRatingMap = new HashMap<>();
+        bookRatingRepository.findAll().forEach(r -> {
+            if (!booksRatingMap.containsKey(r.getBook())) {
+                booksRatingMap.put(r.getBook(), getBookRating(r.getBook().getRatings()));
+            }
+        });
+        return booksRatingMap
+                .entrySet()
+                .stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 }

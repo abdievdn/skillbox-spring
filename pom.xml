@@ -16,7 +16,6 @@
     <description>BookShop Spring Boot Project</description>
     <properties>
         <java.version>11</java.version>
-        <snakeyaml.version>2.2</snakeyaml.version>
     </properties>
 
     <dependencies>
@@ -85,11 +84,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-starter-client</artifactId>
-            <version>3.0.2</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>de.codecentric</groupId>-->
+<!--            <artifactId>spring-boot-admin-starter-client</artifactId>-->
+<!--            <version>2.7.10</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>com.twilio.sdk</groupId>
