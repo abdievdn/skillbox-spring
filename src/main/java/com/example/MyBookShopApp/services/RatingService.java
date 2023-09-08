@@ -8,6 +8,7 @@ import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.BookRatingRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.counting;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RatingService {
@@ -35,11 +37,11 @@ public class RatingService {
     }
 
     private double getBookRating(List<BookRatingEntity> bookRatings) {
-        return Math.round(bookRatings
+        return bookRatings
                 .stream()
                 .mapToDouble(BookRatingEntity::getValue)
                 .average()
-                .orElse(0));
+                .orElse(0);
     }
 
     private HashMap<Short, Integer> getCountOfRatingValues(List<BookRatingEntity> bookRatings) {
@@ -70,16 +72,19 @@ public class RatingService {
         }
     }
 
-    public List<BookEntity> getBooksByRating() {
-        Map<BookEntity, Double> booksRatingMap = new HashMap<>();
+    public List<BookEntity> getBooksByRatingAndCount() {
+        Map<BookEntity, Integer> booksRatingMap = new HashMap<>();
         bookRatingRepository.findAll().forEach(r -> {
             if (!booksRatingMap.containsKey(r.getBook())) {
-                booksRatingMap.put(r.getBook(), getBookRating(r.getBook().getRatings()));
+                booksRatingMap.put(r.getBook(), Integer.valueOf(r.getValue()));
+            } else {
+                booksRatingMap.put(r.getBook(), booksRatingMap.get(r.getBook()) + r.getValue());
             }
         });
         return booksRatingMap
                 .entrySet()
                 .stream()
+                .sorted(Collections.reverseOrder(Comparator.comparing(o -> o.getKey().getPubDate())))
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());

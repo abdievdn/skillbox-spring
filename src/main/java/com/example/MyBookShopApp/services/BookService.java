@@ -54,7 +54,7 @@ public class BookService {
 
     @ServiceProcessTrackable
     public BooksPageDto getPageOfRecommendedBooks(int offset, int size) {
-        List<BookEntity> books = ratingService.getBooksByRating();
+        List<BookEntity> books = ratingService.getBooksByRatingAndCount();
         return new BooksPageDto(getPageOfBookDtoAsList(books, offset, size));
     }
 
