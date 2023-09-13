@@ -128,8 +128,8 @@ public class BookController {
     @GetMapping("/{slug}")
     public String bookPage(
             @Parameter(name = "slug", description = "Identify book by slug value")
-            @PathVariable(value = "slug", required = false) String slug, Model model) {
-        model.addAttribute("book", bookService.getBookDtoBySlug(slug));
+            @PathVariable(value = "slug", required = false) String slug, Model model, Principal principal) {
+        model.addAttribute("book", bookService.getBookDtoBySlug(slug, principal));
         model.addAttribute("bookReviewList", bookReviewService.getBookReviewList(slug));
         return "/books/slug";
     }

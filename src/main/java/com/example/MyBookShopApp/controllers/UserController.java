@@ -8,6 +8,7 @@ import com.example.MyBookShopApp.data.dto.UserDto;
 import com.example.MyBookShopApp.services.BookService;
 import com.example.MyBookShopApp.services.PaymentService;
 import com.example.MyBookShopApp.services.UserService;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -61,7 +62,6 @@ public class UserController {
         return "myarchive";
     }
 
-
     @ControllerParamsCatch
     @ControllerResponseCatch
     @PreAuthorize("hasRole('USER')")
@@ -72,6 +72,25 @@ public class UserController {
                                            Principal principal) {
         return bookService.getPageOfCurrentUserBooks(
                 principal, offset, size, true);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/myhistory")
+    public String myHistoryBooks(Principal principal, Model model) {
+        model.addAttribute("userBooks", bookService.getPageOfCurrentUserHistoryBooks(
+                principal, DefaultController.DEFAULT_OFFSET, DefaultController.DEFAULT_SIZE));
+        return "myhistory";
+    }
+
+    @ControllerParamsCatch
+    @ControllerResponseCatch
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/myhistory/page")
+    @ResponseBody
+    public BooksPageDto myHistoryBooksPage(@RequestParam("offset") int offset,
+                                           @RequestParam("limit") int size,
+                                           Principal principal) {
+        return bookService.getPageOfCurrentUserHistoryBooks(principal, offset, size);
     }
 
     @PreAuthorize("hasRole('USER')")

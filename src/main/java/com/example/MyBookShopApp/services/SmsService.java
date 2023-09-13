@@ -27,10 +27,10 @@ public class SmsService {
         String formattedContact = contact.replaceAll("[^+0-9]", "");
         log.info(formattedContact);
         String generatedCode = CodeUtil.generateCode();
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-        Message.creator(new PhoneNumber(formattedContact),
-                new PhoneNumber(TWILIO_NUMBER),
-                "You secret code is: " + generatedCode).create();
+//        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+//        Message.creator(new PhoneNumber(formattedContact),
+//                new PhoneNumber(TWILIO_NUMBER),
+//                "You secret code is: " + generatedCode).create();
         return generatedCode;
     }
 }

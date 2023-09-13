@@ -1,7 +1,9 @@
 package com.example.MyBookShopApp.security.oauth2;
 
+import com.example.MyBookShopApp.data.entity.enums.ContactType;
 import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
+import com.example.MyBookShopApp.security.BookShopUserService;
 import com.example.MyBookShopApp.security.RegisterService;
 import com.example.MyBookShopApp.security.jwt.JWTUtil;
 import com.example.MyBookShopApp.services.util.CookieUtil;
@@ -32,6 +34,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public void processOAuth2PostLogin(HttpServletRequest request, HttpServletResponse response, CustomOAuth2User oAuth2User) {
         registerService.registerUser(oAuth2User.getUsername(), oAuth2User.getName(), "");
         UserContactEntity contactEntity = contactRepository.findByContact(oAuth2User.getName()).orElseThrow();
+        BookShopUserService.contactType = ContactType.MAIL;
         CookieUtil.deleteCookieByName(request, response,"JSESSIONID");
         CookieUtil.addCookieByName(response, "token",
                 jwtUtil.generateToken(String.valueOf(contactEntity.getUser().getId())));

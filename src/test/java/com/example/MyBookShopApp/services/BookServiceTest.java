@@ -116,7 +116,7 @@ class BookServiceTest {
         Mockito.doReturn(new RatingDto())
                 .when(ratingService)
                 .getBookRatingBySlug(Mockito.any());
-        BookDto bookDto = bookService.getBookDtoBySlug("book1");
+        BookDto bookDto = bookService.getBookDtoBySlug("book1", null);
         assertNotNull(bookDto);
         assertEquals(bookDto.getId(), 1);
         assertEquals(bookDto.getSlug(), "book1");

@@ -17,11 +17,15 @@
             <div class="Section">
                 <div class="Section-header">
                     <h1 class="Section-title">Мои книги</h1>
-                    <div class="Section-header-links"><span class="Section-header-link Section-header-link_ACTIVE">Непрочитанные</span><a
-                            class="Section-header-link" href="/myarchive">Архив</a>
+                    <div class="Section-header-links">
+                        <a class="Section-header-link" href="/my">Непрочитанные</a>
+                        <a class="Section-header-link" href="/myarchive">Архив</a>
+                        <span class="Section-header-link Section-header-link_ACTIVE">История</span>
                     </div>
                 </div>
-                <div th:replace="~{fragments/books_pool_fragment::cards(${userBooks.books})}"></div>
+                <div th:if="${userBooks.books == null || userBooks.books.isEmpty()}">Книг не найдено</div>
+                <div th:if="${userBooks != null && !userBooks.books.isEmpty()}"
+                     th:replace="~{fragments/books_pool_fragment::cards(${userBooks.books})}"></div>
                 <div class="Cards-footer Cards-footer_center">
                     <a class="btn btn_primary" href="#"
                        data-refreshshow="myhistory"

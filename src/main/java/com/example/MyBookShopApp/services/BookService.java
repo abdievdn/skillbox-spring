@@ -15,6 +15,7 @@ import com.example.MyBookShopApp.repositories.Book2UserRepository;
 import com.example.MyBookShopApp.repositories.Book2UserTypeRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -47,8 +49,9 @@ public class BookService {
         return bookRepository.findAllBySlugIn(List.of(slugs));
     }
 
-    public BookDto getBookDtoBySlug(String slug) {
-        UserEntity currentUser = userService.getCurrentUser();
+    public BookDto getBookDtoBySlug(String slug, Principal principal) {
+        UserEntity currentUser = userService.getCurrentUserByPrincipal(principal);
+        log.info(currentUser.getName());
         BookEntity book = getBookBySlug(slug);
         if (currentUser != null) {
             saveBookToUser(BookStatus.VIEWED, book, currentUser);
@@ -67,6 +70,7 @@ public class BookService {
             book2User.setType(book2UserTypeRepository.findByCode(status));
         }
         book2User.setTime(LocalDateTime.now());
+        log.info(book2User.toString());
         book2UserRepository.save(book2User);
     }
 
@@ -172,7 +176,26 @@ public class BookService {
                 .stream()
                 .sorted(Comparator.comparing(
                         Book2UserEntity::getType, (b1, b2) -> Integer.compare(b2.getId(), b1.getId())))
-                .filter(b -> isArchived == b.getType().getCode().equals(BookStatus.ARCHIVED))
+                .filter(b -> isArchived == isArchivedBook(b) && !isViewedBook(b))
+                .map(Book2UserEntity::getBook)
+                .collect(Collectors.toList());
+        return new BooksPageDto(getPageOfBookDtoAsList(books, offset, size));
+    }
+
+    private Boolean isArchivedBook(Book2UserEntity book2User) {
+        return book2User.getType().getCode().equals(BookStatus.ARCHIVED);
+    }
+
+    private Boolean isViewedBook(Book2UserEntity book2User) {
+        return book2User.getType().getCode().equals(BookStatus.VIEWED);
+    }
+
+    public BooksPageDto getPageOfCurrentUserHistoryBooks(Principal principal, int offset, int size) {
+        UserEntity user = userService.getCurrentUserByPrincipal(principal);
+        List<BookEntity> books = user.getBooksLink()
+                .stream()
+                .filter(b -> !isArchivedBook(b))
+                .sorted(Comparator.comparing(Book2UserEntity::getTime).reversed())
                 .map(Book2UserEntity::getBook)
                 .collect(Collectors.toList());
         return new BooksPageDto(getPageOfBookDtoAsList(books, offset, size));

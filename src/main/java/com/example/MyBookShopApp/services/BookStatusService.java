@@ -157,7 +157,10 @@ public class BookStatusService {
         if (principal != null) {
             UserEntity user = userService.getCurrentUserByPrincipal(principal);
             if (isUserHasBooks(user)) {
-                return user.getBooksLink().size();
+                return (int) user.getBooksLink()
+                        .stream()
+                        .filter(b -> !b.getType().getCode().equals(BookStatus.VIEWED))
+                        .count();
             }
         }
         return 0;
