@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
+<body class="Site">
+<header th:replace="~{fragments/header_fragment}"></header>
+<div class="Middle">
+    <div class="wrap">
+        <main class="Middle-main">
+            <ul class="breadcrumbs">
+                <li class="breadcrumbs-item"><a th:href="@{/}">Главная</a>
+                </li>
+                <li class="breadcrumbs-item"><a th:href="@{/profile}">Мой профиль</a>
+                </li>
+                <li class="breadcrumbs-item breadcrumbs-item_current"><span>Мои книги</span>
+                </li>
+            </ul>
+            <div class="Section">
+                <div class="Section-header">
+                    <h1 class="Section-title">Мои книги</h1>
+                    <div class="Section-header-links"><span class="Section-header-link Section-header-link_ACTIVE">Непрочитанные</span><a
+                            class="Section-header-link" href="/myarchive">Архив</a>
+                    </div>
+                </div>
+                <div th:replace="~{fragments/books_pool_fragment::cards(${userBooks.books})}"></div>
+                <div class="Cards-footer Cards-footer_center">
+                    <a class="btn btn_primary" href="#"
+                       data-refreshshow="myhistory"
+                       data-refreshoffset="1"
+                       data-refreshlimit="10">Показать еще</a>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<footer th:replace="~{fragments/footer_fragment :: footerFragment}"></footer>
+</body>
+</html>

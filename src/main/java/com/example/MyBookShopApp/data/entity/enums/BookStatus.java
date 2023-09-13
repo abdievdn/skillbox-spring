@@ -4,5 +4,6 @@ public enum BookStatus {
     KEPT,
     CART,
     PAID,
-    ARCHIVED
+    ARCHIVED,
+    VIEWED
 }

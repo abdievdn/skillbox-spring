@@ -12,6 +12,7 @@ import com.example.MyBookShopApp.data.entity.enums.BookStatus;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
+import com.example.MyBookShopApp.repositories.Book2UserTypeRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.support.PagedListHolder;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +32,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final Book2UserRepository book2UserRepository;
+    private final Book2UserTypeRepository book2UserTypeRepository;
     private final RatingService ratingService;
     private final UserService userService;
     private final AuthorService authorService;
@@ -45,7 +48,26 @@ public class BookService {
     }
 
     public BookDto getBookDtoBySlug(String slug) {
-        return buildBookDto(getBookBySlug(slug));
+        UserEntity currentUser = userService.getCurrentUser();
+        BookEntity book = getBookBySlug(slug);
+        if (currentUser != null) {
+            saveBookToUser(BookStatus.VIEWED, book, currentUser);
+        }
+        return buildBookDto(book);
+    }
+
+    public void saveBookToUser(BookStatus status, BookEntity book, UserEntity user) {
+        Book2UserEntity book2User = book2UserRepository.findByBookAndUser(book, user)
+                .orElse(Book2UserEntity.builder()
+                        .user(user)
+                        .book(book)
+                        .type(book2UserTypeRepository.findByCode(status))
+                        .build());
+        if (!status.equals(BookStatus.VIEWED)) {
+            book2User.setType(book2UserTypeRepository.findByCode(status));
+        }
+        book2User.setTime(LocalDateTime.now());
+        book2UserRepository.save(book2User);
     }
 
     public List<BookDto> getBookDtoListFromBookEntityPage(Page<BookEntity> booksPage) {

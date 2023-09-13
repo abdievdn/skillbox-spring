@@ -19,7 +19,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,7 @@ public class BookStatusService {
                         (status.equals(BookStatus.CART) || status.equals(BookStatus.KEPT))) {
                     return new ResultDto("Вы уже приобрели эту книгу");
                 }
-                setBookToUser(status, book, user);
+                bookService.saveBookToUser(status, book, user);
             }
         } else {
             setBookToCookie(status.name(), slugs, request, response);
@@ -77,26 +76,6 @@ public class BookStatusService {
                 .stream()
                 .map(BookDto::getSlug)
                 .collect(Collectors.joining(","));
-    }
-
-    private void setBookToUser(BookStatus status, BookEntity book, UserEntity user) {
-        Optional<Book2UserEntity> book2User = book2UserRepository.findByBookAndUser(book, user);
-        if (book2User.isPresent()) {
-            Book2UserEntity book2UserEntity = book2User.get();
-            book2UserEntity.setType(book2UserTypeRepository.findByCode(status));
-            book2UserRepository.save(book2UserEntity);
-        } else {
-            saveNewBookToUser(status, book, user);
-        }
-    }
-
-    private void saveNewBookToUser(BookStatus status, BookEntity book, UserEntity user) {
-        book2UserRepository.save(Book2UserEntity.builder()
-                .book(book)
-                .user(user)
-                .type(book2UserTypeRepository.findByCode(status))
-                .time(LocalDateTime.now())
-                .build());
     }
 
     private void setBookToCookie(String status, List<String> slugs,
@@ -215,17 +194,18 @@ public class BookStatusService {
     public ResultDto removeBooks(String slug, String cookieName,
                                  HttpServletRequest request, HttpServletResponse response, Principal principal) {
         if (principal != null) {
-            removeBookFromUser(slug, principal);
+            removeBookFromCartOrKept(slug, principal);
         } else {
             checkAndRemoveFromCookie(cookieName, List.of(slug), request, response);
         }
         return new ResultDto(true);
     }
 
-    private void removeBookFromUser(String slug, Principal principal) {
+    private void removeBookFromCartOrKept(String slug, Principal principal) {
         BookEntity book = bookService.getBookBySlug(slug);
         UserEntity user = userService.getCurrentUserByPrincipal(principal);
         Book2UserEntity book2User = book2UserRepository.findByBookAndUser(book, user).orElseThrow();
-        book2UserRepository.delete(book2User);
+        book2User.setType(book2UserTypeRepository.findByCode(BookStatus.VIEWED));
+        book2UserRepository.save(book2User);
     }
 }
