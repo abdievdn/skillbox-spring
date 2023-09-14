@@ -22,3 +22,13 @@ databaseChangeLog:
                   name: user_id
                   type: INTEGER
             tableName: jwt_blacklist
+  - changeSet:
+      id: 140923-1
+      author: kainart
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: password
+                  type: TEXT

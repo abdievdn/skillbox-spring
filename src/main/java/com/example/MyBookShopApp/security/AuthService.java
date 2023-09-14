@@ -6,7 +6,9 @@ import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.data.dto.UserDto;
 import com.example.MyBookShopApp.data.entity.enums.ContactType;
 import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
+import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
+import com.example.MyBookShopApp.repositories.UserRepository;
 import com.example.MyBookShopApp.security.jwt.JWTUtil;
 import com.example.MyBookShopApp.services.MailService;
 import com.example.MyBookShopApp.services.SmsService;
@@ -28,6 +30,7 @@ import java.time.LocalDateTime;
 public class AuthService {
 
     public static final int CODE_EXPIRED_MIN = 5;
+    private final UserRepository userRepository;
     private final UserContactRepository userContactRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -115,12 +118,14 @@ public class AuthService {
     }
 
     private ResultDto jwtLogin(ContactConfirmationDto payload) {
-        String userId = String.valueOf(getUserContact(payload.getContact()).getUser().getId());
-        BookShopUserService.contactType = ContactType.valueOf(payload.getContactType().toUpperCase());
+        int userId = getUserContact(payload.getContact()).getUser().getId();
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow();
+        userEntity.setPassword(passwordEncoder.encode(payload.getCode()));
+        userRepository.save(userEntity);
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userId, payload.getCode()));
         BookShopUser user = (BookShopUser) bookShopUserService
-                .loadUserByUsername(userId);
+                .loadUserByUsername(String.valueOf(userId));
         return ResultDto.builder()
                 .result(true)
                 .value(jwtUtil.generateToken(user.getUsername()))

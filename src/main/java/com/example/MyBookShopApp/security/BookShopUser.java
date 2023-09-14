@@ -1,6 +1,6 @@
 package com.example.MyBookShopApp.security;
 
-import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
+import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookShopUser implements UserDetails {
 
-    private final UserContactEntity userContactEntity;
+    private final UserEntity user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -24,12 +24,12 @@ public class BookShopUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return userContactEntity.getCode();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return String.valueOf(userContactEntity.getUser().getId());
+        return String.valueOf(user.getId());
     }
 
     @Override

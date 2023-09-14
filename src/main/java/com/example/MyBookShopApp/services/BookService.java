@@ -15,7 +15,6 @@ import com.example.MyBookShopApp.repositories.Book2UserRepository;
 import com.example.MyBookShopApp.repositories.Book2UserTypeRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -51,7 +49,6 @@ public class BookService {
 
     public BookDto getBookDtoBySlug(String slug, Principal principal) {
         UserEntity currentUser = userService.getCurrentUserByPrincipal(principal);
-        log.info(currentUser.getName());
         BookEntity book = getBookBySlug(slug);
         if (currentUser != null) {
             saveBookToUser(BookStatus.VIEWED, book, currentUser);
@@ -70,7 +67,6 @@ public class BookService {
             book2User.setType(book2UserTypeRepository.findByCode(status));
         }
         book2User.setTime(LocalDateTime.now());
-        log.info(book2User.toString());
         book2UserRepository.save(book2User);
     }
 
@@ -121,8 +117,13 @@ public class BookService {
         List<Book2UserEntity> allBooks2Users = book2UserRepository.findAll();
         Map<Integer, Double> popularBooksMap = new TreeMap<>();
         for (Book2UserEntity b : allBooks2Users) {
-            double popIndex;
+            double popIndex = 0;
             switch (b.getType().getCode()) {
+                case VIEWED:
+                    if (b.getTime().isAfter(LocalDateTime.now().minusWeeks(1))) {
+                        popIndex = 0.2;
+                    }
+                    break;
                 case KEPT:
                     popIndex = 0.4;
                     break;

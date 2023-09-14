@@ -1,6 +1,5 @@
 package com.example.MyBookShopApp.data.entity.user;
 
-import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2UserEntity;
 import com.example.MyBookShopApp.data.entity.book.rating.BookRatingEntity;
 import com.example.MyBookShopApp.data.entity.book.rating.BookReviewRatingEntity;
@@ -12,9 +11,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -28,6 +25,9 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(columnDefinition = "VARCHAR(255)")
+    private String password;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String hash;
