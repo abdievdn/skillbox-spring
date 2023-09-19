@@ -34,7 +34,7 @@ public class BookDto {
     @Schema(description = "Is book is bestseller - 'true' or 'false'")
     private Boolean isBestseller;
     @Schema(description = "Rating for book from 0 to 5 stars")
-    private RatingDto rating;
+    private BookRatingDto rating;
     @Schema(description = "Status of book", nullable = true)
     private String status;
     @Schema(description = "Price for book")

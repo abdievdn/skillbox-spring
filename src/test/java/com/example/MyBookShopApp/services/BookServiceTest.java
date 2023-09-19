@@ -2,7 +2,7 @@ package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
-import com.example.MyBookShopApp.data.dto.RatingDto;
+import com.example.MyBookShopApp.data.dto.BookRatingDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.*;
@@ -113,7 +113,7 @@ class BookServiceTest {
         Mockito.doReturn(Optional.of(book1))
                 .when(bookRepository)
                 .findBySlug("book1");
-        Mockito.doReturn(new RatingDto())
+        Mockito.doReturn(new BookRatingDto())
                 .when(ratingService)
                 .getBookRatingBySlug(Mockito.any());
         BookDto bookDto = bookService.getBookDtoBySlug("book1", null);

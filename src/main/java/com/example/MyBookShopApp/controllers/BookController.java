@@ -6,7 +6,6 @@ import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.InteractionWithBooksDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.services.BookReviewService;
-import com.example.MyBookShopApp.services.RatingService;
 import com.example.MyBookShopApp.services.BookFileService;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.services.BookService;
@@ -36,7 +35,6 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
-    private final RatingService ratingService;
     private final BookReviewService bookReviewService;
     private final BookFileService storage;
 
@@ -157,18 +155,7 @@ public class BookController {
                 .body(new ByteArrayResource(data));
     }
 
-    @Operation(summary = "Set rating for book by registered user")
-    @ControllerParamsCatch
-    @ControllerResponseCatch
-    @PostMapping("/rateBook")
-    @PreAuthorize("hasRole('USER')")
-    @ResponseBody
-    public ResultDto rateBook(@RequestBody InteractionWithBooksDto interaction, Principal principal) {
-        ratingService.saveBookRating(interaction.getBookId(), interaction.getValue(), principal);
-        return new ResultDto();
-    }
-
-    @Operation(summary = "Send review for book by registered user")
+    @Operation(summary = "Save review for book by registered user")
     @ControllerParamsCatch
     @ControllerResponseCatch
     @PreAuthorize("hasRole('USER')")
@@ -176,16 +163,6 @@ public class BookController {
     @ResponseBody
     public ResultDto bookReview(@RequestBody InteractionWithBooksDto interaction, Principal principal) {
         bookReviewService.saveBookReview(interaction.getBookId(), interaction.getText(), principal);
-        return new ResultDto();
-    }
-
-    @Operation(summary = "Set rating for book's review by registered user")
-    @ControllerParamsCatch
-    @ControllerResponseCatch
-    @PreAuthorize("hasRole('USER')")
-    @PostMapping("/rateBookReview")
-    @ResponseBody
-    public ResultDto rateBookReview() {
         return new ResultDto();
     }
 }

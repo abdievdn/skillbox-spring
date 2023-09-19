@@ -1,15 +1,16 @@
 package com.example.MyBookShopApp.data.entity.book.rating;
 
 import com.example.MyBookShopApp.data.entity.book.review.BookReviewEntity;
-import com.example.MyBookShopApp.data.entity.user.UserEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "book_review_rating")
 public class BookReviewRatingEntity {
 
@@ -20,11 +21,7 @@ public class BookReviewRatingEntity {
     @Column(columnDefinition = "SMALLINT NOT NULL")
     private short value;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id", columnDefinition = "INT NOT NULL")
-    private BookReviewEntity reviewRating;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id" ,columnDefinition = "INT NOT NULL")
-    private UserEntity userRating;
+    private BookReviewEntity review;
 }

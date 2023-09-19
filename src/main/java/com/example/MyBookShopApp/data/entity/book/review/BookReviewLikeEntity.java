@@ -1,13 +1,17 @@
 package com.example.MyBookShopApp.data.entity.book.review;
 
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "book_review_like")
 public class BookReviewLikeEntity {
 

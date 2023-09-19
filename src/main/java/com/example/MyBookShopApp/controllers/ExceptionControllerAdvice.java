@@ -1,6 +1,8 @@
 package com.example.MyBookShopApp.controllers;
 
+import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.errors.CommonErrorException;
+import com.example.MyBookShopApp.errors.EntityNotFoundError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,6 +21,11 @@ public class ExceptionControllerAdvice {
     public String handleCommonErrorException(Exception exception, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("searchError", exception);
         return "redirect:/";
+    }
+
+    @ExceptionHandler(EntityNotFoundError.class)
+    public ResultDto handleEntityNotFoundException(Exception exception) {
+        return new ResultDto(exception.getMessage());
     }
 
     @ExceptionHandler({NoSuchElementException.class, NullPointerException.class, IllegalStateException.class})

@@ -11,7 +11,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RatingDto {
+public class BookRatingDto {
     short value;
     int count;
     Map<Short, Integer> values2Count;

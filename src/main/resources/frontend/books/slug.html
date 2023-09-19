@@ -3,7 +3,6 @@
 <head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
 <script src="/assets/js/imageUploadScript.js"></script>
 <script src="/assets/js/bookDownloadScript.js"></script>
-</head>
 <body class="Site">
 <header th:replace="fragments/header_fragment"></header>
 <div class="Middle">
@@ -185,8 +184,8 @@
                         <div class="Comments-addComment">
                             <form class="form" action="#" method="post" th:data-bookid="${book.slug}">
                                 <div class="form-group">
-                                <textarea class="form-textarea Comments-review" name="review" id="review"
-                                          placeholder="Текст отзыва" data-validate="require"></textarea>
+                                    <label for="review"></label><textarea class="form-textarea Comments-review" name="review" id="review"
+                                                                          placeholder="Текст отзыва" data-validate="require"></textarea>
                                 </div>
                                 <div class="form-group Comments-sendReview">
                                     <button class="btn btn_warning" type="submit">Отправить отзыв
@@ -208,7 +207,7 @@
                                         <span class="Comment-rating">
                                         <span class="Rating Rating_comment">
                                             <th:block
-                                                    th:replace="fragments/rating_fragment::ratingStarsFragment(${comment.getCommonRatingValue()}, ${comment.getReviewRatingsLink().size()})"></th:block>
+                                                    th:replace="fragments/rating_fragment::ratingStarsFragment(${comment.getReviewRatingValue()}, ${comment.getReviewRatingCount()})"></th:block>
                                         </span>
                                         </span>
                                     </strong>
@@ -228,14 +227,14 @@
                                         <div class="Comment-appeal">
                                             <button class="btn btn_white btn_like" data-btntype="check"
                                                     data-check="false"
-                                                    data-btnradio="two2" data-likeid="1111"><span
+                                                    data-btnradio="two2" th:attr="data-likeid=${comment.id}"><span
                                                     class="btn-icon"><img
                                                     src="/assets/img/icons/comment/like.svg" alt="like.svg"/></span>
                                                 <span class="btn-content"
                                                       th:text="${comment.getLikesCountByValue(1)}"></span>
                                             </button>
                                             <button class="btn btn_white btn_dislike" data-btntype="check"
-                                                    data-check="false" data-btnradio="two2" data-likeid="1111"><span
+                                                    data-check="false" data-btnradio="two2" th:attr="data-likeid=${comment.id}"><span
                                                     class="btn-icon"><img
                                                     src="/assets/img/icons/comment/dislike.svg"
                                                     alt="dislike.svg"/></span>

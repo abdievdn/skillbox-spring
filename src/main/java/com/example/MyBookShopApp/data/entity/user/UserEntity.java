@@ -2,7 +2,6 @@ package com.example.MyBookShopApp.data.entity.user;
 
 import com.example.MyBookShopApp.data.entity.book.links.Book2UserEntity;
 import com.example.MyBookShopApp.data.entity.book.rating.BookRatingEntity;
-import com.example.MyBookShopApp.data.entity.book.rating.BookReviewRatingEntity;
 import com.example.MyBookShopApp.data.entity.book.review.BookReviewEntity;
 import com.example.MyBookShopApp.data.entity.book.review.BookReviewLikeEntity;
 import com.example.MyBookShopApp.security.jwt.JWTBlacklistEntity;
@@ -46,9 +45,6 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user")
     private List<BookRatingEntity> bookRatings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userRating")
-    private List<BookReviewRatingEntity> bookReviewRatings = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<BookReviewLikeEntity> bookReviewLikes = new ArrayList<>();

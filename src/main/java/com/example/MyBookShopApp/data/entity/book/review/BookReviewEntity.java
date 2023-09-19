@@ -43,22 +43,22 @@ public class BookReviewEntity {
     @Column(columnDefinition = "TEXT NOT NULL")
     private String text;
 
-    @OneToMany(mappedBy = "reviewRating")
-    private List<BookReviewRatingEntity> reviewRatingsLink = new ArrayList<>();
+    @OneToOne(mappedBy = "review")
+    private BookReviewRatingEntity reviewRating;
 
     @OneToMany(mappedBy = "review")
-    private List<BookReviewLikeEntity> reviewLikesLink = new ArrayList<>();
+    private List<BookReviewLikeEntity> reviewLikes = new ArrayList<>();
 
-    public int getCommonRatingValue() {
-        return (int) Math.round(reviewRatingsLink
-                .stream()
-                .mapToInt(BookReviewRatingEntity::getValue)
-                .average()
-                .orElse(0));
+    public short getReviewRatingValue() {
+        return reviewRating != null ? reviewRating.getValue() : 0;
+    }
+
+    public int getReviewRatingCount() {
+        return !reviewLikes.isEmpty() ? reviewLikes.size() : 0;
     }
 
     public int getLikesCountByValue(short value) {
-        return  (int) reviewLikesLink
+        return  (int) reviewLikes
                 .stream()
                 .filter(l -> l.getValue() == value)
                 .count();

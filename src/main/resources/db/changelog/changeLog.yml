@@ -32,3 +32,12 @@ databaseChangeLog:
               - column:
                   name: password
                   type: TEXT
+  - changeSet:
+      id: 190923-1
+      author: kainart
+      changes:
+        -  dropColumn:
+             tableName: book_review_rating
+             columns:
+               -  column:
+                    name: user_id

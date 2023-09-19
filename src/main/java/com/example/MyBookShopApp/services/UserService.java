@@ -12,6 +12,7 @@ import com.example.MyBookShopApp.security.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -34,7 +35,9 @@ public class UserService {
     }
 
     public UserEntity getCurrentUserByPrincipal(Principal principal) {
-        return userRepository.findById(Integer.valueOf(principal.getName())).orElse(null);
+        return principal != null ?
+                userRepository.findById(Integer.valueOf(principal.getName()))
+                        .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден!")) : null;
     }
 
     @ServiceProcessTrackable

@@ -1,17 +1,23 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
-import com.example.MyBookShopApp.data.dto.RatingDto;
+import com.example.MyBookShopApp.data.dto.BookRatingDto;
+import com.example.MyBookShopApp.data.dto.ResultDto;
+import com.example.MyBookShopApp.data.dto.ReviewLikeDto;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.rating.BookRatingEntity;
+import com.example.MyBookShopApp.data.entity.book.rating.BookReviewRatingEntity;
+import com.example.MyBookShopApp.data.entity.book.review.BookReviewEntity;
+import com.example.MyBookShopApp.data.entity.book.review.BookReviewLikeEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
-import com.example.MyBookShopApp.repositories.BookRatingRepository;
-import com.example.MyBookShopApp.repositories.BookRepository;
+import com.example.MyBookShopApp.errors.EntityNotFoundError;
+import com.example.MyBookShopApp.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,12 +30,15 @@ import static java.util.stream.Collectors.counting;
 public class RatingService {
 
     private final BookRatingRepository bookRatingRepository;
+    private final BookReviewRatingRepository reviewRatingRepository;
+    private final BookReviewLikeRepository reviewLikeRepository;
+    private final BookReviewRepository reviewRepository;
     private final BookRepository bookRepository;
     private final UserService userService;
 
-    public RatingDto getBookRatingBySlug(BookEntity book) {
+    public BookRatingDto getBookRatingBySlug(BookEntity book) {
         List<BookRatingEntity> bookRatings = book.getRatings();
-        return RatingDto.builder()
+        return BookRatingDto.builder()
                 .value((short) getBookRating(bookRatings))
                 .count(bookRatings.size())
                 .values2Count(getCountOfRatingValues(bookRatings))
@@ -60,8 +69,9 @@ public class RatingService {
     }
 
     @ServiceProcessTrackable
-    public void saveBookRating(String slug, short value, Principal principal) {
-        BookEntity book = bookRepository.findBySlug(slug).orElseThrow();
+    public ResultDto saveBookRating(String slug, short value, Principal principal) throws EntityNotFoundError {
+        BookEntity book = bookRepository.findBySlug(slug)
+                .orElseThrow(() -> new EntityNotFoundError("Книга не найдена!"));
         UserEntity user = userService.getCurrentUserByPrincipal(principal);
         Optional<BookRatingEntity> bookRatingEntity = bookRatingRepository.findByUserAndBook(user, book);
         if (bookRatingEntity.isPresent()) {
@@ -70,6 +80,7 @@ public class RatingService {
         } else {
             bookRatingRepository.save(new BookRatingEntity(book, user, value));
         }
+        return new ResultDto(true);
     }
 
     public List<BookEntity> getBooksByRatingAndCount() {
@@ -88,5 +99,40 @@ public class RatingService {
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+    }
+
+    public ResultDto setLikeToReview(ReviewLikeDto likeDto, Principal principal) throws EntityNotFoundError {
+        UserEntity currentUser = userService.getCurrentUserByPrincipal(principal);
+        BookReviewEntity review = reviewRepository.findById(likeDto.getReviewId())
+                .orElseThrow(() -> new EntityNotFoundError("Отзыв не найден!"));
+        saveLikeForReview(review, currentUser, likeDto.getValue());
+        saveRatingForReview(review);
+        return new ResultDto(true);
+    }
+
+    private void saveRatingForReview(BookReviewEntity review) {
+        BookReviewRatingEntity reviewRating = reviewRatingRepository.findByReview(review)
+                .orElse(BookReviewRatingEntity.builder()
+                        .review(review)
+                        .build());
+        reviewRating.setValue((short) getAverageRatingValueForReview(review));
+        reviewRatingRepository.save(reviewRating);
+    }
+
+    private void saveLikeForReview(BookReviewEntity review, UserEntity user, short value) {
+            BookReviewLikeEntity like = reviewLikeRepository.findByReviewAndUser(review, user)
+                    .orElse(BookReviewLikeEntity.builder()
+                            .review(review)
+                            .user(user)
+                            .time(LocalDateTime.now())
+                            .build());
+            like.setValue(value);
+            reviewLikeRepository.save(like);
+    }
+
+    private int getAverageRatingValueForReview(BookReviewEntity review) {
+        double res = (((double) review.getLikesCountByValue((short) 1) /
+                (review.getLikesCountByValue((short) 1) + review.getLikesCountByValue((short) -1))) / 2);
+        return (int) Math.round(res * 10);
     }
 }
