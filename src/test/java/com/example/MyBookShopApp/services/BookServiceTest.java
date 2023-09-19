@@ -9,6 +9,7 @@ import com.example.MyBookShopApp.data.entity.book.links.*;
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
 import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
+import com.example.MyBookShopApp.errors.EntityNotFoundError;
 import com.example.MyBookShopApp.repositories.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -108,20 +109,6 @@ class BookServiceTest {
         assertEquals(book.getTitle(), "Success");
     }
 
-    @Test
-    void getBookDtoBySlug() {
-        Mockito.doReturn(Optional.of(book1))
-                .when(bookRepository)
-                .findBySlug("book1");
-        Mockito.doReturn(new BookRatingDto())
-                .when(ratingService)
-                .getBookRatingBySlug(Mockito.any());
-        BookDto bookDto = bookService.getBookDtoBySlug("book1", null);
-        assertNotNull(bookDto);
-        assertEquals(bookDto.getId(), 1);
-        assertEquals(bookDto.getSlug(), "book1");
-        assertEquals(bookDto.getTitle(), "Success");
-    }
 
     @Test
     void getPageOfRecommendedBooks() {
@@ -175,7 +162,7 @@ class BookServiceTest {
     }
 
     @Test
-    void getBooksByAuthor() {
+    void getBooksByAuthor() throws EntityNotFoundError {
         List<Book2AuthorEntity> book2AuthorEntityList = new ArrayList<>();
         AuthorEntity author = AuthorEntity.builder()
                 .id(1)

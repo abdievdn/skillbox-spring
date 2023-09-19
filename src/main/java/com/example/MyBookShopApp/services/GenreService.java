@@ -1,7 +1,6 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
-import com.example.MyBookShopApp.data.dto.GenreDto;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2GenreEntity;
 import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
@@ -62,14 +61,6 @@ public class GenreService {
         List<GenreEntity> genres = genreRepository.findAllByParent(null);
         setBooksCountToGenre(genres);
         return genres;
-    }
-
-    public GenreDto getGenreDto(GenreEntity genre) {
-        return GenreDto.builder()
-                .id(genre.getId())
-                .name(genre.getName())
-                .slug(genre.getSlug())
-                .build();
     }
 
     private void setBooksCountToGenre(List<GenreEntity> genres) {

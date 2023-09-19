@@ -11,6 +11,8 @@ import com.example.MyBookShopApp.data.entity.book.links.Book2UserEntity;
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
+import com.example.MyBookShopApp.errors.EntityNotFoundError;
+import com.example.MyBookShopApp.mappers.BookMapper;
 import com.example.MyBookShopApp.repositories.Book2UserRepository;
 import com.example.MyBookShopApp.repositories.Book2UserTypeRepository;
 import com.example.MyBookShopApp.repositories.BookRepository;
@@ -38,6 +40,7 @@ public class BookService {
     private final AuthorService authorService;
     private final TagService tagService;
     private final GenreService genreService;
+    private final BookMapper bookMapper;
 
     public BookEntity getBookBySlug(String slug) {
         return bookRepository.findBySlug(slug).orElse(null);
@@ -53,7 +56,7 @@ public class BookService {
         if (currentUser != null) {
             saveBookToUser(BookStatus.VIEWED, book, currentUser);
         }
-        return buildBookDto(book);
+        return getBookDto(book);
     }
 
     public void saveBookToUser(BookStatus status, BookEntity book, UserEntity user) {
@@ -146,8 +149,8 @@ public class BookService {
     }
 
     @ServiceProcessTrackable
-    public BooksPageDto getPageOfBooksByAuthor(String slug, int offset, int size) {
-        AuthorEntity author = authorService.getAuthorData(slug);
+    public BooksPageDto getPageOfBooksByAuthor(String slug, int offset, int size) throws EntityNotFoundError {
+        AuthorEntity author = authorService.getAuthorEntity(slug);
         List<BookEntity> authorBooks = new ArrayList<>();
         for (Book2AuthorEntity a : author.getBooksLink()) {
             authorBooks.add(a.getBook());
@@ -212,44 +215,23 @@ public class BookService {
         return bookEntityListToBookDtoList(page.getPageList());
     }
 
-    private BookDto buildBookDto(BookEntity bookEntity) {
-        if (bookEntity != null) {
-            BookDto book = BookDto.builder()
-                    .id(bookEntity.getId())
-                    .slug(bookEntity.getSlug())
-                    .image(bookEntity.getImage())
-                    .authors(bookEntity.getAuthorsLink()
-                            .stream()
-                            .map(a -> authorService.getAuthorDto(a.getAuthor()))
-                            .collect(Collectors.toList()))
-                    .tags(bookEntity.getTagsLink()
-                            .stream()
-                            .map(t -> tagService.getTagDto(t.getTag()))
-                            .collect(Collectors.toList()))
-                    .title(bookEntity.getTitle())
-                    .description(bookEntity.getDescription())
-                    .genre(genreService.getGenreDto(bookEntity.getGenreLink().getGenre()))
-                    .discount(bookEntity.getDiscount())
-                    .isBestseller(bookEntity.getIsBestseller() == 1)
-                    .rating(ratingService.getBookRatingBySlug(bookEntity))
-                    .price(bookEntity.getPrice())
-                    .discountPrice(bookEntity.getDiscountPrice())
-                    .files(bookEntity.getBookFileList())
-                    .build();
+    private BookDto getBookDto(BookEntity book) {
+        if (book != null) {
+            BookDto bookDto = bookMapper.toBookDto(book);
             UserEntity user = userService.getCurrentUser();
             if (user != null) {
-                Optional<Book2UserEntity> book2User = book2UserRepository.findByBookAndUser(bookEntity, user);
-                book2User.ifPresent(book2UserEntity -> book.setStatus(book2UserEntity.getType().getCode().name()));
+                Optional<Book2UserEntity> book2User = book2UserRepository.findByBookAndUser(book, user);
+                book2User.ifPresent(book2UserEntity -> bookDto.setStatus(book2UserEntity.getType().getCode().name()));
             }
-            return book;
+            return bookDto;
         }
-        return BookDto.builder().build();
+        return new BookDto();
     }
 
     public List<BookDto> bookEntityListToBookDtoList(List<BookEntity> books) {
         List<BookDto> booksDto = new ArrayList<>();
         for (BookEntity b : books) {
-            booksDto.add(buildBookDto(b));
+            booksDto.add(getBookDto(b));
         }
         return booksDto;
     }

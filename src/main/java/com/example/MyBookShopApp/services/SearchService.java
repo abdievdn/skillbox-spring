@@ -1,13 +1,13 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
-import com.example.MyBookShopApp.data.dto.AuthorDto;
 import com.example.MyBookShopApp.data.dto.BookDto;
 import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.google.api.books.Item;
 import com.example.MyBookShopApp.data.google.api.books.Root;
 import com.example.MyBookShopApp.errors.CommonErrorException;
+import com.example.MyBookShopApp.mappers.BookMapper;
 import com.example.MyBookShopApp.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ public class SearchService {
     private final BookRepository bookRepository;
     private final BookService bookService;
     private final RestTemplate restTemplate;
+    private final BookMapper bookMapper;
 
     @Value("${google.books.api.KEY}")
     private String googleApiKey;
@@ -54,18 +54,7 @@ public class SearchService {
             for (Item item : root.getItems()) {
                 BookDto book = new BookDto();
                 if (item.getVolumeInfo() != null && item.getSaleInfo() != null) {
-                    book = BookDto.builder()
-                            .authors(item.getVolumeInfo().getAuthors().stream()
-                                    .map(a -> AuthorDto.builder()
-                                            .firstName(a.substring(0, a.indexOf(" ")))
-                                            .lastName(a.substring(a.indexOf(" ") + 1, a.length() - 1))
-                                            .build())
-                                    .collect(Collectors.toList()))
-                            .title(item.getVolumeInfo().getTitle())
-                            .image(item.getVolumeInfo().getImageLinks().getThumbnail())
-                            .price((int) item.getSaleInfo().getRetailPrice().getAmount())
-                            .discountPrice(item.getSaleInfo().getListPrice().getAmount())
-                            .build();
+                    book = bookMapper.toBookDto(item.getVolumeInfo(), item.getSaleInfo());
                 }
                 booksList.add(book);
             }

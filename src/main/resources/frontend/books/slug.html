@@ -33,12 +33,7 @@
                     <div class="ProductCard-desc">
                         <div class="ProductCard-header">
                             <h1 class="ProductCard-title" th:text="${book.title}"></h1>
-                            <div class="ProductCard-author"><span class="ProductCard-titleProp">Автор:</span>&#32;
-                                <th:block th:each="author : ${book.authors}">
-                                    <a th:href="@{'/authors/' + ${author.slug}}"
-                                       th:text="${author.toString()}">&nbsp;</a>
-                                </th:block>
-                            </div>
+
                             <div class="ProductCard-rating">
                                 <span class="ProductCard-titleProp">Рейтинг:</span>
                                 <button class="trigger trigger_dropdown" type="button">
@@ -51,7 +46,7 @@
                                         <div class="modal-window">
                                             <a class="modal-close" href="#"><span></span><span></span></a>
                                             <strong class="modal-title">Распределение оценок</strong>
-                                            <div class="RatingGroup" th:each="rate : ${book.rating.values2Count}">
+                                            <div class="RatingGroup" th:each="rate : ${book.rating.getValuesForCount}">
                                                 <span class="Rating">
                                                     <th:block
                                                             th:replace="fragments/rating_fragment::ratingStarsFragment(${rate.key}, ${rate.value})"></th:block>
@@ -61,7 +56,6 @@
                                     </div>
                                 </button>
                             </div>
-
                             <th:block th:if="${currentUser != null}">
                                 <div class="ProductCard-assessment"><span
                                         class="ProductCard-titleProp">Оцените книгу:</span>
@@ -71,18 +65,34 @@
                                 </div>
                             </th:block>
 
+                            <div class="ProductCard-author"><span class="ProductCard-titleProp">Автор:</span>&#32;
+                                <th:block th:each="author : ${book.authors}">
+                                    <a th:href="@{'/authors/' + ${author.slug}}"
+                                       th:text="${author.toString()}">&nbsp;</a>
+                                </th:block>
+                            </div>
+
+                            <div class="ProductCard-author"><span class="ProductCard-titleProp">Жанр:</span>&#32;
+                                <th:block>
+                                    <a th:href="@{'/genres/' + ${book.genre.slug}}"
+                                       th:text="${book.genre.name}">&nbsp;</a>
+                                </th:block>
+                            </div>
+
                             <div class="ProductCard-tags">
                                 <span class="ProductCard-titleProp">Тэги:</span>
                                 <th:block th:each="tag : ${book.tags}">
                                     <a th:href="@{'/tags/' + ${tag.slug}}" th:text="${tag.name}">&nbsp;</a>
                                 </th:block>
                             </div>
+
                             <div class="ProductCard-cost"><span class="ProductCard-titleProp">Цена:</span>
                                 <span class="ProductCard-priceOld" th:if="${book.discount != 0}"
                                       th:text="${'₽' + book.price}"></span>
                                 <span class="ProductCard-price" th:text="${'₽' + book.discountPrice}"></span>
                             </div>
                         </div>
+
                         <div class="ProductCard-text">
                             <p th:text="${book.description}"></p>
                         </div>

@@ -1,7 +1,6 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
-import com.example.MyBookShopApp.data.dto.TagDto;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.repositories.TagRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +35,4 @@ public class TagService {
         return tagRepository.findById(id).orElseThrow();
     }
 
-    public TagDto getTagDto(TagEntity tag) {
-        return TagDto.builder()
-                .id(tag.getId())
-                .name(tag.getName())
-                .slug(tag.getSlug())
-                .build();
-    }
 }

@@ -5,6 +5,7 @@ import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2AuthorEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2GenreEntity;
 import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
+import com.example.MyBookShopApp.errors.EntityNotFoundError;
 import com.example.MyBookShopApp.repositories.AuthorRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,11 +94,11 @@ class AuthorServiceTest {
     }
 
     @Test
-    void getAuthorData() {
+    void getAuthorData() throws EntityNotFoundError {
         Mockito.doReturn(Optional.of(author1))
                 .when(authorRepository)
                 .findBySlug("1ab");
-        AuthorEntity author = authorService.getAuthorData("1ab");
+        AuthorEntity author = authorService.getAuthorEntity("1ab");
         assertNotNull(author);
         assertEquals(author, author1);
         Mockito.verify(authorRepository, Mockito.times(1)).findBySlug(Mockito.any());

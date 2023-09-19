@@ -1,7 +1,6 @@
 package com.example.MyBookShopApp.services;
 
 import com.example.MyBookShopApp.aspect.annotations.ServiceProcessTrackable;
-import com.example.MyBookShopApp.data.dto.BookRatingDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.data.dto.ReviewLikeDto;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
@@ -21,9 +20,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.counting;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,38 +31,6 @@ public class RatingService {
     private final BookReviewRepository reviewRepository;
     private final BookRepository bookRepository;
     private final UserService userService;
-
-    public BookRatingDto getBookRatingBySlug(BookEntity book) {
-        List<BookRatingEntity> bookRatings = book.getRatings();
-        return BookRatingDto.builder()
-                .value((short) getBookRating(bookRatings))
-                .count(bookRatings.size())
-                .values2Count(getCountOfRatingValues(bookRatings))
-                .build();
-    }
-
-    private double getBookRating(List<BookRatingEntity> bookRatings) {
-        return bookRatings
-                .stream()
-                .mapToDouble(BookRatingEntity::getValue)
-                .average()
-                .orElse(0);
-    }
-
-    private HashMap<Short, Integer> getCountOfRatingValues(List<BookRatingEntity> bookRatings) {
-        return bookRatings
-                .stream()
-                .collect(Collectors.groupingBy(
-                        BookRatingEntity::getValue, collectingAndThen(counting(), Long::intValue)))
-                .entrySet()
-                .stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (k, v) -> v,
-                        HashMap::new));
-    }
 
     @ServiceProcessTrackable
     public ResultDto saveBookRating(String slug, short value, Principal principal) throws EntityNotFoundError {
@@ -83,6 +47,7 @@ public class RatingService {
         return new ResultDto(true);
     }
 
+    @ServiceProcessTrackable
     public List<BookEntity> getBooksByRatingAndCount() {
         Map<BookEntity, Integer> booksRatingMap = new HashMap<>();
         bookRatingRepository.findAll().forEach(r -> {
@@ -101,6 +66,7 @@ public class RatingService {
                 .collect(Collectors.toList());
     }
 
+    @ServiceProcessTrackable
     public ResultDto setLikeToReview(ReviewLikeDto likeDto, Principal principal) throws EntityNotFoundError {
         UserEntity currentUser = userService.getCurrentUserByPrincipal(principal);
         BookReviewEntity review = reviewRepository.findById(likeDto.getReviewId())
