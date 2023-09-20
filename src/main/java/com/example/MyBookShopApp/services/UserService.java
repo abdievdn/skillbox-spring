@@ -6,6 +6,7 @@ import com.example.MyBookShopApp.data.dto.UserDto;
 import com.example.MyBookShopApp.data.entity.enums.ContactType;
 import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
+import com.example.MyBookShopApp.mappers.UserMapper;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
 import com.example.MyBookShopApp.repositories.UserRepository;
 import com.example.MyBookShopApp.security.AuthService;
@@ -25,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserContactRepository contactRepository;
     private final AuthService authService;
+    private final UserMapper userMapper;
 
     private UserEntity getUserByContact(UserContactEntity contact) {
         if (contact != null) {
@@ -53,21 +55,7 @@ public class UserService {
     public UserDto getCurrentUserDto(Principal principal) {
         if (principal != null) {
             UserEntity user = getCurrentUserByPrincipal(principal);
-            String email = "";
-            String phone = "";
-            for (UserContactEntity contact : user.getContacts()) {
-                if (contact.getType().equals(ContactType.MAIL)) {
-                    email = contact.getContact();
-                } else {
-                    phone = contact.getContact();
-                }
-            }
-            return UserDto.builder()
-                    .name(user.getName())
-                    .balance(user.getBalance())
-                    .mail(email)
-                    .phone(phone)
-                    .build();
+            return userMapper.toUserDto(user);
         } else {
             return null;
         }

@@ -2577,6 +2577,7 @@
 .ProductCard-assessment {
   display: block;
   margin-top: 10px;
+  margin-bottom: 10px;
 }
 .ProductCard-rating .Rating,
 .ProductCard-assessment .Rating {

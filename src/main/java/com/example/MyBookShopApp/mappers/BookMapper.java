@@ -60,10 +60,8 @@ public interface BookMapper {
 
     default List<AuthorDto> mapAuthors(VolumeInfo volumeInfo) {
         return volumeInfo.getAuthors().stream()
-                .map(a -> AuthorDto.builder()
-                        .firstName(a.substring(0, a.indexOf(" ")))
-                        .lastName(a.substring(a.indexOf(" ") + 1, a.length() - 1))
-                        .build())
+                .map(a ->
+                        new AuthorDto(a.substring(0, a.indexOf(" ")), a.substring(a.indexOf(" ") + 1, a.length() - 1)))
                 .collect(Collectors.toList());
     }
 

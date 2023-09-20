@@ -2,13 +2,11 @@ package com.example.MyBookShopApp.data.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Schema(name = "Author DTO", description = "Author's characteristics")
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthorDto {
@@ -26,6 +24,10 @@ public class AuthorDto {
     @Schema(description = "Author's unique identify code")
     private String slug;
 
+    public AuthorDto(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
     @Override
     public String toString() {
         return lastName + " " + firstName;

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></head>
+<th:block th:replace="fragments/common_head_fragment::common_head(~{::title},~{meta},~{link},~{script})"></th:block>
 <script src="/assets/js/imageUploadScript.js"></script>
 <script src="/assets/js/bookDownloadScript.js"></script>
 <body class="Site">
@@ -55,7 +55,6 @@
                                         </div>
                                     </div>
                                 </button>
-                            </div>
                             <th:block th:if="${currentUser != null}">
                                 <div class="ProductCard-assessment"><span
                                         class="ProductCard-titleProp">Оцените книгу:</span>
@@ -64,6 +63,7 @@
                                 </span>
                                 </div>
                             </th:block>
+                            </div>
 
                             <div class="ProductCard-author"><span class="ProductCard-titleProp">Автор:</span>&#32;
                                 <th:block th:each="author : ${book.authors}">
@@ -72,7 +72,7 @@
                                 </th:block>
                             </div>
 
-                            <div class="ProductCard-author"><span class="ProductCard-titleProp">Жанр:</span>&#32;
+                            <div class="ProductCard-tags"><span class="ProductCard-titleProp">Жанр:</span>&#32;
                                 <th:block>
                                     <a th:href="@{'/genres/' + ${book.genre.slug}}"
                                        th:text="${book.genre.name}">&nbsp;</a>
