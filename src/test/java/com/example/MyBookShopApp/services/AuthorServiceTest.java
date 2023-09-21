@@ -1,5 +1,6 @@
 package com.example.MyBookShopApp.services;
 
+import com.example.MyBookShopApp.data.dto.AuthorDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.Book2AuthorEntity;
@@ -94,7 +95,7 @@ class AuthorServiceTest {
     }
 
     @Test
-    void getAuthorData() throws EntityNotFoundError {
+    void getAuthorEntity() throws EntityNotFoundError {
         Mockito.doReturn(Optional.of(author1))
                 .when(authorRepository)
                 .findBySlug("1ab");
@@ -106,6 +107,11 @@ class AuthorServiceTest {
 
 
     @Test
-    void getAuthorDto() {
+    void getAuthorDto() throws EntityNotFoundError {
+        Mockito.when(authorService.getAuthorEntity("4jb")).thenReturn(author4);
+        AuthorDto authorDto = authorService.getAuthorDto("4jb");
+        assertNotNull(authorDto);
+        assertEquals(authorDto.getId(), author4.getId());
+        assertEquals(authorDto.getLastName(), author4.getLastName());
     }
 }

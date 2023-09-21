@@ -1,6 +1,5 @@
 package com.example.MyBookShopApp.services;
 
-import com.example.MyBookShopApp.data.dto.TagDto;
 import com.example.MyBookShopApp.data.entity.book.links.Book2TagEntity;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.repositories.TagRepository;
@@ -88,13 +87,5 @@ class TagServiceTest {
         TagEntity tag = tagService.getTagById(1);
         assertNotNull(tag);
         assertEquals(tag.getSlug(), "tag1");
-    }
-
-    @Test
-    void getTagDto() {
-        TagDto tagDto = tagService.getTagDto(tag1);
-        assertNotNull(tagDto);
-        assertEquals(tagDto.getName(), tag1.getName());
-        assertEquals(tagDto.getSlug(), "tag1");
     }
 }

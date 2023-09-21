@@ -25,7 +25,6 @@ public class AuthorService {
         return authors.stream().collect(Collectors.groupingBy(a -> a.getLastName().substring(0, 1)));
     }
 
-
     public AuthorEntity getAuthorEntity(String slug) throws EntityNotFoundError {
         return authorRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundError("Автор не найден!"));
     }

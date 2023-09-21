@@ -4,6 +4,7 @@ import com.example.MyBookShopApp.data.dto.ContactConfirmationDto;
 import com.example.MyBookShopApp.data.dto.ResultDto;
 import com.example.MyBookShopApp.data.dto.UserDto;
 import com.example.MyBookShopApp.data.entity.user.UserContactEntity;
+import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.repositories.UserContactRepository;
 import com.example.MyBookShopApp.repositories.UserRepository;
 import com.example.MyBookShopApp.security.jwt.JWTUtil;
@@ -72,7 +73,11 @@ class AuthServiceTest {
                 .contact(contact)
                 .code(code)
                 .build();
-        bookShopUser = new BookShopUser(userContact);
+        UserEntity user = UserEntity.builder()
+                .id(11)
+                .password("")
+                .build();
+        bookShopUser = new BookShopUser(user);
     }
 
     @AfterEach
@@ -91,11 +96,10 @@ class AuthServiceTest {
 
     @Test
     void registerNewUser() {
-        UserDto userDto = UserDto.builder()
-                .name("user")
-                .mail("test@mail.org")
-                .phone("123123123")
-                .build();
+        UserDto userDto = new UserDto();
+        userDto.setName("user");
+        userDto.setMail("test@mail.org");
+        userDto.setPhone("123123123");
         authService.registerNewUser(userDto);
         Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
     }
