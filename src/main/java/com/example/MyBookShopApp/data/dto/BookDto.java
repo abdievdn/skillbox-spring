@@ -8,6 +8,9 @@ import java.util.List;
 
 @Schema(name = "Book DTO", description = "Book's characteristics")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookDto {
 
     @Schema(description = "Book's unique id number")

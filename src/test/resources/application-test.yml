@@ -4,5 +4,18 @@ spring:
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
-  liquibase:
-    test-rollback-on-update: true
+
+twilio:
+  ACCOUNT_SID: 111
+  AUTH_TOKEN: 222
+  TWILIO_NUMBER: 123456789
+
+google:
+  books:
+    api:
+      KEY: 111
+
+yookassa:
+  shop:
+    ID: 111
+    KEY: 222
