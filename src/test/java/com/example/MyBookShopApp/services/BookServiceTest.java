@@ -5,15 +5,14 @@ import com.example.MyBookShopApp.data.dto.BooksPageDto;
 import com.example.MyBookShopApp.data.entity.author.AuthorEntity;
 import com.example.MyBookShopApp.data.entity.book.BookEntity;
 import com.example.MyBookShopApp.data.entity.book.links.*;
+import com.example.MyBookShopApp.data.entity.book.rating.BookRatingEntity;
 import com.example.MyBookShopApp.data.entity.enums.BookStatus;
 import com.example.MyBookShopApp.data.entity.genre.GenreEntity;
 import com.example.MyBookShopApp.data.entity.tag.TagEntity;
 import com.example.MyBookShopApp.data.entity.user.UserEntity;
 import com.example.MyBookShopApp.errors.EntityNotFoundError;
 import com.example.MyBookShopApp.repositories.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,10 +50,19 @@ class BookServiceTest {
     @MockBean
     private GenreRepository genreRepository;
 
+    @MockBean
+    private BookRatingRepository ratingRepository;
+
+    @MockBean
+    private UserRepository userRepository;
+
     private String slug1, slug2;
     private BookEntity book1, book2;
     private List<BookEntity> booksList;
     private Page<BookEntity> booksPage;
+    private List<Book2UserEntity> book2UserEntityList;
+    Principal principal;
+    UserEntity user;
 
     @Autowired
     BookServiceTest(BookService bookService) {
@@ -67,7 +76,6 @@ class BookServiceTest {
         book1 = BookEntity.builder()
                 .id(1)
                 .slug(slug1)
-                .title("Success")
                 .authorsLink(new ArrayList<>())
                 .tagsLink(new ArrayList<>())
                 .genreLink(new Book2GenreEntity(1, book1, new GenreEntity()))
@@ -75,16 +83,17 @@ class BookServiceTest {
                 .price(100)
                 .discount((short) 5)
                 .pubDate(LocalDate.of(2022, 5, 12))
-                .ratings(new ArrayList<>())
+                .ratings(List.of(BookRatingEntity.builder()
+                        .value((short) 5)
+                        .build()))
                 .build();
         book2 = BookEntity.builder()
                 .id(2)
                 .slug(slug2)
-                .title("Another")
                 .authorsLink(new ArrayList<>())
                 .tagsLink(new ArrayList<>())
                 .genreLink(new Book2GenreEntity(2, book2, new GenreEntity()))
-                .isBestseller((short) 1)
+                .isBestseller((short) 0)
                 .price(300)
                 .discount((short) 0)
                 .pubDate(LocalDate.of(2020, 5, 12))
@@ -92,6 +101,25 @@ class BookServiceTest {
                 .build();
         booksList = List.of(book1, book2);
         booksPage = new PageImpl<>(booksList);
+        book2UserEntityList = List.of(
+                Book2UserEntity.builder()
+                        .book(book1)
+                        .type(Book2UserTypeEntity.builder()
+                                .code(BookStatus.PAID)
+                                .build())
+                        .build(),
+                Book2UserEntity.builder()
+                        .book(book2)
+                        .type(Book2UserTypeEntity.builder()
+                                .code(BookStatus.ARCHIVED)
+                                .build())
+                        .build());
+        principal = () -> "1";
+        user = UserEntity.builder()
+                .id(1)
+                .password("111")
+                .booksLink(book2UserEntityList)
+                .build();
     }
 
     @AfterEach
@@ -101,6 +129,9 @@ class BookServiceTest {
         booksList = null;
         booksPage = null;
         slug1 = slug2 = null;
+        book2UserEntityList = null;
+        user = null;
+        principal = null;
     }
 
     @Test
@@ -111,7 +142,7 @@ class BookServiceTest {
         BookEntity book = bookService.getBookBySlug(slug1);
         assertNotNull(book);
         assertEquals(book, this.book1);
-        assertEquals(book.getTitle(), "Success");
+        assertEquals(book.getSlug(), slug1);
     }
 
     @Test
@@ -133,9 +164,9 @@ class BookServiceTest {
                 .findBySlug(slug2);
         BookDto bookDto = bookService.getBookDtoBySlug(slug2, null);
         assertNotNull(bookDto);
-        assertEquals(bookDto.getTitle(), "Another");
+        assertEquals(bookDto.getSlug(), slug2);
         assertEquals(bookDto.getPrice(), 300);
-        assertNotEquals(bookDto.getSlug(), "book1");
+        assertNotEquals(bookDto.getSlug(), slug1);
 
     }
 
@@ -156,12 +187,22 @@ class BookServiceTest {
 
     @Test
     void getPageOfRecommendedBooks() {
-        Mockito.when(bookRepository.findAllByIsBestsellerOrderByPriceAsc(Mockito.eq((short) 1), Mockito.any()))
-                .thenReturn(booksPage);
+        Mockito.doReturn(List.of(BookRatingEntity.builder()
+                                .book(book1)
+                                .value((short) 5)
+                                .build(),
+                        BookRatingEntity.builder()
+                                .book(book2)
+                                .value((short) 1)
+                                .build()))
+                .when(ratingRepository)
+                .findAll();
         BooksPageDto booksPageDto = bookService.getPageOfRecommendedBooks(0, 10);
         assertNotNull(booksPageDto);
-        assertEquals(booksPageDto.getBooks().get(0).getIsBestseller(), book1.getIsBestseller() == 1);
+        assertEquals(booksPageDto.getBooks().get(0).getIsBestseller(), true);
+        assertEquals(booksPageDto.getBooks().get(0).getSlug(), slug1);
     }
+
     @Test
     void getPageOfRecentBooks() {
         Mockito.when(bookRepository.findAllByOrderByPubDateDesc(Mockito.any()))
@@ -217,7 +258,7 @@ class BookServiceTest {
                 .thenReturn(Optional.of(author));
         BooksPageDto booksPageDto = bookService.getPageOfBooksByAuthor("author", 0, 10);
         assertNotNull(booksPageDto);
-        assertEquals(booksPageDto.getBooks().get(0).getSlug(), "book1");
+        assertEquals(booksPageDto.getBooks().get(0).getSlug(), slug1);
         assertEquals(booksPageDto.getCount(), 1);
     }
 
@@ -234,7 +275,7 @@ class BookServiceTest {
                 .thenReturn(Optional.of(tag));
         BooksPageDto booksPageDto = bookService.getPageOfBooksByTag(1, 0, 10);
         assertNotNull(booksPageDto);
-        assertEquals(booksPageDto.getBooks().get(0).getTitle(), "Success");
+        assertEquals(booksPageDto.getBooks().get(0).getSlug(), slug1);
     }
 
     @Test
@@ -253,21 +294,36 @@ class BookServiceTest {
                 .thenReturn(Optional.of(book1));
         BooksPageDto booksPageDto = bookService.getPageOfBooksByGenreAndSubGenres("genre", 0, 10);
         assertNotNull(booksPageDto);
-        assertEquals(booksPageDto.getBooks().get(0).getTitle(), "Success");
+        assertEquals(booksPageDto.getBooks().get(0).getSlug(), slug1);
     }
 
     @Test
     void getPageOfCurrentUserBooks() {
-
+        Mockito.doReturn(Optional.of(user))
+                .when(userRepository)
+                .findById(1);
+        BooksPageDto booksPageDto = bookService.getPageOfCurrentUserBooks(principal, 0, 10, false);
+        assertNotNull(booksPageDto);
+        assertEquals(booksPageDto.getBooks().size(), 1);
+        assertEquals(booksPageDto.getBooks().get(0).getSlug(), slug1);
     }
 
     @Test
     void getPageOfCurrentUserHistoryBooks() {
-
+        Mockito.doReturn(Optional.of(user))
+                .when(userRepository)
+                .findById(1);
+        BooksPageDto booksPageDto = bookService.getPageOfCurrentUserHistoryBooks(principal, 0, 10);
+        assertNotNull(booksPageDto);
+        assertEquals(booksPageDto.getBooks().size(), 1);
+        assertEquals(booksPageDto.getBooks().get(0).getSlug(), slug1);
     }
 
     @Test
     void bookEntityListToBookDtoList() {
-
+        List<BookDto> bookDtoList = bookService.bookEntityListToBookDtoList(booksList);
+        assertNotNull(bookDtoList);
+        assertEquals(bookDtoList.size(), 2);
+        assertEquals(bookDtoList.get(1).getSlug(), slug2);
     }
 }
